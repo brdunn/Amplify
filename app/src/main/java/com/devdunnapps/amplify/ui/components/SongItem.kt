@@ -102,7 +102,11 @@ fun SongItem(
                 }
                 .fillMaxHeight()
         ) {
-            Icon(Icons.Filled.MoreVert, contentDescription = null)
+            Icon(
+                imageVector = Icons.Filled.MoreVert,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface
+            )
         }
     }
 }
