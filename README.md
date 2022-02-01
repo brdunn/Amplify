@@ -5,7 +5,7 @@
 ## What is Amplify?
 It is easier to ask what Amplify is not. Amplify is not a content discovery music player. You should use Amplify if you are focused on listening to a specific artist, album, or song. If you are looking for music suggestions or auto generated playlists, there are plenty of other great music players available. Amplify forgoes some of the features of common modern-day music players to focus on providing the ultimate "baseline" experience.
 
-Amplify requires a Plex server to serve content from. You must know the IP address and port through which the Plex server is serving its REST API's.
+Amplify requires a Plex server to serve content.
 
 Amplify is currently a WIP POC that I work on in my free time and as such is far from being a working or daily driver ready app.
 
@@ -20,7 +20,7 @@ Amplify is currently a WIP POC that I work on in my free time and as such is far
 You must have Android Studio installed and working. Simply build the project and start MainActivity.java
 
 ## Plans
-- Improve basic music features (skip, add to queue, play next, etc.)
+- Queue list on the now playing screen
 - Additional UI scaling (landscape, different sized devices, tablets, etc.)
 - Additional settings for appearance and functionality
 - Casting support
