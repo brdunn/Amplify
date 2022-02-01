@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:test="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:background="?android:attr/selectableItemBackground">
+
+    <TextView
+        android:id="@+id/album_song_index"
+        android:layout_width="64dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:paddingHorizontal="16dp"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        test:text="1"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintGuide_percent="0.5"
+        android:orientation="horizontal"/>
+
+    <TextView
+        android:id="@+id/album_song_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:maxWidth="300dp"
+        app:layout_constraintBottom_toTopOf="@id/guideline"
+        app:layout_constraintStart_toEndOf="@id/album_song_index"
+        app:layout_constraintEnd_toStartOf="@id/album_song_menu"
+        android:textStyle="bold"
+        android:lines="1"
+        android:ellipsize="end"
+        test:text="Song Name" />
+
+    <TextView
+        android:id="@+id/album_song_artist"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/guideline"
+        app:layout_constraintStart_toEndOf="@id/album_song_index"
+        app:layout_constraintEnd_toStartOf="@id/album_song_menu"
+        android:lines="1"
+        android:ellipsize="end"
+        test:text="Artist" />
+
+    <ImageView
+        android:id="@+id/album_song_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/album_song_title"
+        app:layout_constraintBottom_toBottomOf="@id/album_song_artist"
+        android:paddingHorizontal="16dp"
+        android:src="@drawable/ic_menu_18dp"
+        android:background="?android:attr/selectableItemBackgroundBorderless"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

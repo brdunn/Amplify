@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    tools:context=".ui.main.MainActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/artist_toolbar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/artist_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            tools:title="Ben Folds" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/artist_picture"
+                android:layout_width="match_parent"
+                android:layout_height="320dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintTop_toTopOf="parent"
+                android:foreground="@drawable/artist_picture_gradient" />
+
+            <TextView
+                android:id="@+id/artist_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/artist_shuffle_btn"
+                android:layout_marginBottom="24dp"
+                android:textAlignment="center"
+                android:textStyle="bold"
+                android:maxLines="2"
+                android:ellipsize="end"
+                tools:text="Ben Folds"
+                style="@style/TextAppearance.MaterialComponents.Headline3" />
+
+            <Button
+                android:id="@+id/artist_shuffle_btn"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/artist_picture"
+                app:layout_constraintBottom_toBottomOf="@id/artist_picture"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:text="@string/artist_shuffle_btn" />
+
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/artist_bio_compose"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="36dp"
+                app:layout_constraintTop_toBottomOf="@id/artist_shuffle_btn" />
+
+            <TextView
+                android:id="@+id/artist_albums_header"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/artist_bio_compose"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/artist_see_all_albums_btn"
+                android:layout_marginStart="16dp"
+                android:textStyle="bold"
+                android:text="@string/artist_albums_header"
+                style="@style/TextAppearance.MaterialComponents.Headline4" />
+
+            <Button
+                android:id="@+id/artist_see_all_albums_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/artist_bio_compose"
+                app:layout_constraintStart_toEndOf="@id/artist_albums_header"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="8dp"
+                android:text="@string/artist_expand_section_button"
+                style="@style/Widget.Material3.Button.TextButton" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/artist_albums_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                app:layout_constraintTop_toBottomOf="@id/artist_albums_header"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="5"
+                tools:listitem="@layout/item_artist_fragment_album_card" />
+
+            <TextView
+                android:id="@+id/artist_top_songs_header"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/artist_albums_recycler_view"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/artist_see_all_songs_btn"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:textStyle="bold"
+                android:text="@string/artist_top_songs_header"
+                style="@style/TextAppearance.MaterialComponents.Headline4" />
+
+            <Button
+                android:id="@+id/artist_see_all_songs_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/artist_albums_recycler_view"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="32dp"
+                android:text="@string/artist_expand_section_button"
+                style="@style/Widget.Material3.Button.TextButton" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/artist_top_songs_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                app:layout_constraintTop_toBottomOf="@id/artist_top_songs_header"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="5"
+                tools:listitem="@layout/item_song" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Theme -->
+    <color name="md_theme_primary">#4DDAD8</color>
+    <color name="md_theme_onPrimary">#003737</color>
+    <color name="md_theme_primaryContainer">#004F4F</color>
+    <color name="md_theme_onPrimaryContainer">#6FF7F5</color>
+    <color name="md_theme_secondary">#B0CCCB</color>
+    <color name="md_theme_onSecondary">#1B3534</color>
+    <color name="md_theme_secondaryContainer">#314B4A</color>
+    <color name="md_theme_onSecondaryContainer">#CCE8E7</color>
+    <color name="md_theme_tertiary">#B2C8E8</color>
+    <color name="md_theme_onTertiary">#1C324B</color>
+    <color name="md_theme_tertiaryContainer">#334862</color>
+    <color name="md_theme_onTertiaryContainer">#D1E4FF</color>
+    <color name="md_theme_error">#FFB4A9</color>
+    <color name="md_theme_errorContainer">#930006</color>
+    <color name="md_theme_onError">#680003</color>
+    <color name="md_theme_onErrorContainer">#FFDAD4</color>
+    <color name="md_theme_background">#191C1C</color>
+    <color name="md_theme_onBackground">#E0E3E2</color>
+    <color name="md_theme_surface">#191C1C</color>
+    <color name="md_theme_onSurface">#E0E3E2</color>
+    <color name="md_theme_surfaceVariant">#3F4848</color>
+    <color name="md_theme_onSurfaceVariant">#BEC9C8</color>
+    <color name="md_theme_outline">#889392</color>
+    <color name="md_theme_inverseOnSurface">#191C1C</color>
+    <color name="md_theme_inverseSurface">#E0E3E2</color>
+    <color name="md_theme_primaryInverse">#006A69</color>
+
+
+    <!-- Artist -->
+    <color name="artist_gradient_start">#FF121212</color>
+    <color name="artist_gradient_middle">#66121212</color>
+    <color name="artist_gradient_end">#00121212</color>
+
+    <!-- Album -->
+    <color name="album_gradient_start">#FF121212</color>
+    <color name="album_gradient_middle">#99121212</color>
+    <color name="album_gradient_end">#44121212</color>
+</resources>
