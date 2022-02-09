@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    tools:context=".ui.main.MainActivity"
+    android:fitsSystemWindows="false">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/album_toolbar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/album_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            tools:title="Rockin' the Suburbs" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/album_header"
+                android:layout_width="match_parent"
+                android:layout_height="225dp"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/album_artwork"
+                    android:layout_width="175dp"
+                    android:layout_height="175dp"
+                    app:layout_constraintStart_toStartOf="@id/album_header"
+                    app:layout_constraintTop_toTopOf="@id/album_header"
+                    app:layout_constraintBottom_toBottomOf="@id/album_header"
+                    android:layout_marginHorizontal="24dp"
+                    tools:src="@drawable/ic_albums_black_24dp" />
+
+                <TextView
+                    android:id="@+id/album_title"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintStart_toEndOf="@id/album_artwork"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/album_artwork"
+                    app:layout_constraintBottom_toTopOf="@id/album_year"
+                    android:layout_marginHorizontal="24dp"
+                    android:textStyle="bold"
+                    app:autoSizeTextType="uniform"
+                    app:autoSizeMinTextSize="8sp"
+                    app:autoSizeMaxTextSize="42sp"
+                    app:autoSizeStepGranularity="2sp"
+                    android:breakStrategy="simple"
+                    android:gravity="bottom"
+                    tools:text="Rockin' the Suburbs" />
+
+                <TextView
+                    android:id="@+id/album_year"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintStart_toEndOf="@id/album_artwork"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/album_title"
+                    app:layout_constraintBottom_toBottomOf="@id/album_artwork"
+                    android:layout_marginHorizontal="24dp"
+                    android:textSize="14sp"
+                    tools:text="Ben Folds • 2001" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <Button
+                android:id="@+id/album_play_btn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/album_header"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/album_shuffle_btn"
+                android:layout_marginHorizontal="16dp"
+                android:padding="12dp"
+                android:text="@string/album_play_btn" />
+
+            <Button
+                android:id="@+id/album_shuffle_btn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/album_header"
+                app:layout_constraintStart_toEndOf="@id/album_play_btn"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginHorizontal="16dp"
+                android:padding="12dp"
+                android:text="@string/album_shuffle_btn" />
+
+            <TextView
+                android:id="@+id/album_num_tracks"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/album_play_btn"
+                app:layout_constraintEnd_toStartOf="@id/album_duration"
+                tools:text="10 Tracks" />
+
+            <TextView
+                android:id="@+id/album_duration"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"
+                app:layout_constraintTop_toBottomOf="@id/album_play_btn"
+                app:layout_constraintStart_toEndOf="@id/album_num_tracks"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:textAlignment="viewEnd"
+                tools:text="51 minutes" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/album_songs_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                app:layout_constraintTop_toBottomOf="@id/album_duration"
+                tools:listitem="@layout/item_album_song"
+                tools:itemCount="10" />
+
+            <TextView
+                android:id="@+id/album_studio_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/album_songs_recycler_view"
+                android:layout_margin="16dp"
+                tools:text="Studio Name" />
+
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/album_review_compose"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                app:layout_constraintTop_toBottomOf="@id/album_studio_name" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
