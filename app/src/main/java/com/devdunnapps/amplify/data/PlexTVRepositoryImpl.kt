@@ -1,6 +1,7 @@
 package com.devdunnapps.amplify.data
 
 import android.content.Context
+import com.devdunnapps.amplify.data.models.ErrorsDTO
 import com.devdunnapps.amplify.data.models.SigninDTO
 import com.devdunnapps.amplify.domain.models.LibrarySection
 import com.devdunnapps.amplify.domain.models.Server
@@ -8,6 +9,7 @@ import com.devdunnapps.amplify.domain.models.User
 import com.devdunnapps.amplify.domain.repository.PlexTVRepository
 import com.devdunnapps.amplify.utils.PreferencesUtils
 import com.devdunnapps.amplify.utils.Resource
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
@@ -46,15 +48,23 @@ class PlexTVRepositoryImpl @Inject constructor(
     override fun signInUser(username: String, password: String, authToken: String?): Flow<Resource<User>> = flow {
         emit(Resource.Loading())
 
-        val userCredentials = SigninDTO(username, password, authToken)
-        val response = api.signInUser(userCredentials)
-        if (response.code() == 201) {
-            emit(Resource.Success(response.body()?.toUser()))
-        } else {
-            // TODO: error handling
-            println("Failure: ${response.code()}")
-            println(response.body())
-            emit(Resource.Error("error"))
+        try {
+            val userCredentials = SigninDTO(username, password, authToken)
+            val response = api.signInUser(userCredentials)
+            if (response.code() == 201) {
+                emit(Resource.Success(response.body()?.toUser()))
+            } else if (response.code() == 401) {
+                val errors = Gson().fromJson(response.errorBody()?.charStream(), ErrorsDTO::class.java)
+                if (errors.errors[0].code == 1029) {
+                    emit(Resource.Error(errors.errors[0].code.toString()))
+                } else {
+                    emit(Resource.Error("Not authorized"))
+                }
+            } else {
+                emit(Resource.Error("Error logging in"))
+            }
+        } catch(e: IOException) {
+            emit(Resource.Error("Couldn't sign in user, please check your internet connection."))
         }
     }
 
