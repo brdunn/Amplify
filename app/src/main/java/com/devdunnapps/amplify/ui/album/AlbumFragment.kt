@@ -5,16 +5,49 @@ import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import coil.compose.LocalImageLoader
+import coil.compose.rememberImagePainter
 import com.bumptech.glide.Glide
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.databinding.FragmentAlbumBinding
+import com.devdunnapps.amplify.domain.models.Album
+import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.ui.components.ExpandableText
+import com.devdunnapps.amplify.ui.components.rememberViewInteropNestedScrollConnection
 import com.devdunnapps.amplify.utils.*
 import com.google.android.material.composethemeadapter3.Mdc3Theme
 import com.google.android.material.divider.MaterialDividerItemDecoration
@@ -22,9 +55,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.io.Serializable
 
 @AndroidEntryPoint
-class AlbumFragment : Fragment(), AlbumSongsAdapter.ItemClickListener, View.OnClickListener {
+class AlbumFragment : Fragment() {
 
-    private var albumSongsAdapter: AlbumSongsAdapter? = null
     private var _binding: FragmentAlbumBinding? = null
     private val binding get() = _binding!!
     private val viewModel: AlbumViewModel by viewModels()
@@ -34,59 +66,21 @@ class AlbumFragment : Fragment(), AlbumSongsAdapter.ItemClickListener, View.OnCl
 
         setSystemUI()
 
-        viewModel.album.observe(viewLifecycleOwner) { result ->
-            if (result is Resource.Success) {
-                val album = result.data!!
-
-                binding.albumToolbar.title = album.title
-                binding.albumTitle.text = album.title
-                binding.albumYear.text = getString(R.string.album_subtitle, album.artistName, album.year)
-                binding.albumNumTracks.text = resources.getQuantityString(R.plurals.album_track_count, album.numSongs, album.numSongs)
-                binding.albumStudioName.text = album.studio
-
-                val imageUrl = PlexUtils.getInstance(requireActivity()).addKeyAndAddress(album.thumb)
-                Glide.with(binding.albumArtwork.context)
-                    .load(imageUrl)
-                    .error(R.drawable.ic_albums_black_24dp)
-                    .into(binding.albumArtwork)
-
-                if (album.review.isNotEmpty()) {
-                    binding.albumReviewCompose.setContent {
-                        Mdc3Theme {
-                            ExpandableText(album.review)
-                        }
+         binding.albumCompose.apply {
+            setContent {
+                Mdc3Theme {
+                    Surface(
+                        modifier = Modifier.nestedScroll(rememberViewInteropNestedScrollConnection())
+                    ) {
+                        AlbumPage(
+                            viewModel = viewModel
+                        )
                     }
                 }
             }
         }
 
-        viewModel.songs.observe(viewLifecycleOwner) { result ->
-            if (result is Resource.Success) {
-                val songs = result.data!!
-                albumSongsAdapter = AlbumSongsAdapter(songs)
-                albumSongsAdapter?.setClickListener(this@AlbumFragment)
-                binding.albumSongsRecyclerView.adapter = albumSongsAdapter
-            }
-        }
-
-        viewModel.albumDuration.observe(viewLifecycleOwner) {
-            val duration = TimeUtils.millisecondsToMinutes(it)
-            binding.albumDuration.text = resources.getQuantityString(R.plurals.album_duration, duration, duration)
-        }
-
-        binding.albumSongsRecyclerView.layoutManager =  LinearLayoutManager(activity)
-        val songsDivider = MaterialDividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
-        binding.albumSongsRecyclerView.addItemDecoration(songsDivider)
-
-        binding.albumPlayBtn.setOnClickListener(this)
-        binding.albumShuffleBtn.setOnClickListener(this)
-
         return binding.root
-    }
-
-    override fun onItemClick(view: View?, position: Int) {
-        val song = albumSongsAdapter!!.getItem(position)
-        viewModel.playSong(song)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -107,27 +101,6 @@ class AlbumFragment : Fragment(), AlbumSongsAdapter.ItemClickListener, View.OnCl
         }
     }
 
-    override fun onClick(v: View) {
-        when (v.id) {
-            R.id.album_play_btn -> playBtnClicked()
-            R.id.album_shuffle_btn -> shuffleBtnClicked()
-        }
-    }
-
-    /**
-     * Play the entire album from beginning to end
-     */
-    private fun playBtnClicked() {
-        viewModel.playAlbum()
-    }
-
-    /**
-     * Shuffle the entire album
-     */
-    private fun shuffleBtnClicked() {
-        viewModel.playAlbum(shuffle = true)
-    }
-
     private fun setSystemUI() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.albumToolbarLayout) { view, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -139,5 +112,238 @@ class AlbumFragment : Fragment(), AlbumSongsAdapter.ItemClickListener, View.OnCl
         (activity as AppCompatActivity).supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         (activity as AppCompatActivity).supportActionBar!!.setDisplayShowHomeEnabled(true)
         setHasOptionsMenu(true)
+    }
+}
+
+@Composable
+fun AlbumHeader(album: Album) {
+    Row(
+        modifier = Modifier.padding(16.dp)
+    ) {
+        val context = LocalContext.current
+        val imageUrl = PlexUtils.getInstance(context).getSizedImage(album.thumb, 500, 500)
+        Image(
+            modifier = Modifier.weight(1F),
+            painter = rememberImagePainter(
+                data = imageUrl,
+                imageLoader = LocalImageLoader.current,
+                builder = {
+                    placeholder(R.drawable.ic_albums_black_24dp)
+                    error(R.drawable.ic_albums_black_24dp)
+                }
+            ),
+            contentDescription = null,
+            contentScale = ContentScale.FillWidth
+        )
+
+        Column(
+            modifier = Modifier
+                .weight(1F)
+                .aspectRatio(1F, false)
+                .padding(12.dp),
+        ) {
+            Box(
+                modifier = Modifier
+                    .weight(1F)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.BottomStart
+            ) {
+                val textStyleBody1 = MaterialTheme.typography.displayLarge
+                var textStyle by remember { mutableStateOf(textStyleBody1) }
+                var readyToDraw by remember { mutableStateOf(false) }
+
+                Text(
+                    text = album.title,
+                    style = textStyle,
+                    overflow = TextOverflow.Clip,
+                    modifier = Modifier.drawWithContent {
+                        if (readyToDraw) drawContent()
+                    },
+                    onTextLayout = { result ->
+                        if (result.didOverflowHeight) {
+                            textStyle = textStyle.copy(fontSize = textStyle.fontSize * 0.9)
+                        } else {
+                            readyToDraw = true
+                        }
+                    }
+                )
+            }
+
+            Text(
+                modifier = Modifier
+                    .weight(1F)
+                    .fillMaxSize(),
+                text = album.artistName + " • " + album.year
+            )
+        }
+    }
+}
+
+@Composable
+fun PlayControls(onPlayClicked: () -> Unit, onShuffleClicked: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        Button(
+            modifier = Modifier.width(150.dp),
+            onClick = onPlayClicked,
+        ) {
+            Text(text = "Play")
+        }
+
+        Button(
+            modifier = Modifier.width(150.dp),
+            onClick = onShuffleClicked,
+        ) {
+            Text(text = "Shuffle")
+        }
+    }
+}
+
+@Composable
+fun AlbumPage(viewModel: AlbumViewModel) {
+    Column(
+
+    ) {
+        val album by viewModel.album.observeAsState()
+        val songs by viewModel.songs.observeAsState()
+
+        if (album is Resource.Success && songs is Resource.Success) {
+            // TODO: ew
+            val successAlbumData = album!!.data!!
+            val successSongsData = songs!!.data!!
+
+            LazyColumn{
+                item {
+                    AlbumHeader(album = successAlbumData)
+
+                    PlayControls(
+                        onPlayClicked = { viewModel.playAlbum(WhenToPlay.NOW, false) },
+                        onShuffleClicked = { viewModel.playAlbum(WhenToPlay.NOW, true) }
+                    )
+
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    ) {
+                        val resources = LocalContext.current.resources
+                        Text(
+                            text = resources.getQuantityString(R.plurals.album_track_count, successAlbumData.numSongs, successAlbumData.numSongs)
+                        )
+
+                        val albumDuration by viewModel.albumDuration.observeAsState()
+                        albumDuration?.let {
+                            val duration = TimeUtils.millisecondsToMinutes(albumDuration!!)
+                            Text(
+                                text = resources.getQuantityString(R.plurals.album_duration, duration, duration)
+                            )
+                        }
+                    }
+                }
+
+                itemsIndexed(
+                    items = successSongsData
+                ) { index, song ->
+                    AlbumSong(
+                        song = song,
+                        albumPos = index + 1,
+                        onClick = { viewModel.playSong(song) },
+                        onItemMenuClick = {}
+                    )
+                }
+
+                item {
+                    Text(
+                        text = successAlbumData.studio,
+                        modifier = Modifier.padding(16.dp)
+                    )
+
+                    ExpandableText(
+                        text = successAlbumData.review
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun AlbumSong(
+    song: Song,
+    albumPos: Int,
+    onClick: () -> Unit,
+    onItemMenuClick: (String) -> Unit
+) {
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(65.dp)
+            .clickable { onClick() }
+    ) {
+        val (artwork, title, artist, menu) = createRefs()
+        val guideline = createGuidelineFromTop(0.5f)
+
+        Box(
+            modifier = Modifier
+                .constrainAs(artwork) {
+                    start.linkTo(parent.start)
+                }
+                .padding(vertical = 4.dp, horizontal = 16.dp)
+                .fillMaxHeight()
+                .aspectRatio(1f, true),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = albumPos.toString(),
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        Text(
+            text = song.title,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .constrainAs(title) {
+                    start.linkTo(artwork.end)
+                    end.linkTo(menu.start)
+                    bottom.linkTo(guideline)
+                    width = Dimension.fillToConstraints
+                }
+        )
+
+        Text(
+            text = song.artistName,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .constrainAs(artist) {
+                    start.linkTo(artwork.end)
+                    end.linkTo(menu.start)
+                    top.linkTo(guideline)
+                    width = Dimension.fillToConstraints
+                },
+            textAlign = TextAlign.Start
+        )
+
+        IconButton(
+            onClick = { onItemMenuClick(song.id) },
+            modifier = Modifier
+                .constrainAs(menu) {
+                    end.linkTo(parent.end)
+                }
+                .fillMaxHeight()
+        ) {
+            Icon(
+                imageVector = Icons.Filled.MoreVert,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface
+            )
+        }
     }
 }

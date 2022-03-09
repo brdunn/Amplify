@@ -272,6 +272,34 @@ fun PreviewAlbumHeader() {
                     duration = 56000,
                     songUrl = "",
                     userRating = 10
+                ),
+                Song(
+                    year = "2000",
+                    title = "Summer Highland Falls",
+                    thumb = "",
+                    id = "",
+                    artistThumb = "",
+                    artistName = "Billy Joel",
+                    artistId = "",
+                    albumId = "",
+                    albumName = "Complete Albums Collection",
+                    duration = 56000,
+                    songUrl = "",
+                    userRating = 10
+                ),
+                Song(
+                    year = "2000",
+                    title = "Summer Highland Falls",
+                    thumb = "",
+                    id = "",
+                    artistThumb = "",
+                    artistName = "Billy Joel",
+                    artistId = "",
+                    albumId = "",
+                    albumName = "Complete Albums Collection",
+                    duration = 56000,
+                    songUrl = "",
+                    userRating = 10
                 )
             )
 
