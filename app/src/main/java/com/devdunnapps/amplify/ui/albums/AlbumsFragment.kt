@@ -62,6 +62,11 @@ class AlbumsFragment : Fragment(){
         return binding.root
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun setSystemUI() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.albumsToolbarLayout) { view, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())

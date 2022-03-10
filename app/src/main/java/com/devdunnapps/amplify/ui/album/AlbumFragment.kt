@@ -1,8 +1,6 @@
 package com.devdunnapps.amplify.ui.album
 
 import android.os.Bundle
-import android.support.v4.media.session.MediaControllerCompat
-import android.support.v4.media.session.PlaybackStateCompat
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -15,11 +13,13 @@ import com.bumptech.glide.Glide
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.databinding.FragmentAlbumBinding
 import com.devdunnapps.amplify.ui.components.ExpandableText
-import com.devdunnapps.amplify.utils.*
+import com.devdunnapps.amplify.utils.PlexUtils
+import com.devdunnapps.amplify.utils.Resource
+import com.devdunnapps.amplify.utils.TimeUtils
+import com.devdunnapps.amplify.utils.WhenToPlay
 import com.google.android.material.composethemeadapter3.Mdc3Theme
 import com.google.android.material.divider.MaterialDividerItemDecoration
 import dagger.hilt.android.AndroidEntryPoint
-import java.io.Serializable
 
 @AndroidEntryPoint
 class AlbumFragment : Fragment(), AlbumSongsAdapter.ItemClickListener, View.OnClickListener {
@@ -82,6 +82,12 @@ class AlbumFragment : Fragment(), AlbumSongsAdapter.ItemClickListener, View.OnCl
         binding.albumShuffleBtn.setOnClickListener(this)
 
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        albumSongsAdapter = null
     }
 
     override fun onItemClick(view: View?, position: Int) {

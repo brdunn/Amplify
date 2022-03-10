@@ -58,6 +58,11 @@ class ArtistsFragment : Fragment() {
         return binding.root
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun setSystemUI() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.artistsToolbarLayout) { view, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())

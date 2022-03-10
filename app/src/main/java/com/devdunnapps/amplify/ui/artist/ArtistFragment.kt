@@ -22,7 +22,6 @@ import com.devdunnapps.amplify.utils.PlexUtils
 import com.devdunnapps.amplify.utils.Resource
 import com.google.android.material.composethemeadapter3.Mdc3Theme
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
 
 @AndroidEntryPoint
 class ArtistFragment : Fragment(),
@@ -53,6 +52,13 @@ class ArtistFragment : Fragment(),
         binding.artistSeeAllSongsBtn.setOnClickListener(this)
 
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        artistTopAlbumsListAdapter = null
+        songsListAdapter = null
     }
 
     private fun loadArtistTopAlbums() {

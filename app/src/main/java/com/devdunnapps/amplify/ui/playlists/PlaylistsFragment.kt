@@ -101,6 +101,11 @@ class PlaylistsFragment : Fragment() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun setSystemUI() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.playlistsToolbarLayout) { view, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())

@@ -6,8 +6,6 @@ import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.view.LayoutInflater
@@ -105,6 +103,11 @@ class NowPlayingFragment : Fragment() {
         binding.collapseBtn.setOnClickListener {
             (requireActivity() as MainActivity).bottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private fun loadCurrentMetadata(metadata: MediaMetadataCompat) {

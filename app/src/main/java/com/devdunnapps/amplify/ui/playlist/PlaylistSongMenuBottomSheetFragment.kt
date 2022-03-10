@@ -63,14 +63,19 @@ class PlaylistSongMenuBottomSheetFragment : BottomSheetDialogFragment() {
 
         binding.songBottomSheetPlaylistBtn.setOnClickListener {
             viewModel.removeSongFromPlaylist()
-            viewModel.isSongRemovedComplete.observe(viewLifecycleOwner, { result ->
+            viewModel.isSongRemovedComplete.observe(viewLifecycleOwner) { result ->
                 if (result is Resource.Success) {
                     findNavController().previousBackStackEntry?.savedStateHandle?.set("refreshData", true)
                     dismiss()
                 }
-            })
+            }
         }
 
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
