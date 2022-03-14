@@ -1,8 +1,6 @@
 package com.devdunnapps.amplify.ui.album
 
 import android.os.Bundle
-import android.support.v4.media.session.MediaControllerCompat
-import android.support.v4.media.session.PlaybackStateCompat
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
@@ -10,21 +8,19 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -38,21 +34,22 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.navigation.fragment.findNavController
 import coil.compose.LocalImageLoader
 import coil.compose.rememberImagePainter
-import com.bumptech.glide.Glide
+import com.devdunnapps.amplify.MobileNavigationDirections
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.databinding.FragmentAlbumBinding
 import com.devdunnapps.amplify.domain.models.Album
 import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.ui.components.ExpandableText
 import com.devdunnapps.amplify.ui.components.rememberViewInteropNestedScrollConnection
-import com.devdunnapps.amplify.utils.*
+import com.devdunnapps.amplify.utils.PlexUtils
+import com.devdunnapps.amplify.utils.Resource
+import com.devdunnapps.amplify.utils.TimeUtils
+import com.devdunnapps.amplify.utils.WhenToPlay
 import com.google.android.material.composethemeadapter3.Mdc3Theme
-import com.google.android.material.divider.MaterialDividerItemDecoration
 import dagger.hilt.android.AndroidEntryPoint
-import java.io.Serializable
 
 @AndroidEntryPoint
 class AlbumFragment : Fragment() {
@@ -73,7 +70,11 @@ class AlbumFragment : Fragment() {
                         modifier = Modifier.nestedScroll(rememberViewInteropNestedScrollConnection())
                     ) {
                         AlbumPage(
-                            viewModel = viewModel
+                            viewModel = viewModel,
+                            onSongMenuClick = { songId ->
+                                val action = MobileNavigationDirections.actionGlobalNavigationSongBottomSheet(songId)
+                                findNavController().navigate(action)
+                            }
                         )
                     }
                 }
@@ -81,6 +82,11 @@ class AlbumFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -121,9 +127,13 @@ fun AlbumHeader(album: Album) {
         modifier = Modifier.padding(16.dp)
     ) {
         val context = LocalContext.current
-        val imageUrl = PlexUtils.getInstance(context).getSizedImage(album.thumb, 500, 500)
+        val imageUrl = remember { PlexUtils.getInstance(context).addKeyAndAddress(album.thumb) }
         Image(
-            modifier = Modifier.weight(1F),
+            modifier = Modifier
+                .padding(16.dp)
+                .weight(1F)
+                .aspectRatio(1F)
+                .clip(shape = RoundedCornerShape(4.dp)),
             painter = rememberImagePainter(
                 data = imageUrl,
                 imageLoader = LocalImageLoader.current,
@@ -186,14 +196,18 @@ fun PlayControls(onPlayClicked: () -> Unit, onShuffleClicked: () -> Unit) {
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         Button(
-            modifier = Modifier.width(150.dp),
+            modifier = Modifier
+                .weight(1F)
+                .padding(horizontal = 16.dp),
             onClick = onPlayClicked,
         ) {
             Text(text = "Play")
         }
 
         Button(
-            modifier = Modifier.width(150.dp),
+            modifier = Modifier
+                .weight(1F)
+                .padding(horizontal = 16.dp),
             onClick = onShuffleClicked,
         ) {
             Text(text = "Shuffle")
@@ -202,7 +216,7 @@ fun PlayControls(onPlayClicked: () -> Unit, onShuffleClicked: () -> Unit) {
 }
 
 @Composable
-fun AlbumPage(viewModel: AlbumViewModel) {
+fun AlbumPage(viewModel: AlbumViewModel, onSongMenuClick: (String) -> Unit) {
     Column(
 
     ) {
@@ -251,7 +265,7 @@ fun AlbumPage(viewModel: AlbumViewModel) {
                         song = song,
                         albumPos = index + 1,
                         onClick = { viewModel.playSong(song) },
-                        onItemMenuClick = {}
+                        onMenuClick = onSongMenuClick
                     )
                 }
 
@@ -275,7 +289,7 @@ fun AlbumSong(
     song: Song,
     albumPos: Int,
     onClick: () -> Unit,
-    onItemMenuClick: (String) -> Unit
+    onMenuClick: (String) -> Unit
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -332,7 +346,7 @@ fun AlbumSong(
         )
 
         IconButton(
-            onClick = { onItemMenuClick(song.id) },
+            onClick = { onMenuClick(song.id) },
             modifier = Modifier
                 .constrainAs(menu) {
                     end.linkTo(parent.end)
