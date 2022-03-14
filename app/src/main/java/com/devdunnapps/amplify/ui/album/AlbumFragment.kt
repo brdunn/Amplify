@@ -25,6 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -43,6 +44,7 @@ import com.devdunnapps.amplify.databinding.FragmentAlbumBinding
 import com.devdunnapps.amplify.domain.models.Album
 import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.ui.components.ExpandableText
+import com.devdunnapps.amplify.ui.components.LoadingScreen
 import com.devdunnapps.amplify.ui.components.rememberViewInteropNestedScrollConnection
 import com.devdunnapps.amplify.utils.PlexUtils
 import com.devdunnapps.amplify.utils.Resource
@@ -122,7 +124,58 @@ class AlbumFragment : Fragment() {
 }
 
 @Composable
-fun AlbumHeader(album: Album) {
+private fun AlbumPage(viewModel: AlbumViewModel, onSongMenuClick: (String) -> Unit) {
+    val album by viewModel.album.observeAsState(Resource.Loading())
+    val songs by viewModel.songs.observeAsState(Resource.Loading())
+
+    if (album is Resource.Success && songs is Resource.Success) {
+        LazyColumn{
+            item {
+                AlbumHeader(
+                    viewModel = viewModel,
+                    album = album.data!!
+                )
+            }
+
+            itemsIndexed(
+                items = songs.data!!
+            ) { index, song ->
+                AlbumSong(
+                    song = song,
+                    albumPos = index + 1,
+                    onClick = { viewModel.playSong(song) },
+                    onMenuClick = onSongMenuClick
+                )
+            }
+
+            item {
+                AlbumFooter(album = album.data!!)
+            }
+        }
+    } else {
+        LoadingScreen()
+    }
+}
+
+@Composable
+private fun AlbumHeader(viewModel: AlbumViewModel, album: Album) {
+    Column {
+        ArtworkTitle(album = album)
+
+        PlayControls(
+            onPlayClicked = { viewModel.playAlbum(WhenToPlay.NOW, false) },
+            onShuffleClicked = { viewModel.playAlbum(WhenToPlay.NOW, true) }
+        )
+
+        AlbumDurationMetadata(
+            viewModel = viewModel,
+            album = album
+        )
+    }
+}
+
+@Composable
+private fun ArtworkTitle(album: Album) {
     Row(
         modifier = Modifier.padding(16.dp)
     ) {
@@ -158,19 +211,20 @@ fun AlbumHeader(album: Album) {
                     .fillMaxSize(),
                 contentAlignment = Alignment.BottomStart
             ) {
-                val textStyleBody1 = MaterialTheme.typography.displayLarge
-                var textStyle by remember { mutableStateOf(textStyleBody1) }
+                val maxTextStyle = MaterialTheme.typography.displayLarge
+                var textStyle by remember { mutableStateOf(maxTextStyle) }
                 var readyToDraw by remember { mutableStateOf(false) }
 
                 Text(
                     text = album.title,
                     style = textStyle,
-                    overflow = TextOverflow.Clip,
-                    modifier = Modifier.drawWithContent {
-                        if (readyToDraw) drawContent()
-                    },
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .drawWithContent {
+                            if (readyToDraw) drawContent()
+                        },
                     onTextLayout = { result ->
-                        if (result.didOverflowHeight) {
+                        if (result.didOverflowHeight || result.isLineEllipsized(0)) {
                             textStyle = textStyle.copy(fontSize = textStyle.fontSize * 0.9)
                         } else {
                             readyToDraw = true
@@ -190,7 +244,7 @@ fun AlbumHeader(album: Album) {
 }
 
 @Composable
-fun PlayControls(onPlayClicked: () -> Unit, onShuffleClicked: () -> Unit) {
+private fun PlayControls(onPlayClicked: () -> Unit, onShuffleClicked: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly
@@ -216,76 +270,44 @@ fun PlayControls(onPlayClicked: () -> Unit, onShuffleClicked: () -> Unit) {
 }
 
 @Composable
-fun AlbumPage(viewModel: AlbumViewModel, onSongMenuClick: (String) -> Unit) {
-    Column(
-
+private fun AlbumDurationMetadata(viewModel: AlbumViewModel, album: Album) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        val album by viewModel.album.observeAsState()
-        val songs by viewModel.songs.observeAsState()
+        val resources = LocalContext.current.resources
+        Text(
+            text = resources.getQuantityString(R.plurals.album_track_count, album.numSongs, album.numSongs)
+        )
 
-        if (album is Resource.Success && songs is Resource.Success) {
-            // TODO: ew
-            val successAlbumData = album!!.data!!
-            val successSongsData = songs!!.data!!
-
-            LazyColumn{
-                item {
-                    AlbumHeader(album = successAlbumData)
-
-                    PlayControls(
-                        onPlayClicked = { viewModel.playAlbum(WhenToPlay.NOW, false) },
-                        onShuffleClicked = { viewModel.playAlbum(WhenToPlay.NOW, true) }
-                    )
-
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                    ) {
-                        val resources = LocalContext.current.resources
-                        Text(
-                            text = resources.getQuantityString(R.plurals.album_track_count, successAlbumData.numSongs, successAlbumData.numSongs)
-                        )
-
-                        val albumDuration by viewModel.albumDuration.observeAsState()
-                        albumDuration?.let {
-                            val duration = TimeUtils.millisecondsToMinutes(albumDuration!!)
-                            Text(
-                                text = resources.getQuantityString(R.plurals.album_duration, duration, duration)
-                            )
-                        }
-                    }
-                }
-
-                itemsIndexed(
-                    items = successSongsData
-                ) { index, song ->
-                    AlbumSong(
-                        song = song,
-                        albumPos = index + 1,
-                        onClick = { viewModel.playSong(song) },
-                        onMenuClick = onSongMenuClick
-                    )
-                }
-
-                item {
-                    Text(
-                        text = successAlbumData.studio,
-                        modifier = Modifier.padding(16.dp)
-                    )
-
-                    ExpandableText(
-                        text = successAlbumData.review
-                    )
-                }
-            }
+        val albumDuration by viewModel.albumDuration.observeAsState()
+        albumDuration?.let {
+            val duration = TimeUtils.millisecondsToMinutes(it)
+            Text(
+                text = resources.getQuantityString(R.plurals.album_duration, duration, duration)
+            )
         }
     }
 }
 
 @Composable
-fun AlbumSong(
+private fun AlbumFooter(album: Album) {
+    Column {
+        Text(
+            text = album.studio,
+            modifier = Modifier.padding(16.dp)
+        )
+
+        ExpandableText(
+            text = album.review
+        )
+    }
+}
+
+@Composable
+private fun AlbumSong(
     song: Song,
     albumPos: Int,
     onClick: () -> Unit,
@@ -358,6 +380,75 @@ fun AlbumSong(
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurface
             )
+        }
+    }
+}
+
+
+@Preview
+@Composable
+fun PreviewAlbumHeader() {
+    Mdc3Theme {
+        Surface {
+            val album = Album(
+                artistId = "0",
+                artistName = "Billy Joel",
+                artistThumb = "",
+                id = "0",
+                numSongs = 10,
+                review = "",
+                studio = "Columbia",
+                thumb = "",
+                title = "Antisocialites",
+                year = "2000"
+            )
+
+            val songs = listOf(
+                Song(
+                    year = "2000",
+                    title = "Summer Highland Falls",
+                    thumb = "",
+                    id = "",
+                    artistThumb = "",
+                    artistName = "Billy Joel",
+                    artistId = "",
+                    albumId = "",
+                    albumName = "Complete Albums Collection",
+                    duration = 56000,
+                    songUrl = "",
+                    userRating = 10
+                ),
+                Song(
+                    year = "2000",
+                    title = "Summer Highland Falls",
+                    thumb = "",
+                    id = "",
+                    artistThumb = "",
+                    artistName = "Billy Joel",
+                    artistId = "",
+                    albumId = "",
+                    albumName = "Complete Albums Collection",
+                    duration = 56000,
+                    songUrl = "",
+                    userRating = 10
+                ),
+                Song(
+                    year = "2000",
+                    title = "Summer Highland Falls",
+                    thumb = "",
+                    id = "",
+                    artistThumb = "",
+                    artistName = "Billy Joel",
+                    artistId = "",
+                    albumId = "",
+                    albumName = "Complete Albums Collection",
+                    duration = 56000,
+                    songUrl = "",
+                    userRating = 10
+                )
+            )
+
+            ArtworkTitle(album = album)
         }
     }
 }
