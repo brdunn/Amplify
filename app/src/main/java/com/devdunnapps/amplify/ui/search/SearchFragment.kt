@@ -105,6 +105,15 @@ class SearchFragment: Fragment() {
         return binding.root
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        songsListAdapter = null
+        albumsListAdapter = null
+        artistsListAdapter = null
+        playlistsListAdapter = null
+    }
+
     override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
         menu.forEach { it.isVisible = false }

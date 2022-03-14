@@ -62,6 +62,11 @@ class ArtistAllSongsFragment : Fragment() {
         return binding.root
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun setSystemUI() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.artistAllSongsToolbarLayout) { view, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
