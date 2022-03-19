@@ -36,6 +36,7 @@ class AddToPlaylistBottomSheetFragment : BottomSheetDialogFragment(),
                 is Resource.Error -> {
                     Toast.makeText(activity, "Error getting playlists", Toast.LENGTH_SHORT).show()
                 }
+                else -> Unit
             }
         }
 

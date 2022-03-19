@@ -144,7 +144,7 @@ private fun PlaylistsScreen(
     onClick: (String) -> Unit,
     onItemMenuClick: (String) -> Unit
 ) {
-    val playlists by viewModel.playlists.observeAsState()
+    val playlists by viewModel.playlists.observeAsState(Resource.Loading())
     when (playlists) {
         is Resource.Loading -> {
             LoadingScreen()

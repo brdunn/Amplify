@@ -81,7 +81,7 @@ private fun SongsScreen(
     onClick: (Song) -> Unit,
     onItemMenuClick: (String) -> Unit
 ) {
-    val songs by viewModel.songs.observeAsState()
+    val songs by viewModel.songs.observeAsState(Resource.Loading())
     when (songs) {
         is Resource.Loading -> {
             LoadingScreen()

@@ -73,6 +73,7 @@ class SongMenuBottomSheetFragment : BottomSheetDialogFragment() {
                         }
                     }
                 }
+                else -> Unit
             }
         }
 

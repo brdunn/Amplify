@@ -28,6 +28,7 @@ class LyricsBottomSheet : BottomSheetDialogFragment() {
                 is Resource.Error -> {
                     binding.lyricsText.text = "Could not find lyrics for this song"
                 }
+                else -> Unit
             }
         }
 
