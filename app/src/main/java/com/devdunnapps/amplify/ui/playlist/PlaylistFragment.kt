@@ -16,10 +16,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.databinding.FragmentPlaylistBinding
-import com.devdunnapps.amplify.utils.PlexUtils
 import com.devdunnapps.amplify.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
 
 @AndroidEntryPoint
 class PlaylistFragment : Fragment(), PlaylistListAdapter.ItemClickListener, View.OnClickListener {
@@ -28,14 +26,11 @@ class PlaylistFragment : Fragment(), PlaylistListAdapter.ItemClickListener, View
     private val binding get() = _binding!!
     private var playlistAdapter: PlaylistListAdapter? = null
     private val viewModel: PlaylistViewModel by viewModels()
-    private lateinit var plexUtils: PlexUtils
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentPlaylistBinding.inflate(inflater, container, false)
 
         setSystemUI()
-
-        plexUtils = PlexUtils.getInstance(requireActivity())
 
         viewModel.playlist.observe(viewLifecycleOwner) { result ->
             if (result is Resource.Success) {
@@ -84,6 +79,12 @@ class PlaylistFragment : Fragment(), PlaylistListAdapter.ItemClickListener, View
                 navBackStackEntry.lifecycle.removeObserver(observer)
             }
         })
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        playlistAdapter = null
     }
 
     override fun onItemClick(view: View?, position: Int) {

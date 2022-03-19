@@ -14,7 +14,6 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.devdunnapps.amplify.MobileNavigationDirections
 import com.devdunnapps.amplify.R
-import com.devdunnapps.amplify.databinding.FragmentAlbumsBinding
 import com.devdunnapps.amplify.databinding.FragmentArtistAllAlbumsBinding
 import com.devdunnapps.amplify.ui.utils.RecyclerViewGridItemMargins
 import com.devdunnapps.amplify.utils.Resource
@@ -48,6 +47,12 @@ class ArtistAllAlbumsFragment : Fragment(), ArtistAllAlbumsListAdapter.ItemClick
         }
 
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        albumsListAdapter = null
     }
 
     override fun onItemClick(view: View?, position: Int) {

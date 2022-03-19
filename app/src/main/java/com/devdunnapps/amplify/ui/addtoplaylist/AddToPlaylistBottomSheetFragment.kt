@@ -24,8 +24,8 @@ class AddToPlaylistBottomSheetFragment : BottomSheetDialogFragment(),
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
        _binding = FragmentAddToPlaylistBottomSheetBinding.inflate(inflater, container, false)
 
-        viewModel.playlists.observe(viewLifecycleOwner, { result ->
-            when(result) {
+        viewModel.playlists.observe(viewLifecycleOwner) { result ->
+            when (result) {
                 is Resource.Success -> {
                     val playlists = result.data!!
                     playlistsAdapter = AddToPlaylistListAdapter(playlists)
@@ -37,17 +37,23 @@ class AddToPlaylistBottomSheetFragment : BottomSheetDialogFragment(),
                     Toast.makeText(activity, "Error getting playlists", Toast.LENGTH_SHORT).show()
                 }
             }
-        })
+        }
 
         return binding.root
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        playlistsAdapter = null
+    }
+
     override fun onItemClick(view: View?, position: Int) {
         viewModel.addSongToPlaylist(playlistsAdapter!!.getItem(position).id)
-        viewModel.isSongAddedComplete.observe(viewLifecycleOwner, { result ->
+        viewModel.isSongAddedComplete.observe(viewLifecycleOwner) { result ->
             if (result is Resource.Success) {
                 dismiss()
             }
-        })
+        }
     }
 }
