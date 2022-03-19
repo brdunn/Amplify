@@ -115,8 +115,8 @@ fun LoginInfoScreen(viewModel: LoginFlowViewModel) {
                 isError = user is Resource.Error
             )
 
-            val twoFactorAuthRequired by viewModel.twoFactorAuthRequired.observeAsState()
-            if (twoFactorAuthRequired == true) {
+            val twoFactorAuthRequired by viewModel.twoFactorAuthRequired.observeAsState(false)
+            if (twoFactorAuthRequired) {
                 OutlinedTextField(
                     value = twoFactorToken,
                     onValueChange = { twoFactorToken = it },
@@ -136,7 +136,9 @@ fun LoginInfoScreen(viewModel: LoginFlowViewModel) {
                 onClick = {
                     viewModel.login(username, password, twoFactorToken)
                 },
-                enabled = username.isNotEmpty() && password.isNotEmpty()
+                enabled = username.isNotEmpty()
+                        && password.isNotEmpty()
+                        && if (twoFactorAuthRequired) twoFactorToken.isNotEmpty() else true
             ) {
                 Text("Login")
             }

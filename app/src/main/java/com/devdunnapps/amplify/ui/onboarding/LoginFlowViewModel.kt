@@ -53,7 +53,7 @@ class LoginFlowViewModel @Inject constructor(
                     getServers()
                 } else if (it is Resource.Error && it.message == "1029") {
                     _twoFactorAuthRequired.postValue(true)
-                    _user.value = it
+//                    _user.value = it
                 } else {
                     _user.value = it
                 }
@@ -61,7 +61,7 @@ class LoginFlowViewModel @Inject constructor(
         }
     }
 
-    fun getServers() {
+    private fun getServers() {
         viewModelScope.launch {
             getUsersServersUseCase(_user.value!!.data!!.authToken).collect {
                 _servers.value = it
