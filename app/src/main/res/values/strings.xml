@@ -68,7 +68,7 @@
         <item>MODE_NIGHT_FOLLOW_SYSTEM</item>
     </string-array>
 
-    <string name="reset_preferences_dialog_summary">Are you sure you want to reset all preferences?</string>
+    <string name="sign_out_dialog_summary">Are you sure you want to sign out?</string>
 
     <!-- Notification Channel Settings -->
     <string name="playback_channel_name">Media Playback</string>
