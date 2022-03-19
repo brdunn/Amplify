@@ -7,11 +7,11 @@
         app:title="Choose theme"
         app:summary="System Default"
         app:entries="@array/theme_titles"
-        app:entryValues="@array/theme_values"/>
+        app:entryValues="@array/theme_values" />
 
     <Preference
-        app:key="reset_preferences"
-        app:title="Reset Preferences"
-        app:summary="Resets all app preferences and re-initiates server sign in" />
+        app:key="sign_out"
+        app:title="Sign out"
+        app:summary="Logs you out of your server" />
 
 </PreferenceScreen>

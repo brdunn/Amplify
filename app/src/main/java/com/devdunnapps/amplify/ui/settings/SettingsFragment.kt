@@ -19,24 +19,21 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onPreferenceTreeClick(preference: Preference): Boolean {
         return when (preference.key) {
-            "reset_preferences" -> {
-                showResetAllPreferences()
+            "sign_out" -> {
+                signOut()
                 true
             }
             else -> false
         }
     }
 
-    private fun showResetAllPreferences() {
+    private fun signOut() {
         MaterialAlertDialogBuilder(requireActivity())
-            .setMessage("Reset Preferences")
-            .setMessage(resources.getString(R.string.reset_preferences_dialog_summary))
+            .setMessage("Logout")
+            .setMessage(resources.getString(R.string.sign_out_dialog_summary))
             .setNegativeButton("Cancel") { _, _ -> }
             .setPositiveButton("Confirm") { _, _ ->
-                val darkModeValues = resources.getStringArray(R.array.theme_values)
-                this.preferenceManager.sharedPreferences!!.edit().putString("theme", darkModeValues[2]).commit()
-
-                viewModel.clearAllPreferences()
+                viewModel.signOut()
 
                 val restartApp = Intent(requireActivity(), MainActivity::class.java)
                 restartApp.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

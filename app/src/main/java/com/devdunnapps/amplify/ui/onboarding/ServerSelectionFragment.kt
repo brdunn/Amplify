@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -81,14 +83,13 @@ private fun ServerSelectionScreen(viewModel: LoginFlowViewModel, onItemClick: (S
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ServerItem(server: Server, onClick: (Server) -> Unit) {
     Button(
         onClick = { onClick(server) }
     ) {
         Text(
-            text = server.address,
+            text = "${server.address}\nLocal Only: ${server.localConnectionsOnly}\nProxy: ${server.proxyConnectionsAllowed}",
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center
         )

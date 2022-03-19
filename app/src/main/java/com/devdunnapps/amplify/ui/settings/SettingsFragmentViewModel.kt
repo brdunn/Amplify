@@ -6,7 +6,7 @@ import com.devdunnapps.amplify.utils.PreferencesUtils
 
 class SettingsFragmentViewModel(private val app: Application): AndroidViewModel(app) {
 
-    fun clearAllPreferences() {
+    fun signOut() {
         PreferencesUtils.saveString(app.applicationContext, PreferencesUtils.PREF_PLEX_SERVER_LIBRARY, null)
         PreferencesUtils.saveString(app.applicationContext, PreferencesUtils.PREF_PLEX_SERVER_ADDRESS, null)
         PreferencesUtils.saveString(app.applicationContext, PreferencesUtils.PREF_PLEX_USER_TOKEN, null)

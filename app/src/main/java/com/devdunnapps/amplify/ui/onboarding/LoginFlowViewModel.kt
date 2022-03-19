@@ -1,7 +1,10 @@
 package com.devdunnapps.amplify.ui.onboarding
 
 import android.app.Application
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.devdunnapps.amplify.domain.models.LibrarySection
 import com.devdunnapps.amplify.domain.models.Server
 import com.devdunnapps.amplify.domain.models.User
@@ -23,8 +26,11 @@ class LoginFlowViewModel @Inject constructor(
     private val app: Application
 ): AndroidViewModel(app) {
 
-    private val _user = MutableLiveData<Resource<User>>()
+    private val _user = MutableLiveData<Resource<User>>(Resource.Loading())
     val user: LiveData<Resource<User>> = _user
+
+    private val _twoFactorAuthRequired = MutableLiveData(false)
+    val twoFactorAuthRequired: LiveData<Boolean> = _twoFactorAuthRequired
 
     private val _servers = MutableLiveData<Resource<List<Server>>>()
     val servers: LiveData<Resource<List<Server>>> = _servers
@@ -45,6 +51,9 @@ class LoginFlowViewModel @Inject constructor(
                     PreferencesUtils.saveString(app.applicationContext, PreferencesUtils.PREF_PLEX_USER_TOKEN, it.data!!.authToken)
                     _user.value = it
                     getServers()
+                } else if (it is Resource.Error && it.message == "1029") {
+                    _twoFactorAuthRequired.postValue(true)
+//                    _user.value = it
                 } else {
                     _user.value = it
                 }
@@ -52,7 +61,7 @@ class LoginFlowViewModel @Inject constructor(
         }
     }
 
-    fun getServers() {
+    private fun getServers() {
         viewModelScope.launch {
             getUsersServersUseCase(_user.value!!.data!!.authToken).collect {
                 _servers.value = it

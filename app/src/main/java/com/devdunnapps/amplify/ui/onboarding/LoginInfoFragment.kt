@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.devdunnapps.amplify.utils.Resource
 import com.google.android.material.composethemeadapter.MdcTheme
 import com.google.android.material.composethemeadapter3.Mdc3Theme
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,24 +41,33 @@ class LoginInfoFragment: Fragment() {
             setContent {
                 Mdc3Theme {
                     MdcTheme {
-                        LoginInfoScreen(viewModel) {
-                            val action = LoginInfoFragmentDirections.actionLoginInfoFragmentToServerSelectionFragment()
-                            findNavController().navigate(action)
-
-                            (requireActivity() as OnBoardingActivity).updateIndicators { it + 1 }
-                        }
+                        LoginInfoScreen(viewModel)
                     }
                 }
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.user.observe(viewLifecycleOwner) { resource ->
+            if (resource is Resource.Success) {
+                val action = LoginInfoFragmentDirections.actionLoginInfoFragmentToServerSelectionFragment()
+                findNavController().navigate(action)
+
+                (requireActivity() as OnBoardingActivity).updateIndicators { it + 1 }
             }
         }
     }
 }
 
 @Composable
-fun LoginInfoScreen(viewModel: LoginFlowViewModel, onLogin: () -> Unit) {
+fun LoginInfoScreen(viewModel: LoginFlowViewModel) {
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var twoFactorToken by rememberSaveable { mutableStateOf("") }
+
+    val user by viewModel.user.observeAsState()
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -78,7 +89,8 @@ fun LoginInfoScreen(viewModel: LoginFlowViewModel, onLogin: () -> Unit) {
                 onValueChange = { username = it },
                 label = { Text("Username") },
                 singleLine = true,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                isError = user is Resource.Error
             )
 
             var isPasswordVisible by remember { mutableStateOf(false) }
@@ -99,29 +111,34 @@ fun LoginInfoScreen(viewModel: LoginFlowViewModel, onLogin: () -> Unit) {
                             contentDescription = null
                         )
                     }
-                }
+                },
+                isError = user is Resource.Error
             )
 
-            OutlinedTextField(
-                value = twoFactorToken,
-                onValueChange = { twoFactorToken = it },
-                label = { Text("2 Factor Token") },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                keyboardActions = KeyboardActions {
-                    viewModel.login(username, password, twoFactorToken)
-                    onLogin()
-                }
-            )
+            val twoFactorAuthRequired by viewModel.twoFactorAuthRequired.observeAsState(false)
+            if (twoFactorAuthRequired) {
+                OutlinedTextField(
+                    value = twoFactorToken,
+                    onValueChange = { twoFactorToken = it },
+                    label = { Text("2 Factor Token") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    keyboardActions = KeyboardActions {
+                        viewModel.login(username, password, twoFactorToken)
+                    },
+                    isError = user is Resource.Error
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
                 onClick = {
                     viewModel.login(username, password, twoFactorToken)
-                    onLogin()
                 },
-                enabled = username.isNotEmpty() && password.isNotEmpty() && twoFactorToken.isNotEmpty()
+                enabled = username.isNotEmpty()
+                        && password.isNotEmpty()
+                        && if (twoFactorAuthRequired) twoFactorToken.isNotEmpty() else true
             ) {
                 Text("Login")
             }
