@@ -176,9 +176,7 @@ private fun AlbumHeader(viewModel: AlbumViewModel, album: Album) {
 
 @Composable
 private fun ArtworkTitle(album: Album) {
-    Row(
-        modifier = Modifier.padding(16.dp)
-    ) {
+    Row {
         val context = LocalContext.current
         val imageUrl = remember { PlexUtils.getInstance(context).addKeyAndAddress(album.thumb) }
         Image(
@@ -203,7 +201,7 @@ private fun ArtworkTitle(album: Album) {
             modifier = Modifier
                 .weight(1F)
                 .aspectRatio(1F, false)
-                .padding(12.dp),
+                .padding(16.dp),
         ) {
             Box(
                 modifier = Modifier
@@ -300,6 +298,8 @@ private fun AlbumFooter(album: Album) {
             modifier = Modifier.padding(16.dp)
         )
 
+        Spacer(modifier = Modifier.height(8.dp))
+
         ExpandableText(
             text = album.review
         )
@@ -327,7 +327,7 @@ private fun AlbumSong(
                 .constrainAs(artwork) {
                     start.linkTo(parent.start)
                 }
-                .padding(vertical = 4.dp, horizontal = 16.dp)
+                .padding(vertical = 4.dp, horizontal = 8.dp)
                 .fillMaxHeight()
                 .aspectRatio(1f, true),
             contentAlignment = Alignment.Center
