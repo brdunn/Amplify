@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -27,7 +26,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.devdunnapps.amplify.utils.Resource
-import com.google.android.material.composethemeadapter.MdcTheme
 import com.google.android.material.composethemeadapter3.Mdc3Theme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -40,9 +38,7 @@ class LoginInfoFragment: Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 Mdc3Theme {
-                    MdcTheme {
-                        LoginInfoScreen(viewModel)
-                    }
+                    LoginInfoScreen(viewModel)
                 }
             }
         }

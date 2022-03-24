@@ -100,10 +100,9 @@ dependencies {
     implementation "androidx.compose.material:material-icons-extended:$composeVersion"
     implementation "androidx.compose.runtime:runtime-livedata:$composeVersion"
     implementation "androidx.activity:activity-compose:1.4.0"
-    implementation "com.google.android.material:compose-theme-adapter:1.1.5"
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.0"
-    implementation "androidx.compose.material3:material3:1.0.0-alpha07"
-    implementation "com.google.android.material:compose-theme-adapter-3:1.0.5"
+    implementation "androidx.compose.material3:material3:1.0.0-alpha08"
+    implementation "com.google.android.material:compose-theme-adapter-3:1.0.6"
 
     def accompanistVersion = "0.23.0"
     implementation "com.google.accompanist:accompanist-insets:$accompanistVersion"
