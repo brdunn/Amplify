@@ -72,6 +72,11 @@ class SongMenuBottomSheetFragment : BottomSheetDialogFragment() {
                             viewModel.rateSong(Rating.THUMB_UP)
                         }
                     }
+
+                    song.playCount?.let { playCount ->
+                        binding.songBottomSheetPlayCount.text =
+                            resources.getQuantityString(R.plurals.song_play_count, playCount, playCount)
+                    }
                 }
                 else -> Unit
             }

@@ -126,7 +126,8 @@ fun SongItemPreview() {
         thumb = "",
         title = "Song Title",
         year = "",
-        userRating = 0
+        userRating = 0,
+        playCount = 10
     )
     Mdc3Theme {
         Surface {

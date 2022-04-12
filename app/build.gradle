@@ -43,7 +43,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion "1.1.0"
+        kotlinCompilerExtensionVersion "1.1.1"
     }
 
     lint {
@@ -79,7 +79,7 @@ dependencies {
 
     implementation "androidx.media:media:1.5.0"
 
-    def exoPlayerVersion = "2.17.0"
+    def exoPlayerVersion = "2.17.1"
     implementation "com.google.android.exoplayer:exoplayer-core:$exoPlayerVersion"
     implementation "com.google.android.exoplayer:exoplayer-ui:$exoPlayerVersion"
     implementation "com.google.android.exoplayer:extension-mediasession:$exoPlayerVersion"

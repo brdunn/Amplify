@@ -416,7 +416,8 @@ fun PreviewAlbumHeader() {
                     albumName = "Complete Albums Collection",
                     duration = 56000,
                     songUrl = "",
-                    userRating = 10
+                    userRating = 10,
+                    playCount = 10
                 ),
                 Song(
                     year = "2000",
@@ -430,7 +431,8 @@ fun PreviewAlbumHeader() {
                     albumName = "Complete Albums Collection",
                     duration = 56000,
                     songUrl = "",
-                    userRating = 10
+                    userRating = 10,
+                    playCount = 10
                 ),
                 Song(
                     year = "2000",
@@ -444,7 +446,8 @@ fun PreviewAlbumHeader() {
                     albumName = "Complete Albums Collection",
                     duration = 56000,
                     songUrl = "",
-                    userRating = 10
+                    userRating = 10,
+                    playCount = 10
                 )
             )
 

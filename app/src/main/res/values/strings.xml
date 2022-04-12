@@ -91,4 +91,10 @@
 
     <!-- Search Fragment -->
     <string name="search_hint">Search Library</string>
+
+    <!-- SongMenuBottomSheetFragment -->
+    <plurals name="song_play_count">
+        <item quantity="one">%d Play</item>
+        <item quantity="other">%d Plays</item>
+    </plurals>
 </resources>
