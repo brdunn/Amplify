@@ -300,9 +300,7 @@ private fun AlbumFooter(album: Album) {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        ExpandableText(
-            text = album.review
-        )
+        ExpandableText(text = album.review)
     }
 }
 

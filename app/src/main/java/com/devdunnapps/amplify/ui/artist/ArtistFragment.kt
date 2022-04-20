@@ -81,11 +81,9 @@ class ArtistFragment : Fragment(),
                 binding.artistToolbar.title = artist.name
                 binding.artistName.text = artist.name
 
-                if (artist.bio.isNotEmpty()) {
-                    binding.artistBioCompose.setContent {
-                        Mdc3Theme {
-                            ExpandableText(artist.bio)
-                        }
+                binding.artistBioCompose.setContent {
+                    Mdc3Theme {
+                        ExpandableText(artist.bio)
                     }
                 }
 

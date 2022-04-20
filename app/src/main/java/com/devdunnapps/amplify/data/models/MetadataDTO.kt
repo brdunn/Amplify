@@ -32,7 +32,7 @@ data class MetadataDTO(
         title = title!!,
         artistThumb = parentThumb ?: "",
         id = ratingKey!!,
-        review = summary!!,
+        review = summary,
         thumb = thumb ?: "",
         numSongs = leafCount ?: 0,
         year = year ?: "",
@@ -44,7 +44,7 @@ data class MetadataDTO(
         id = ratingKey!!,
         name = title!!,
         thumb = thumb ?: "",
-        bio = summary!!
+        bio = summary
     )
 
     fun toSong() = Song(

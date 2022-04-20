@@ -19,9 +19,11 @@ import com.google.android.material.composethemeadapter3.Mdc3Theme
 
 @Composable
 fun ExpandableText(
-    text: String = "Default test here",
+    text: String?,
     collapsedLines: Int = 3
 ) {
+    if (text == null || text.isEmpty()) return;
+
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally

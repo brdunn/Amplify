@@ -7,7 +7,7 @@ data class Album(
         val title: String,
         val artistThumb: String,
         val id: String,
-        val review: String,
+        val review: String?,
         val thumb: String,
         val numSongs: Int,
         val year: String,

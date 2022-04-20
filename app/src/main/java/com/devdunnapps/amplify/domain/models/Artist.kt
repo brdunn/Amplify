@@ -6,5 +6,5 @@ data class Artist(
         val id: String,
         val name: String,
         val thumb: String,
-        val bio: String,
+        val bio: String?,
 ) : Serializable
