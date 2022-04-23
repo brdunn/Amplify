@@ -60,8 +60,8 @@ class AlbumViewModel @Inject constructor(
     fun playAlbum(whenToPlay: WhenToPlay = WhenToPlay.NOW, shuffle: Boolean = false) {
         val action = when (whenToPlay) {
             WhenToPlay.NOW -> "play_songs_now"
-            WhenToPlay.NEXT -> "add_songs_to_queue"
-            WhenToPlay.QUEUE -> "play_songs_next"
+            WhenToPlay.NEXT -> "play_songs_next"
+            WhenToPlay.QUEUE -> "add_songs_to_queue"
         }
 
         val shuffleMode = if (shuffle) PlaybackStateCompat.SHUFFLE_MODE_ALL else PlaybackStateCompat.SHUFFLE_MODE_NONE

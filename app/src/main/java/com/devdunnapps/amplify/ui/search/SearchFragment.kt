@@ -1,10 +1,12 @@
 package com.devdunnapps.amplify.ui.search
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -47,6 +49,8 @@ class SearchFragment: Fragment() {
         binding.searchResultsAlbums.addItemDecoration(RecyclerViewGridItemMargins(resources.getDimensionPixelSize(R.dimen.eight_margin)))
         binding.searchResultsArtists.layoutManager = GridLayoutManager(requireContext(), 3)
         binding.searchResultsArtists.addItemDecoration(RecyclerViewGridItemMargins(resources.getDimensionPixelSize(R.dimen.eight_margin)))
+
+        binding.search.requestFocus()
 
         binding.search.doOnTextChanged { text, _, _, _ ->
             viewModel.search(text.toString())
@@ -103,6 +107,14 @@ class SearchFragment: Fragment() {
         }
 
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // automatically show the software keyboard
+        val imm: InputMethodManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.showSoftInput(binding.search, InputMethodManager.SHOW_IMPLICIT)
     }
 
     override fun onDestroyView() {

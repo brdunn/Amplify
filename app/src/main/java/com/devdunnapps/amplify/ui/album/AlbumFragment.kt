@@ -1,7 +1,9 @@
 package com.devdunnapps.amplify.ui.album
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -12,6 +14,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.PlaylistPlay
+import androidx.compose.material.icons.outlined.QueueMusic
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -22,9 +26,13 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -73,6 +81,12 @@ class AlbumFragment : Fragment() {
                     ) {
                         AlbumPage(
                             viewModel = viewModel,
+                            onPlayNextClick = {
+                                viewModel.playAlbum(WhenToPlay.NEXT, false)
+                            },
+                            onAddToQueueClick = {
+                                viewModel.playAlbum(WhenToPlay.QUEUE, false)
+                            },
                             onSongMenuClick = { songId ->
                                 val action = MobileNavigationDirections.actionGlobalNavigationSongBottomSheet(songId)
                                 findNavController().navigate(action)
@@ -91,24 +105,6 @@ class AlbumFragment : Fragment() {
         _binding = null
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_album, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_album_add_to_queue -> {
-                viewModel.playAlbum(WhenToPlay.QUEUE)
-                true
-            }
-            R.id.menu_album_play_next -> {
-                viewModel.playAlbum(WhenToPlay.NEXT)
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
     private fun setSystemUI() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.albumToolbarLayout) { view, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -119,12 +115,16 @@ class AlbumFragment : Fragment() {
         (activity as AppCompatActivity).setSupportActionBar(binding.albumToolbar)
         (activity as AppCompatActivity).supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         (activity as AppCompatActivity).supportActionBar!!.setDisplayShowHomeEnabled(true)
-        setHasOptionsMenu(true)
     }
 }
 
 @Composable
-private fun AlbumPage(viewModel: AlbumViewModel, onSongMenuClick: (String) -> Unit) {
+private fun AlbumPage(
+    viewModel: AlbumViewModel,
+    onPlayNextClick: () -> Unit,
+    onSongMenuClick: (String) -> Unit,
+    onAddToQueueClick: () -> Unit
+) {
     val album by viewModel.album.observeAsState(Resource.Loading())
     val songs by viewModel.songs.observeAsState(Resource.Loading())
 
@@ -133,7 +133,9 @@ private fun AlbumPage(viewModel: AlbumViewModel, onSongMenuClick: (String) -> Un
             item {
                 AlbumHeader(
                     viewModel = viewModel,
-                    album = album.data!!
+                    album = album.data!!,
+                    onPlayNextClick = onPlayNextClick,
+                    onAddToQueueClick = onAddToQueueClick
                 )
             }
 
@@ -158,9 +160,18 @@ private fun AlbumPage(viewModel: AlbumViewModel, onSongMenuClick: (String) -> Un
 }
 
 @Composable
-private fun AlbumHeader(viewModel: AlbumViewModel, album: Album) {
+private fun AlbumHeader(
+    viewModel: AlbumViewModel,
+    album: Album,
+    onPlayNextClick: () -> Unit,
+    onAddToQueueClick: () -> Unit
+) {
     Column {
-        ArtworkTitle(album = album)
+        ArtworkTitle(
+            album = album,
+            onPlayNextClick = onPlayNextClick,
+            onAddToQueueClick = onAddToQueueClick
+        )
 
         PlayControls(
             onPlayClicked = { viewModel.playAlbum(WhenToPlay.NOW, false) },
@@ -175,7 +186,7 @@ private fun AlbumHeader(viewModel: AlbumViewModel, album: Album) {
 }
 
 @Composable
-private fun ArtworkTitle(album: Album) {
+private fun ArtworkTitle(album: Album, onPlayNextClick: () -> Unit, onAddToQueueClick: () -> Unit) {
     Row {
         val context = LocalContext.current
         val imageUrl = remember { PlexUtils.getInstance(context).addKeyAndAddress(album.thumb) }
@@ -201,7 +212,7 @@ private fun ArtworkTitle(album: Album) {
             modifier = Modifier
                 .weight(1F)
                 .aspectRatio(1F, false)
-                .padding(16.dp),
+                .padding(top = 16.dp, end = 16.dp, bottom = 16.dp),
         ) {
             Box(
                 modifier = Modifier
@@ -209,7 +220,10 @@ private fun ArtworkTitle(album: Album) {
                     .fillMaxSize(),
                 contentAlignment = Alignment.BottomStart
             ) {
-                val maxTextStyle = MaterialTheme.typography.displayLarge
+                val maxTextStyle = TextStyle (
+                    fontSize = 50.sp,
+                    fontWeight = FontWeight.Bold
+                )
                 var textStyle by remember { mutableStateOf(maxTextStyle) }
                 var readyToDraw by remember { mutableStateOf(false) }
 
@@ -217,10 +231,12 @@ private fun ArtworkTitle(album: Album) {
                     text = album.title,
                     style = textStyle,
                     overflow = TextOverflow.Ellipsis,
+                    maxLines = 3,
                     modifier = Modifier
                         .drawWithContent {
                             if (readyToDraw) drawContent()
-                        },
+                        }
+                        .padding(start = 16.dp),
                     onTextLayout = { result ->
                         if (result.didOverflowHeight || result.isLineEllipsized(0)) {
                             textStyle = textStyle.copy(fontSize = textStyle.fontSize * 0.9)
@@ -233,10 +249,49 @@ private fun ArtworkTitle(album: Album) {
 
             Text(
                 modifier = Modifier
-                    .weight(1F)
-                    .fillMaxSize(),
-                text = album.artistName + " • " + album.year
+                    .weight(0.3f)
+                    .fillMaxWidth()
+                    .padding(start = 16.dp),
+                text = buildAnnotatedString {
+                    append("by ")
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                        append(album.artistName)
+                    }
+                },
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
+
+            Text(
+                modifier = Modifier
+                    .weight(0.3f)
+                    .fillMaxWidth()
+                    .padding(start = 16.dp),
+                maxLines = 1,
+                text =  "Album • ${album.year}"
+            )
+
+            Row(
+                modifier = Modifier.weight(0.3f).padding(start = 4.dp)
+            ) {
+                IconButton(
+                    onClick = { onPlayNextClick() }
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.PlaylistPlay,
+                        contentDescription = "Play next"
+                    )
+                }
+
+                IconButton(
+                    onClick = { onAddToQueueClick() }
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.QueueMusic,
+                        contentDescription = "Add to queue"
+                    )
+                }
+            }
         }
     }
 }
@@ -402,7 +457,11 @@ private fun PreviewAlbumHeader() {
                 year = "2000"
             )
 
-            ArtworkTitle(album = album)
+            ArtworkTitle(
+                album = album,
+                onPlayNextClick = {},
+                onAddToQueueClick = {}
+            )
         }
     }
 }
