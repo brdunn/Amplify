@@ -238,7 +238,7 @@ class PlexRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun searchLibrary(query: String): Flow<Resource<SearchResults>> = flow {
+    override fun searchLibrary(query: String): Flow<Resource<MixedMedia>> = flow {
         emit(Resource.Loading())
         try {
             var songs: List<Song> = emptyList()
@@ -282,7 +282,7 @@ class PlexRepositoryImpl @Inject constructor(
                 playlists = playlistsMetadata.map { it.toPlaylist() }
             }
 
-            emit(Resource.Success(SearchResults(songs, albums, artists, playlists)))
+            emit(Resource.Success(MixedMedia(songs, albums, artists, playlists)))
         } catch(e: HttpException) {
             emit(Resource.Error("Oops, something went wrong!"))
         } catch(e: IOException) {
@@ -319,6 +319,40 @@ class PlexRepositoryImpl @Inject constructor(
             emit(Resource.Error("Oops, something went wrong!"))
         } catch(e: IOException) {
             emit(Resource.Error("Couldn't mark as listened, please check your internet connection."))
+        }
+    }
+
+    override fun getRecentlyPlayedMedia(): Flow<Resource<MixedMedia>> = flow {
+        emit(Resource.Loading())
+        try {
+            val hub = api.getRecentlyPlayedMedia(section, userToken).mediaContainer.hub!!
+            var songs: List<Song> = emptyList()
+            var albums: List<Album> = emptyList()
+            var artists: List<Artist> = emptyList()
+            var playlists: List<Playlist> = emptyList()
+
+            val artistsMetadata = hub
+                .first { it.type == "artist" }
+                .metadata
+            if (artistsMetadata != null) {
+                artists = artistsMetadata.map { it.toArtist() }
+            }
+
+            val playlistsMetadata = hub
+                .first { it.type == "playlist" }
+                .metadata
+            if (playlistsMetadata != null) {
+                playlists = playlistsMetadata.map { it.toPlaylist() }
+            }
+            emit(Resource.Success(MixedMedia(songs, albums, artists, playlists)))
+        } catch(e: HttpException) {
+            emit(Resource.Error("Oops, something went wrong!"))
+            println("here")
+
+        } catch(e: IOException) {
+            emit(Resource.Error("Couldn't get recently played media, please check your internet connection."))
+            println("here2")
+
         }
     }
 }

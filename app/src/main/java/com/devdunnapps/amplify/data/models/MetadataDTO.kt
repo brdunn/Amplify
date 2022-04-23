@@ -66,7 +66,7 @@ data class MetadataDTO(
     fun toPlaylist() = Playlist(
         id = ratingKey!!,
         title = title!!,
-        summary = summary!!,
+        summary = summary,
         numSongs = leafCount!!
     )
 }

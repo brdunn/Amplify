@@ -6,9 +6,9 @@ import com.devdunnapps.amplify.utils.Resource
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class SearchLibraryUseCase @Inject constructor(
+class GetRecentlyPlayedMediaUseCase @Inject constructor(
     private val repository: PlexRepository
 ) {
 
-    operator fun invoke(query: String): Flow<Resource<MixedMedia>> = repository.searchLibrary(query)
+    operator fun invoke(): Flow<Resource<MixedMedia>> = repository.getRecentlyPlayedMedia()
 }

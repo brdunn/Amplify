@@ -157,4 +157,11 @@ interface PlexAPI {
         @Query("key") key: String,
         @Header("X-Plex-Token") userToken: String
     ): Response<Unit>
+
+    @Headers("Accept: application/json")
+    @GET("hubs/sections/{section}?excludeFields=summary&includeLibraryPlaylists=1")
+    suspend fun getRecentlyPlayedMedia(
+        @Path("section") section: String,
+        @Header("X-Plex-Token") userToken: String
+    ): PlexModelDTO
 }

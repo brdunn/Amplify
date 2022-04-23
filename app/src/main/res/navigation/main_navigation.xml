@@ -164,5 +164,9 @@
         android:id="@+id/nowPlayingFragment"
         android:name="com.devdunnapps.amplify.ui.nowplaying.NowPlayingFragment"
         android:label="NowPlayingFragment"
-        tools:layout="@layout/bottom_sheet_now_playing"/><action android:id="@+id/action_global_navigation_add_to_playlist_bottom_sheet" app:destination="@id/navigation_add_to_playlist_bottom_sheet"/>
+        tools:layout="@layout/bottom_sheet_now_playing" />
+
+    <action
+        android:id="@+id/action_global_homeFragment"
+        app:destination="@id/navigation_home" />
 </navigation>

@@ -1,6 +1,5 @@
 package com.devdunnapps.amplify.domain.repository
 
-import android.content.Context
 import com.devdunnapps.amplify.domain.models.*
 import com.devdunnapps.amplify.utils.Resource
 import kotlinx.coroutines.flow.Flow
@@ -41,9 +40,11 @@ interface PlexRepository {
 
     fun createPlaylist(playlistTitle: String): Flow<Resource<Playlist>>
 
-    fun searchLibrary(query: String): Flow<Resource<SearchResults>>
+    fun searchLibrary(query: String): Flow<Resource<MixedMedia>>
 
     fun rateSong(songId: String, rating: Int): Flow<Resource<Unit>>
 
     fun markSongAsListened(songId: String): Flow<Resource<Unit>>
+
+    fun getRecentlyPlayedMedia(): Flow<Resource<MixedMedia>>
 }
