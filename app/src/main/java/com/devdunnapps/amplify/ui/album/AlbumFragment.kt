@@ -319,6 +319,7 @@ private fun AlbumSong(
     ) {
         val (artwork, title, artist, menu) = createRefs()
         val guideline = createGuidelineFromTop(0.5f)
+        val songDuration = TimeUtils.millisecondsToTime(song.duration)
 
         Box(
             modifier = Modifier
@@ -352,7 +353,7 @@ private fun AlbumSong(
         )
 
         Text(
-            text = song.artistName,
+            text = "${song.artistName} • $songDuration",
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
@@ -385,7 +386,7 @@ private fun AlbumSong(
 
 @Preview
 @Composable
-fun PreviewAlbumHeader() {
+private fun PreviewAlbumHeader() {
     Mdc3Theme {
         Surface {
             val album = Album(
@@ -397,59 +398,41 @@ fun PreviewAlbumHeader() {
                 review = "",
                 studio = "Columbia",
                 thumb = "",
-                title = "Antisocialites",
+                title = "The Complete Albums Collection",
                 year = "2000"
             )
 
-            val songs = listOf(
-                Song(
-                    year = "2000",
-                    title = "Summer Highland Falls",
-                    thumb = "",
-                    id = "",
-                    artistThumb = "",
-                    artistName = "Billy Joel",
-                    artistId = "",
-                    albumId = "",
-                    albumName = "Complete Albums Collection",
-                    duration = 56000,
-                    songUrl = "",
-                    userRating = 10,
-                    playCount = 10
-                ),
-                Song(
-                    year = "2000",
-                    title = "Summer Highland Falls",
-                    thumb = "",
-                    id = "",
-                    artistThumb = "",
-                    artistName = "Billy Joel",
-                    artistId = "",
-                    albumId = "",
-                    albumName = "Complete Albums Collection",
-                    duration = 56000,
-                    songUrl = "",
-                    userRating = 10,
-                    playCount = 10
-                ),
-                Song(
-                    year = "2000",
-                    title = "Summer Highland Falls",
-                    thumb = "",
-                    id = "",
-                    artistThumb = "",
-                    artistName = "Billy Joel",
-                    artistId = "",
-                    albumId = "",
-                    albumName = "Complete Albums Collection",
-                    duration = 56000,
-                    songUrl = "",
-                    userRating = 10,
-                    playCount = 10
-                )
+            ArtworkTitle(album = album)
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewAlbumSong() {
+    Mdc3Theme {
+        Surface {
+            val song = Song(
+                year = "2021",
+                title = "Hotel TV",
+                thumb = "",
+                id = "",
+                artistThumb = "",
+                artistName = "Lawrence",
+                artistId = "",
+                albumId = "",
+                albumName = "Hotel TV",
+                duration = 217000,
+                songUrl = "",
+                userRating = 10,
+                playCount = 10
             )
 
-            ArtworkTitle(album = album)
+            AlbumSong(song = song,
+                albumPos = 2,
+                onClick = {},
+                onMenuClick = {}
+            )
         }
     }
 }
