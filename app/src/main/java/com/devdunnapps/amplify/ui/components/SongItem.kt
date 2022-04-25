@@ -27,6 +27,7 @@ import coil.compose.rememberImagePainter
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.utils.PlexUtils
+import com.devdunnapps.amplify.utils.TimeUtils
 import com.google.android.material.composethemeadapter3.Mdc3Theme
 
 @Composable
@@ -80,8 +81,9 @@ fun SongItem(
                 }
         )
 
+        val songDuration = TimeUtils.millisecondsToTime(song.duration)
         Text(
-            text = song.artistName,
+            text = "${song.artistName} • $songDuration",
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
@@ -121,7 +123,7 @@ fun SongItemPreview() {
         albumName = "",
         artistName = "Artist Name",
         artistThumb = "",
-        duration = 1,
+        duration = 142000,
         songUrl = "",
         thumb = "",
         title = "Song Title",
