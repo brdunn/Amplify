@@ -372,7 +372,7 @@ private fun AlbumSong(
             .height(65.dp)
             .clickable { onClick() }
     ) {
-        val (artwork, title, artist, menu) = createRefs()
+        val (artwork, title, description, menu) = createRefs()
         val guideline = createGuidelineFromTop(0.5f)
         val songDuration = TimeUtils.millisecondsToTime(song.duration)
 
@@ -412,7 +412,7 @@ private fun AlbumSong(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
-                .constrainAs(artist) {
+                .constrainAs(description) {
                     start.linkTo(artwork.end)
                     end.linkTo(menu.start)
                     top.linkTo(guideline)
@@ -487,7 +487,8 @@ private fun PreviewAlbumSong() {
                 playCount = 10
             )
 
-            AlbumSong(song = song,
+            AlbumSong(
+                song = song,
                 albumPos = 2,
                 onClick = {},
                 onMenuClick = {}

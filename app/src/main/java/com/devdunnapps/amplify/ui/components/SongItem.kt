@@ -42,7 +42,7 @@ fun SongItem(
             .height(65.dp)
             .clickable{ onClick() }
     ) {
-        val (artwork, title, artist, menu) = createRefs()
+        val (artwork, title, description, menu) = createRefs()
         val guideline = createGuidelineFromTop(0.5f)
         val context = LocalContext.current
         val artworkUrl = remember { PlexUtils.getInstance(context).getSizedImage(song.thumb, 200, 200) }
@@ -87,7 +87,7 @@ fun SongItem(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
-                .constrainAs(artist) {
+                .constrainAs(description) {
                     start.linkTo(artwork.end)
                     end.linkTo(menu.start)
                     top.linkTo(guideline)
@@ -134,7 +134,7 @@ fun SongItemPreview() {
     Mdc3Theme {
         Surface {
             SongItem(
-                song =song,
+                song = song,
                 onClick = {},
                 onItemMenuClick = {}
             )
