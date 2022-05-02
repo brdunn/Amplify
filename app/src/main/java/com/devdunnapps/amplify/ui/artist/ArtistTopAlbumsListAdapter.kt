@@ -1,70 +1,53 @@
 package com.devdunnapps.amplify.ui.artist
 
-import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.devdunnapps.amplify.R
+import com.devdunnapps.amplify.databinding.ItemArtistFragmentAlbumCardBinding
 import com.devdunnapps.amplify.domain.models.Album
 import com.devdunnapps.amplify.utils.PlexUtils
-import com.devdunnapps.amplify.utils.StringUtils
 
 class ArtistTopAlbumsListAdapter(
     private val albums: List<Album>,
-    private val context: Context
+    private val onClick: (album: Album) -> Unit
 ) : RecyclerView.Adapter<ArtistTopAlbumsListAdapter.ViewHolder>() {
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
 
-        val textViewAlbumTitle: TextView = view.findViewById(R.id.artist_album_card_title)
-        val textViewAlbumSubtitle: TextView = view.findViewById(R.id.artist_album_card_subtitle)
-        val imageViewAlbumArtwork: ImageView = view.findViewById(R.id.artist_album_card_picture)
+    class ViewHolder(
+        private val binding: ItemArtistFragmentAlbumCardBinding,
+        private val onClick: (album: Album) -> Unit
+    ) : RecyclerView.ViewHolder(binding.root) {
 
-        override fun onClick(view: View) {
-            mClickListener?.onItemClick(view, bindingAdapterPosition)
-        }
+        fun bind(album: Album) {
+            binding.artistAlbumCardTitle.text = album.title
 
-        init {
-            view.setOnClickListener(this)
+            // TODO(handle the case of EPs and other non album items)
+            val contentYear = album.year
+            val subtitle = binding.artistAlbumCardSubtitle.context
+                .resources.getString(R.string.artist_albums_subtitle, "Album", contentYear)
+            binding.artistAlbumCardSubtitle.text = subtitle
+
+            val imageUrl = PlexUtils
+                .getInstance(binding.artistAlbumCardPicture.context).addKeyAndAddress(album.thumb)
+            Glide.with(binding.artistAlbumCardPicture)
+                .load(imageUrl)
+                .error(R.drawable.ic_albums_black_24dp)
+                .into(binding.artistAlbumCardPicture)
+
+            binding.root.setOnClickListener { onClick(album) }
         }
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(viewGroup.context).inflate(R.layout.item_artist_fragment_album_card, viewGroup, false)
-        return ViewHolder(view)
+        val binding  = ItemArtistFragmentAlbumCardBinding
+            .inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
+        return ViewHolder(binding, onClick)
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        viewHolder.textViewAlbumTitle.text = albums[position].title
-
-        // TODO("Does this this need to handle the case of EPs and other non album items?")
-        val contentType = StringUtils.toTitleCase("album")
-        val contentYear = albums[position].year
-        viewHolder.textViewAlbumSubtitle.text = context.resources.getString(R.string.artist_albums_subtitle, contentType, contentYear)
-
-        val imageUrl = PlexUtils.getInstance(context).addKeyAndAddress(albums[position].thumb)
-        Glide.with(viewHolder.imageViewAlbumArtwork.context)
-            .load(imageUrl)
-            .error(R.drawable.ic_albums_black_24dp)
-            .into(viewHolder.imageViewAlbumArtwork)
+        return viewHolder.bind(albums[position])
     }
 
     override fun getItemCount() = albums.size
-
-    fun getItem(id: Int) = albums[id].id
-
-    fun setClickListener(itemClickListener: ItemClickListener) {
-        mClickListener = itemClickListener
-    }
-
-    interface ItemClickListener {
-        fun onItemClick(view: View?, position: Int)
-    }
-
-    companion object {
-        private var mClickListener: ItemClickListener? = null
-    }
 }

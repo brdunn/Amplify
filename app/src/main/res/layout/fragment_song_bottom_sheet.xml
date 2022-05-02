@@ -71,13 +71,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/song_bottom_sheet_play_count"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        tools:text="69 Listens"/>
-
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -129,6 +122,16 @@
         android:paddingVertical="8dp"
         app:icon="@drawable/ic_playlists_black_24dp"
         android:text="Add to Playlist"
+        android:textAlignment="viewStart"
+        style="@style/Widget.MaterialComponents.Button.TextButton.Icon" />
+
+    <Button
+        android:id="@+id/song_bottom_sheet_info_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="8dp"
+        app:icon="@drawable/ic_info_black_24dp"
+        android:text="Info"
         android:textAlignment="viewStart"
         style="@style/Widget.MaterialComponents.Button.TextButton.Icon" />
 

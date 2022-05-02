@@ -24,13 +24,7 @@ import com.google.android.material.composethemeadapter3.Mdc3Theme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ArtistFragment : Fragment(),
-    ArtistTopAlbumsListAdapter.ItemClickListener,
-    ArtistTopSongsListAdapter.ItemClickListener,
-    View.OnClickListener {
-
-    private var artistTopAlbumsListAdapter: ArtistTopAlbumsListAdapter? = null
-    private var songsListAdapter: ArtistTopSongsListAdapter? = null
+class ArtistFragment : Fragment(), View.OnClickListener {
 
     private var _binding: FragmentArtistBinding? = null
     private val binding get() = _binding!!
@@ -57,8 +51,6 @@ class ArtistFragment : Fragment(),
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        artistTopAlbumsListAdapter = null
-        songsListAdapter = null
     }
 
     private fun loadArtistTopAlbums() {
@@ -66,8 +58,10 @@ class ArtistFragment : Fragment(),
         viewModel.artistAlbums.observe(viewLifecycleOwner) { result ->
             if (result is Resource.Success) {
                 val albums = result.data!!
-                artistTopAlbumsListAdapter = ArtistTopAlbumsListAdapter(albums, requireActivity())
-                artistTopAlbumsListAdapter!!.setClickListener(this@ArtistFragment)
+                val artistTopAlbumsListAdapter = ArtistTopAlbumsListAdapter(albums) { album ->
+                    val action = MobileNavigationDirections.actionGlobalNavigationAlbum(album.id)
+                    findNavController().navigate(action)
+                }
                 binding.artistAlbumsRecyclerView.adapter = artistTopAlbumsListAdapter
             }
         }
@@ -98,12 +92,11 @@ class ArtistFragment : Fragment(),
     private fun loadArtistTopSongs() {
         viewModel.artistSongs.observe(viewLifecycleOwner) { result ->
             if (result is Resource.Success) {
-                val artistsSongs = result.data!!
-                songsListAdapter = ArtistTopSongsListAdapter(
-                    requireActivity(),
-                    artistsSongs.subList(0, if (artistsSongs.size < 5) artistsSongs.size else 5)
-                )
-                songsListAdapter?.setClickListener(this@ArtistFragment)
+                val songs = result.data!!
+                val artistsSongs = songs.subList(0, if (songs.size < 5) songs.size else 5)
+                val songsListAdapter = ArtistTopSongsListAdapter(artistsSongs) { song ->
+                    viewModel.playSong(song)
+                }
                 binding.artistTopSongsRecyclerView.adapter = songsListAdapter
 
                 artistSongs = artistsSongs
@@ -121,19 +114,6 @@ class ArtistFragment : Fragment(),
             .load(imageUrl)
             .placeholder(R.drawable.ic_artists_black_24dp)
             .into(binding.artistPicture)
-    }
-
-    override fun onItemClick(view: View?, position: Int) {
-        when (view?.id) {
-            R.id.song_item -> {
-                val song = songsListAdapter!!.getItem(position)
-                viewModel.playSong(song)
-            }
-            R.id.artist_album_card -> {
-                val action = MobileNavigationDirections.actionGlobalNavigationAlbum(artistTopAlbumsListAdapter!!.getItem(position))
-                findNavController().navigate(action)
-            }
-        }
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.devdunnapps.amplify.ui.artist
+package com.devdunnapps.amplify.ui.search
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -11,26 +11,27 @@ import com.devdunnapps.amplify.databinding.ItemSongBinding
 import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.utils.PlexUtils
 
-class ArtistTopSongsListAdapter(
+class SongsListAdapter(
     private val songs: List<Song>,
-    private val onClick: (song: Song) -> Unit
-) : RecyclerView.Adapter<ArtistTopSongsListAdapter.ViewHolder>() {
+    private val onClick: (Song) -> Unit
+) : RecyclerView.Adapter<SongsListAdapter.ViewHolder>() {
 
     class ViewHolder(
         private val binding: ItemSongBinding,
-        private val onClick: (song: Song) -> Unit
+        private val onClick: (Song) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(song: Song) {
             binding.songCardTitle.text = song.title
             binding.songCardArtist.text = song.artistName
+
             binding.songCardMenu.setOnClickListener {
                 val action = MobileNavigationDirections.actionGlobalNavigationSongBottomSheet(song.id)
                 binding.songCardMenu.findNavController().navigate(action)
             }
 
-            val imageUrl = PlexUtils
-                .getInstance(binding.songCardAlbumArtwork.context).addKeyAndAddress(song.thumb)
+            val imageUrl = PlexUtils.getInstance(binding.songCardAlbumArtwork.context)
+                .getSizedImage(song.thumb, 200, 200)
             Glide.with(binding.songCardAlbumArtwork)
                 .load(imageUrl)
                 .placeholder(R.drawable.ic_albums_black_24dp)
@@ -41,15 +42,13 @@ class ArtistTopSongsListAdapter(
     }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
-        val view = ItemSongBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
-        return ViewHolder(view, onClick)
+        val binding = ItemSongBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
+        return ViewHolder(binding, onClick)
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        return viewHolder.bind(songs[position])
+        viewHolder.bind(songs[position])
     }
 
-    override fun getItemCount(): Int {
-        return songs.size
-    }
+    override fun getItemCount() = songs.size
 }
