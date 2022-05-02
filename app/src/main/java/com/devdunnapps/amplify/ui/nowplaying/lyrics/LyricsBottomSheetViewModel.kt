@@ -1,4 +1,4 @@
-package com.devdunnapps.amplify.ui.nowplaying
+package com.devdunnapps.amplify.ui.nowplaying.lyrics
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
@@ -20,7 +20,7 @@ class LyricsBottomSheetViewModel @Inject constructor(
     getSongLyricsUseCase: GetSongLyricsUseCase
 ) : ViewModel() {
 
-    private val songId: String = savedStateHandle["songId"]!!
+    private val songId: String = LyricsBottomSheetArgs.fromSavedStateHandle(savedStateHandle).songId
 
     val songLyrics: LiveData<Resource<Lyric>> = getSongLyricsUseCase(songId).asLiveData()
 }

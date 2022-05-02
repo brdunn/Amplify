@@ -3,7 +3,10 @@ package com.devdunnapps.amplify.ui.artist
 import android.app.Application
 import android.os.Bundle
 import android.support.v4.media.session.PlaybackStateCompat
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import com.devdunnapps.amplify.domain.models.Album
 import com.devdunnapps.amplify.domain.models.Artist
 import com.devdunnapps.amplify.domain.models.Song
@@ -26,7 +29,7 @@ class ArtistViewModel @Inject constructor(
     private val musicServiceConnection: MusicServiceConnection
 ) : AndroidViewModel(application) {
 
-    private val artistId: String = savedStateHandle["artistKey"]!!
+    private val artistId: String = ArtistFragmentArgs.fromSavedStateHandle(savedStateHandle).artistKey
 
     val artistSongs: LiveData<Resource<List<Song>>> = getArtistSongsUseCase(artistId).asLiveData()
 

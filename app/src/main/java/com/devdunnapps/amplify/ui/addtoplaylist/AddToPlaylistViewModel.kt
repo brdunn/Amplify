@@ -18,7 +18,8 @@ class AddToPlaylistViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val songId: String = savedStateHandle["songId"]!!
+    private val songId: String = AddToPlaylistBottomSheetFragmentArgs
+        .fromSavedStateHandle(savedStateHandle).songId
 
     val playlists: LiveData<Resource<List<Playlist>>> = getPlaylistsUseCase().asLiveData()
 

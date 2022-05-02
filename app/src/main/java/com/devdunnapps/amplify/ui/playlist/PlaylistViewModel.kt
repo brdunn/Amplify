@@ -11,7 +11,6 @@ import com.devdunnapps.amplify.utils.MusicServiceConnection
 import com.devdunnapps.amplify.utils.Resource
 import com.devdunnapps.amplify.utils.WhenToPlay
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.io.Serializable
 import javax.inject.Inject
@@ -24,7 +23,8 @@ class PlaylistViewModel @Inject constructor(
     private val musicServiceConnection: MusicServiceConnection
 ) : ViewModel() {
 
-    private val playlistId: String = savedStateHandle["playlistId"]!!
+    private val playlistId: String =
+        PlaylistFragmentArgs.fromSavedStateHandle(savedStateHandle).playlistId
 
     private val _playlist = MutableLiveData<Resource<Playlist>>()
     val playlist: LiveData<Resource<Playlist>> = _playlist

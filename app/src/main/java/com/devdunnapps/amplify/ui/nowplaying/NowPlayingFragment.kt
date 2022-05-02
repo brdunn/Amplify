@@ -27,6 +27,7 @@ import com.devdunnapps.amplify.MobileNavigationDirections
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.databinding.FragmentNowPlayingBinding
 import com.devdunnapps.amplify.ui.main.MainActivity
+import com.devdunnapps.amplify.ui.nowplaying.lyrics.LyricsBottomSheet
 import com.devdunnapps.amplify.utils.NOTHING_PLAYING
 import com.devdunnapps.amplify.utils.TimeUtils
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -205,12 +206,9 @@ class NowPlayingFragment : Fragment() {
         val songTitle = viewModel.metadata.value!!.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
         val artist = viewModel.metadata.value!!.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
         val songId = viewModel.metadata.value!!.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
-        val bottomSheet = LyricsBottomSheet()
-        val bundle = Bundle()
-        bundle.putString("songId", songId)
-        bundle.putString("songTitle", songTitle)
-        bundle.putString("songArtist", artist)
-        bottomSheet.arguments = bundle
-        bottomSheet.show(childFragmentManager, "lyrics_sheet")
+
+        val action = MobileNavigationDirections
+            .actionGlobalLyricsBottomSheet(songId, songTitle, artist)
+        findNavController().navigate(action)
     }
 }

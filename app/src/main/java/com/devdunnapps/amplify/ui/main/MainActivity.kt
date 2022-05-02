@@ -20,6 +20,7 @@ import androidx.fragment.app.commit
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
 import com.bumptech.glide.Glide
@@ -59,6 +60,15 @@ class MainActivity : AppCompatActivity() {
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_content_frame) as NavHostFragment
         binding.navView.setupWithNavController(navHostFragment.navController)
+
+        // This app uses a navigation graph that contains flows that are shared between top level
+        // destinations. As of navigation component 2.4.0, we must manually set the selected
+        // navigation item as a work around to ensure that the appropriate item is selected in
+        // the BottomNavigationView.
+        binding.navView.setOnItemSelectedListener { item ->
+            NavigationUI.onNavDestinationSelected(item, navHostFragment.navController)
+            true
+        }
 
         viewModel.playbackState.observe(this) {
             if (it.state == PlaybackStateCompat.STATE_PAUSED) {

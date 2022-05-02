@@ -3,7 +3,6 @@ package com.devdunnapps.amplify.ui.album
 import android.os.Bundle
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.lifecycle.*
-import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.domain.models.Album
 import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.domain.usecases.GetAlbumSongsUseCase
@@ -12,7 +11,6 @@ import com.devdunnapps.amplify.utils.MusicServiceConnection
 import com.devdunnapps.amplify.utils.Resource
 import com.devdunnapps.amplify.utils.WhenToPlay
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.io.Serializable
 import javax.inject.Inject
@@ -25,7 +23,7 @@ class AlbumViewModel @Inject constructor(
     private val musicServiceConnection: MusicServiceConnection
 ) : ViewModel() {
 
-    private val albumId: String = savedStateHandle["albumId"]!!
+    private val albumId: String = AlbumFragmentArgs.fromSavedStateHandle(savedStateHandle).albumId
 
     val album: LiveData<Resource<Album>> = getAlbumUseCase(albumId).asLiveData()
 

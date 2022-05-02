@@ -8,6 +8,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.domain.usecases.GetArtistSongsUseCase
+import com.devdunnapps.amplify.ui.artist.ArtistFragmentArgs
 import com.devdunnapps.amplify.utils.MusicServiceConnection
 import com.devdunnapps.amplify.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +22,7 @@ class ArtistAllSongsViewModel @Inject constructor(
     private val musicServiceConnection: MusicServiceConnection
 ) : AndroidViewModel(application) {
 
-    private val artistId: String = savedStateHandle["artistId"]!!
+    private val artistId: String = ArtistFragmentArgs.fromSavedStateHandle(savedStateHandle).artistKey
 
     val artistSongs: LiveData<Resource<List<Song>>> = getArtistSongsUseCase(artistId).asLiveData()
 

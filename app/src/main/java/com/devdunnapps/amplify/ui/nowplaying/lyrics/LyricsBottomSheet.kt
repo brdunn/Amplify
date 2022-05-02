@@ -1,10 +1,11 @@
-package com.devdunnapps.amplify.ui.nowplaying
+package com.devdunnapps.amplify.ui.nowplaying.lyrics
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.navArgs
 import com.devdunnapps.amplify.databinding.FragmentLyricsBottomSheetBinding
 import com.devdunnapps.amplify.utils.Resource
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -16,12 +17,17 @@ class LyricsBottomSheet : BottomSheetDialogFragment() {
     private var _binding: FragmentLyricsBottomSheetBinding? = null
     private val binding get() = _binding!!
     private val viewModel: LyricsBottomSheetViewModel by viewModels()
+    private val args: LyricsBottomSheetArgs by navArgs()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-       _binding = FragmentLyricsBottomSheetBinding.inflate(inflater, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentLyricsBottomSheetBinding.inflate(inflater, container, false)
 
         viewModel.songLyrics.observe(viewLifecycleOwner) { result ->
-            when(result) {
+            when (result) {
                 is Resource.Success -> {
                     binding.lyricsText.text = result.data!!.lyrics
                 }
@@ -32,8 +38,8 @@ class LyricsBottomSheet : BottomSheetDialogFragment() {
             }
         }
 
-        binding.songBottomSheetTitle.text = requireArguments().getString("songTitle")!!
-        binding.songBottomSheetArtist.text = requireArguments().getString("songArtist")!!
+        binding.songBottomSheetTitle.text = args.songTitle
+        binding.songBottomSheetArtist.text = args.songArtist
 
         return binding.root
     }
