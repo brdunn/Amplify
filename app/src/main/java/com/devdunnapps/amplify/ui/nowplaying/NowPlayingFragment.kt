@@ -202,15 +202,16 @@ class NowPlayingFragment : Fragment() {
     }
 
     private fun showLyrics() {
-        val songTitle = viewModel.metadata.value!!.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
-        val artist = viewModel.metadata.value!!.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
         val songId = viewModel.metadata.value!!.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
-        val bottomSheet = LyricsBottomSheet()
-        val bundle = Bundle()
-        bundle.putString("songId", songId)
-        bundle.putString("songTitle", songTitle)
-        bundle.putString("songArtist", artist)
-        bottomSheet.arguments = bundle
-        bottomSheet.show(childFragmentManager, "lyrics_sheet")
+        val songTitle = viewModel.metadata.value!!.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
+        val songArtist = viewModel.metadata.value!!.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
+
+        val action = MobileNavigationDirections.actionGlobalLyricsBottomSheet(
+            songId,
+            songTitle,
+            songArtist
+        )
+
+        findNavController().navigate(action)
     }
 }

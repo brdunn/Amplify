@@ -183,5 +183,24 @@
     </dialog>
 
     <action android:id="@+id/action_global_playlistMenuBottomSheetFragment"
-        app:destination="@id/playlistMenuBottomSheetFragment"/>
+        app:destination="@id/playlistMenuBottomSheetFragment" />
+
+    <dialog
+        android:id="@+id/lyricsBottomSheet"
+        android:name="com.devdunnapps.amplify.ui.nowplaying.LyricsBottomSheet"
+        android:label="LyricsBottomSheet"
+        tools:layout="@layout/fragment_lyrics_bottom_sheet">
+        <argument
+            android:name="songId"
+            app:argType="string" />
+        <argument
+            android:name="songTitle"
+            app:argType="string" />
+        <argument
+            android:name="songArtist"
+            app:argType="string" />
+    </dialog>
+
+    <action android:id="@+id/action_global_lyricsBottomSheet"
+        app:destination="@id/lyricsBottomSheet" />
 </navigation>
