@@ -103,6 +103,9 @@
         <argument
             android:name="songId"
             app:argType="string" />
+        <action
+            android:id="@+id/action_navigation_song_bottom_sheet_to_songAdditionalInfoBottomSheetFragment"
+            app:destination="@id/songAdditionalInfoBottomSheetFragment" />
     </dialog>
 
     <dialog
@@ -164,5 +167,40 @@
         android:id="@+id/nowPlayingFragment"
         android:name="com.devdunnapps.amplify.ui.nowplaying.NowPlayingFragment"
         android:label="NowPlayingFragment"
-        tools:layout="@layout/bottom_sheet_now_playing"/><action android:id="@+id/action_global_navigation_add_to_playlist_bottom_sheet" app:destination="@id/navigation_add_to_playlist_bottom_sheet"/>
+        tools:layout="@layout/bottom_sheet_now_playing"/>
+
+    <action android:id="@+id/action_global_navigation_add_to_playlist_bottom_sheet"
+        app:destination="@id/navigation_add_to_playlist_bottom_sheet"/>
+
+    <dialog
+        android:id="@+id/songAdditionalInfoBottomSheetFragment"
+        android:name="com.devdunnapps.amplify.ui.songbottomsheet.SongAdditionalInfoBottomSheetFragment"
+        android:label="SongAdditionalInfoBottomSheetFragment"
+        tools:layout="@layout/fragment_song_additional_info_bottom_sheet">
+        <argument
+            android:name="song"
+            app:argType="com.devdunnapps.amplify.domain.models.Song" />
+    </dialog>
+
+    <action android:id="@+id/action_global_playlistMenuBottomSheetFragment"
+        app:destination="@id/playlistMenuBottomSheetFragment" />
+
+    <dialog
+        android:id="@+id/lyricsBottomSheet"
+        android:name="com.devdunnapps.amplify.ui.nowplaying.LyricsBottomSheet"
+        android:label="LyricsBottomSheet"
+        tools:layout="@layout/fragment_lyrics_bottom_sheet">
+        <argument
+            android:name="songId"
+            app:argType="string" />
+        <argument
+            android:name="songTitle"
+            app:argType="string" />
+        <argument
+            android:name="songArtist"
+            app:argType="string" />
+    </dialog>
+
+    <action android:id="@+id/action_global_lyricsBottomSheet"
+        app:destination="@id/lyricsBottomSheet" />
 </navigation>

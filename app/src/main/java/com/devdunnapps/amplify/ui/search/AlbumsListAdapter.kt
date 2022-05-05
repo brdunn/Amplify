@@ -1,4 +1,4 @@
-package com.devdunnapps.amplify.ui.artist.albums
+package com.devdunnapps.amplify.ui.search
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -9,21 +9,21 @@ import com.devdunnapps.amplify.databinding.ItemAlbumCardBinding
 import com.devdunnapps.amplify.domain.models.Album
 import com.devdunnapps.amplify.utils.PlexUtils
 
-class ArtistAllAlbumsListAdapter(
+class AlbumsListAdapter(
     private val albums: List<Album>,
-    private val onClick: (album: Album) -> Unit
-) : RecyclerView.Adapter<ArtistAllAlbumsListAdapter.ViewHolder>() {
+    private val onClick: (Album) -> Unit
+) : RecyclerView.Adapter<AlbumsListAdapter.ViewHolder>() {
 
     class ViewHolder(
         private val binding: ItemAlbumCardBinding,
-        private val onClick: (album: Album) -> Unit
+        private val onClick: (Album) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(album: Album) {
             binding.albumCardTitle.text = album.title
 
-            val imageUrl = PlexUtils.getInstance(binding.albumCardArtwork.context)
-                .addKeyAndAddress(album.thumb)
+            val imageUrl = PlexUtils
+                .getInstance(binding.albumCardArtwork.context).addKeyAndAddress(album.thumb)
             Glide.with(binding.albumCardArtwork)
                 .load(imageUrl)
                 .placeholder(R.drawable.ic_albums_black_24dp)
@@ -35,8 +35,7 @@ class ArtistAllAlbumsListAdapter(
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
-            ItemAlbumCardBinding.inflate(LayoutInflater
-                .from(viewGroup.context), viewGroup, false),
+            ItemAlbumCardBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false),
             onClick
         )
     }

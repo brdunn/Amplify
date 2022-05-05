@@ -11,7 +11,6 @@ import com.devdunnapps.amplify.domain.usecases.SearchLibraryUseCase
 import com.devdunnapps.amplify.utils.MusicServiceConnection
 import com.devdunnapps.amplify.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -32,9 +31,9 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    fun playSong(songIndex: Int) {
+    fun playSong(song: Song) {
         val bundle = Bundle()
-        bundle.putSerializable("song", _searchResults.value!!.data!!.songs[songIndex])
+        bundle.putSerializable("song", song)
         musicServiceConnection.transportControls.sendCustomAction("play_song", bundle)
     }
 }

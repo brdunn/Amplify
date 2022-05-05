@@ -72,11 +72,6 @@ class SongMenuBottomSheetFragment : BottomSheetDialogFragment() {
                             viewModel.rateSong(Rating.THUMB_UP)
                         }
                     }
-
-                    song.playCount?.let { playCount ->
-                        binding.songBottomSheetPlayCount.text =
-                            resources.getQuantityString(R.plurals.song_play_count, playCount, playCount)
-                    }
                 }
                 else -> Unit
             }
@@ -105,7 +100,15 @@ class SongMenuBottomSheetFragment : BottomSheetDialogFragment() {
         }
 
         binding.songBottomSheetPlaylistBtn.setOnClickListener {
+            dismiss()
             val action = MobileNavigationDirections.actionGlobalNavigationAddToPlaylistBottomSheet(song.id)
+            findNavController().navigate(action)
+        }
+
+        binding.songBottomSheetInfoBtn.setOnClickListener {
+            dismiss()
+            val action = SongMenuBottomSheetFragmentDirections
+                .actionNavigationSongBottomSheetToSongAdditionalInfoBottomSheetFragment(song)
             findNavController().navigate(action)
         }
 
