@@ -17,8 +17,8 @@ fun ArtistList(
     onItemClick: (String) -> Unit
 ) {
     LazyVerticalGrid(
-        columns = GridCells.Fixed(count = 2),
-        contentPadding = PaddingValues(all = 16.dp),
+        columns = GridCells.Adaptive(150.dp),
+        contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {

@@ -19,8 +19,8 @@ fun AlbumList(
     onItemClick: (String) -> Unit
 ) {
     LazyVerticalGrid(
-        columns = GridCells.Fixed(count = 3),
-        contentPadding = PaddingValues(all = 8.dp),
+        columns = GridCells.Adaptive(100.dp),
+        contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.fillMaxSize()

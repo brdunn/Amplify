@@ -36,8 +36,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
@@ -370,21 +368,17 @@ private fun AlbumSong(
     onClick: () -> Unit,
     onMenuClick: (String) -> Unit
 ) {
-    ConstraintLayout(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(65.dp)
-            .clickable { onClick() }
+            .clickable { onClick() },
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        val (artwork, title, description, menu) = createRefs()
-        val guideline = createGuidelineFromTop(0.5f)
         val songDuration = TimeUtils.millisecondsToTime(song.duration)
 
         Box(
             modifier = Modifier
-                .constrainAs(artwork) {
-                    start.linkTo(parent.start)
-                }
                 .padding(vertical = 4.dp, horizontal = 8.dp)
                 .fillMaxHeight()
                 .aspectRatio(1f, true),
@@ -397,41 +391,26 @@ private fun AlbumSong(
             )
         }
 
-        Text(
-            text = song.title,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .constrainAs(title) {
-                    start.linkTo(artwork.end)
-                    end.linkTo(menu.start)
-                    bottom.linkTo(guideline)
-                    width = Dimension.fillToConstraints
-                }
-        )
+        Column (
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = song.title,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                fontWeight = FontWeight.Bold
+            )
 
-        Text(
-            text = "${song.artistName} • $songDuration",
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .constrainAs(description) {
-                    start.linkTo(artwork.end)
-                    end.linkTo(menu.start)
-                    top.linkTo(guideline)
-                    width = Dimension.fillToConstraints
-                },
-            textAlign = TextAlign.Start
-        )
+            Text(
+                text = "${song.artistName} • $songDuration",
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Start
+            )
+        }
 
         IconButton(
-            onClick = { onMenuClick(song.id) },
-            modifier = Modifier
-                .constrainAs(menu) {
-                    end.linkTo(parent.end)
-                }
-                .fillMaxHeight()
+            onClick = { onMenuClick(song.id) }
         ) {
             Icon(
                 imageVector = Icons.Filled.MoreVert,

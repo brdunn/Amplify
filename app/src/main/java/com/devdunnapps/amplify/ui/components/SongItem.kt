@@ -12,6 +12,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -20,8 +21,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import coil.compose.LocalImageLoader
 import coil.compose.rememberImagePainter
 import com.devdunnapps.amplify.R
@@ -36,16 +35,17 @@ fun SongItem(
     onClick: () -> Unit,
     onItemMenuClick: (String) -> Unit
 ) {
-    ConstraintLayout(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(65.dp)
-            .clickable{ onClick() }
+            .clickable { onClick() },
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        val (artwork, title, description, menu) = createRefs()
-        val guideline = createGuidelineFromTop(0.5f)
         val context = LocalContext.current
-        val artworkUrl = remember { PlexUtils.getInstance(context).getSizedImage(song.thumb, 200, 200) }
+        val artworkUrl = remember {
+            PlexUtils.getInstance(context).getSizedImage(song.thumb, 200, 200)
+        }
 
         Image(
             painter = rememberImagePainter(
@@ -59,50 +59,32 @@ fun SongItem(
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .constrainAs(artwork) {
-                    start.linkTo(parent.start)
-                }
                 .padding(vertical = 4.dp, horizontal = 16.dp)
                 .fillMaxHeight()
                 .aspectRatio(1f, true)
         )
 
-        Text(
-            text = song.title,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .constrainAs(title) {
-                    start.linkTo(artwork.end)
-                    end.linkTo(menu.start)
-                    bottom.linkTo(guideline)
-                    width = Dimension.fillToConstraints
-                }
-        )
+        Column (
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = song.title,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                fontWeight = FontWeight.Bold,
+            )
 
-        val songDuration = TimeUtils.millisecondsToTime(song.duration)
-        Text(
-            text = "${song.artistName} • $songDuration",
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .constrainAs(description) {
-                    start.linkTo(artwork.end)
-                    end.linkTo(menu.start)
-                    top.linkTo(guideline)
-                    width = Dimension.fillToConstraints
-                },
-            textAlign = TextAlign.Start
-        )
+            val songDuration = TimeUtils.millisecondsToTime(song.duration)
+            Text(
+                text = "${song.artistName} • $songDuration",
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Start
+            )
+        }
 
         IconButton(
-            onClick = { onItemMenuClick(song.id) },
-            modifier = Modifier
-                .constrainAs(menu) {
-                    end.linkTo(parent.end)
-                }
-                .fillMaxHeight()
+            onClick = { onItemMenuClick(song.id) }
         ) {
             Icon(
                 imageVector = Icons.Filled.MoreVert,
