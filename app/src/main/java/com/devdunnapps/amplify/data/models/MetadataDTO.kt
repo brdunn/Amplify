@@ -38,7 +38,7 @@ data class MetadataDTO(
         numSongs = leafCount ?: 0,
         year = year ?: "",
         artistName = parentTitle!!,
-        studio = studio ?: ""
+        studio = studio
     )
 
     fun toArtist() = Artist(

@@ -272,7 +272,9 @@ private fun ArtworkTitle(album: Album, onPlayNextClick: () -> Unit, onAddToQueue
             )
 
             Row(
-                modifier = Modifier.weight(0.3f).padding(start = 4.dp)
+                modifier = Modifier
+                    .weight(0.3f)
+                    .padding(start = 4.dp)
             ) {
                 IconButton(
                     onClick = { onPlayNextClick() }
@@ -348,12 +350,14 @@ private fun AlbumDurationMetadata(viewModel: AlbumViewModel, album: Album) {
 @Composable
 private fun AlbumFooter(album: Album) {
     Column {
-        Text(
-            text = album.studio,
-            modifier = Modifier.padding(16.dp)
-        )
+        album.studio?.let { studio ->
+            Text(
+                text = studio,
+                modifier = Modifier.padding(16.dp)
+            )
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+        }
 
         ExpandableText(text = album.review)
     }

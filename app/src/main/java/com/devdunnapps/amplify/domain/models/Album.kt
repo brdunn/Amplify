@@ -12,5 +12,5 @@ data class Album(
         val numSongs: Int,
         val year: String,
         val artistName: String,
-        val studio: String
+        val studio: String?
 ) : Serializable
