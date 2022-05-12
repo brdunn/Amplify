@@ -13,12 +13,12 @@ import com.devdunnapps.amplify.utils.PlexUtils
 
 class ArtistTopSongsListAdapter(
     private val songs: List<Song>,
-    private val onClick: (song: Song) -> Unit
+    private val onClick: (Song) -> Unit
 ) : RecyclerView.Adapter<ArtistTopSongsListAdapter.ViewHolder>() {
 
     class ViewHolder(
         private val binding: ItemSongBinding,
-        private val onClick: (song: Song) -> Unit
+        private val onClick: (Song) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(song: Song) {

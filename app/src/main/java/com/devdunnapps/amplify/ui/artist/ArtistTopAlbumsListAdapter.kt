@@ -11,12 +11,12 @@ import com.devdunnapps.amplify.utils.PlexUtils
 
 class ArtistTopAlbumsListAdapter(
     private val albums: List<Album>,
-    private val onClick: (album: Album) -> Unit
+    private val onClick: (Album) -> Unit
 ) : RecyclerView.Adapter<ArtistTopAlbumsListAdapter.ViewHolder>() {
 
     class ViewHolder(
         private val binding: ItemArtistFragmentAlbumCardBinding,
-        private val onClick: (album: Album) -> Unit
+        private val onClick: (Album) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(album: Album) {
