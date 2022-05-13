@@ -1,6 +1,5 @@
 package com.devdunnapps.amplify.ui.components
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -10,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import com.devdunnapps.amplify.domain.models.Artist
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ArtistList(
     artists: List<Artist>,

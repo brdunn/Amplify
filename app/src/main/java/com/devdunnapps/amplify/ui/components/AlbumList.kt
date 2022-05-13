@@ -1,6 +1,5 @@
 package com.devdunnapps.amplify.ui.components
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.devdunnapps.amplify.domain.models.Album
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AlbumList(
     albums: List<Album>,

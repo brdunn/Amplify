@@ -11,8 +11,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
@@ -28,7 +30,6 @@ import com.devdunnapps.amplify.domain.models.Playlist
 import com.devdunnapps.amplify.ui.components.ErrorScreen
 import com.devdunnapps.amplify.ui.components.LoadingScreen
 import com.devdunnapps.amplify.ui.components.PlaylistList
-import com.devdunnapps.amplify.ui.components.rememberViewInteropNestedScrollConnection
 import com.devdunnapps.amplify.utils.Resource
 import com.google.android.material.composethemeadapter3.Mdc3Theme
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -53,6 +54,7 @@ class PlaylistsFragment : Fragment() {
         return binding.root
     }
 
+    @OptIn(ExperimentalComposeUiApi::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -77,7 +79,7 @@ class PlaylistsFragment : Fragment() {
         binding.playlistsCompose.setContent {
             Mdc3Theme {
                 Surface(
-                    modifier = Modifier.nestedScroll((rememberViewInteropNestedScrollConnection()))
+                    modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection())
                 ) {
                     PlaylistsScreen(
                         viewModel = viewModel,

@@ -20,12 +20,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -51,7 +53,6 @@ import com.devdunnapps.amplify.domain.models.Album
 import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.ui.components.ExpandableText
 import com.devdunnapps.amplify.ui.components.LoadingScreen
-import com.devdunnapps.amplify.ui.components.rememberViewInteropNestedScrollConnection
 import com.devdunnapps.amplify.utils.PlexUtils
 import com.devdunnapps.amplify.utils.Resource
 import com.devdunnapps.amplify.utils.TimeUtils
@@ -66,7 +67,12 @@ class AlbumFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: AlbumViewModel by viewModels()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    @OptIn(ExperimentalComposeUiApi::class)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentAlbumBinding.inflate(inflater, container, false)
 
         setSystemUI()
@@ -75,7 +81,7 @@ class AlbumFragment : Fragment() {
             setContent {
                 Mdc3Theme {
                     Surface(
-                        modifier = Modifier.nestedScroll(rememberViewInteropNestedScrollConnection())
+                        modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection())
                     ) {
                         AlbumPage(
                             viewModel = viewModel,

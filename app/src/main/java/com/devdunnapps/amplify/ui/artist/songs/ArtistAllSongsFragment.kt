@@ -9,8 +9,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
@@ -23,7 +25,6 @@ import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.ui.components.ErrorScreen
 import com.devdunnapps.amplify.ui.components.LoadingScreen
 import com.devdunnapps.amplify.ui.components.SongsList
-import com.devdunnapps.amplify.ui.components.rememberViewInteropNestedScrollConnection
 import com.devdunnapps.amplify.utils.Resource
 import com.google.android.material.composethemeadapter3.Mdc3Theme
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,7 +36,12 @@ class ArtistAllSongsFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: ArtistAllSongsViewModel by viewModels()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    @OptIn(ExperimentalComposeUiApi::class)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentArtistAllSongsBinding.inflate(inflater, container, false)
 
         setSystemUI()
@@ -43,7 +49,7 @@ class ArtistAllSongsFragment : Fragment() {
         binding.artistAllSongsCompose.setContent {
             Mdc3Theme {
                 Surface(
-                    modifier = Modifier.nestedScroll((rememberViewInteropNestedScrollConnection()))
+                    modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection())
                 ) {
                     ArtistAllSongsScreen(
                         viewModel = viewModel,

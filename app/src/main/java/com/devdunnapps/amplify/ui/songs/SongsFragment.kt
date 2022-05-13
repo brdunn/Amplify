@@ -9,8 +9,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
@@ -20,7 +22,9 @@ import androidx.navigation.fragment.findNavController
 import com.devdunnapps.amplify.MobileNavigationDirections
 import com.devdunnapps.amplify.databinding.FragmentSongsBinding
 import com.devdunnapps.amplify.domain.models.Song
-import com.devdunnapps.amplify.ui.components.*
+import com.devdunnapps.amplify.ui.components.ErrorScreen
+import com.devdunnapps.amplify.ui.components.LoadingScreen
+import com.devdunnapps.amplify.ui.components.SongsList
 import com.devdunnapps.amplify.utils.Resource
 import com.google.android.material.composethemeadapter3.Mdc3Theme
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,6 +36,7 @@ class SongsFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: SongsViewModel by viewModels()
 
+    @OptIn(ExperimentalComposeUiApi::class)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentSongsBinding.inflate(inflater, container, false)
 
@@ -40,7 +45,7 @@ class SongsFragment : Fragment() {
         binding.songsCompose.setContent {
             Mdc3Theme {
                 Surface(
-                    modifier = Modifier.nestedScroll((rememberViewInteropNestedScrollConnection()))
+                    modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection())
                 ) {
                     SongsScreen(
                         viewModel = viewModel,
