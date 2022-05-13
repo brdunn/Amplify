@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/login_navigation"
     app:startDestination="@id/welcomeFragment">
 
@@ -12,8 +11,10 @@
         <action
             android:id="@+id/action_welcomeFragment_to_loginInfoFragment"
             app:destination="@id/loginInfoFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
+            app:enterAnim="@anim/side_in_right"
+            app:exitAnim="@anim/side_out_left"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -23,8 +24,10 @@
         <action
             android:id="@+id/action_loginInfoFragment_to_serverSelectionFragment"
             app:destination="@id/serverSelectionFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
+            app:enterAnim="@anim/side_in_right"
+            app:exitAnim="@anim/side_out_left"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -34,8 +37,10 @@
         <action
             android:id="@+id/action_serverSelectionFragment_to_librarySelectionFragment"
             app:destination="@id/librarySelectionFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
+            app:enterAnim="@anim/side_in_right"
+            app:exitAnim="@anim/side_out_left"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right" />
     </fragment>
 
     <fragment
