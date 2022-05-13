@@ -1,5 +1,6 @@
 package com.devdunnapps.amplify.ui.playlists
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import com.devdunnapps.amplify.databinding.FragmentPlaylistBottomSheetBinding
 import com.devdunnapps.amplify.utils.Resource
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -29,13 +31,7 @@ class PlaylistMenuBottomSheetFragment : BottomSheetDialogFragment() {
         }
 
         binding.playlistBottomSheetDelPlaylistBtn.setOnClickListener {
-            viewModel.deletePlaylist()
-            viewModel.isPlaylistDeletionComplete.observe(viewLifecycleOwner) { result ->
-                if (result is Resource.Success) {
-                    findNavController().previousBackStackEntry?.savedStateHandle?.set("refreshData", true)
-                    dismiss()
-                }
-            }
+            deleteConfirmationDialog()
         }
 
         return binding.root
@@ -44,5 +40,25 @@ class PlaylistMenuBottomSheetFragment : BottomSheetDialogFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun deleteConfirmationDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setMessage("Are you sure you want to delete this playlist?")
+            .setPositiveButton("Delete") { dialog, _ ->
+                viewModel.deletePlaylist()
+                viewModel.isPlaylistDeletionComplete.observe(viewLifecycleOwner) { result ->
+                    if (result is Resource.Success) {
+                        dialog.dismiss()
+                        findNavController().previousBackStackEntry?.savedStateHandle?.set("refreshData", true)
+                        dismiss()
+                    }
+                }
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+            .show()
     }
 }
