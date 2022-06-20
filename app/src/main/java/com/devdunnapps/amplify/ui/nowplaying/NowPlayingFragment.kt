@@ -1,6 +1,5 @@
 package com.devdunnapps.amplify.ui.nowplaying
 
-import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
@@ -9,11 +8,8 @@ import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.MenuRes
-import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -97,7 +93,9 @@ class NowPlayingFragment : Fragment() {
         binding.repeatBtn.setOnClickListener { viewModel.toggleRepeatState() }
 
         binding.songMenu.setOnClickListener {
-            showMenu(binding.songMenu, R.menu.menu_now_playing, requireContext())
+            val songId = viewModel.metadata.value!!.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
+            val action = MobileNavigationDirections.actionGlobalNavigationSongBottomSheet(songId)
+            findNavController().navigate(action)
         }
 
         binding.collapseBtn.setOnClickListener {
@@ -166,52 +164,5 @@ class NowPlayingFragment : Fragment() {
         binding.playPauseBtn.backgroundTintList = ColorStateList.valueOf(vibrantColor)
         binding.seekBar.trackActiveTintList = ColorStateList.valueOf(vibrantColor)
         binding.seekBar.thumbTintList = ColorStateList.valueOf(vibrantColor)
-    }
-
-    private fun showMenu(v: View, @MenuRes menuRes: Int, context: Context) {
-        PopupMenu(context, v).apply {
-            menuInflater.inflate(menuRes, menu)
-            setOnMenuItemClickListener { menuItem: MenuItem ->
-                when(menuItem.itemId) {
-                    R.id.now_playing_to_artist -> {
-                        val action = MobileNavigationDirections.actionGlobalNavigationArtist(viewModel.metadata.value!!.getString("ARTIST_ID"))
-                        findNavController().navigate(action)
-                        (requireActivity() as MainActivity).bottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
-                        true
-                    }
-                    R.id.now_playing_to_album -> {
-                        val action = MobileNavigationDirections.actionGlobalNavigationAlbum(viewModel.metadata.value!!.getString("ALBUM_ID"))
-                        findNavController().navigate(action)
-                        (requireActivity() as MainActivity).bottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
-                        true
-                    }
-                    R.id.now_playing_add_to_playlist -> {
-                        val action = MobileNavigationDirections.actionGlobalNavigationAddToPlaylistBottomSheet(viewModel.metadata.value!!.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))
-                        findNavController().navigate(action)
-                        true
-                    }
-                    R.id.now_playing_to_lyrics -> {
-                        showLyrics()
-                        true
-                    }
-                    else -> false
-                }
-            }
-            show()
-        }
-    }
-
-    private fun showLyrics() {
-        val songId = viewModel.metadata.value!!.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
-        val songTitle = viewModel.metadata.value!!.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
-        val songArtist = viewModel.metadata.value!!.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
-
-        val action = MobileNavigationDirections.actionGlobalLyricsBottomSheet(
-            songId,
-            songTitle,
-            songArtist
-        )
-
-        findNavController().navigate(action)
     }
 }

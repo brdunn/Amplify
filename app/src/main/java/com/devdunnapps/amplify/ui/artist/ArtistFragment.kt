@@ -57,12 +57,13 @@ class ArtistFragment : Fragment(), View.OnClickListener {
         binding.artistAlbumsRecyclerView.addItemDecoration(ArtistAlbumsMargins(resources.getDimensionPixelSize(R.dimen.default_margin)))
         viewModel.artistAlbums.observe(viewLifecycleOwner) { result ->
             if (result is Resource.Success) {
-                val albums = result.data!!
-                val artistTopAlbumsListAdapter = ArtistTopAlbumsListAdapter(albums) { album ->
-                    val action = MobileNavigationDirections.actionGlobalNavigationAlbum(album.id)
-                    findNavController().navigate(action)
+                result.data?.let { albums ->
+                    val artistTopAlbumsListAdapter = ArtistTopAlbumsListAdapter(albums) { album ->
+                        val action = MobileNavigationDirections.actionGlobalNavigationAlbum(album.id)
+                        findNavController().navigate(action)
+                    }
+                    binding.artistAlbumsRecyclerView.adapter = artistTopAlbumsListAdapter
                 }
-                binding.artistAlbumsRecyclerView.adapter = artistTopAlbumsListAdapter
             }
         }
     }

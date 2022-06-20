@@ -29,14 +29,14 @@ data class MetadataDTO(
 ) : Serializable {
 
     fun toAlbum() = Album(
-        artistId = parentRatingKey ?: "",
+        artistId = parentRatingKey.orEmpty(),
         title = title!!,
-        artistThumb = parentThumb ?: "",
+        artistThumb = parentThumb.orEmpty(),
         id = ratingKey!!,
         review = summary,
-        thumb = thumb ?: "",
+        thumb = thumb.orEmpty(),
         numSongs = leafCount ?: 0,
-        year = year ?: "",
+        year = year.orEmpty(),
         artistName = parentTitle!!,
         studio = studio
     )
@@ -44,7 +44,7 @@ data class MetadataDTO(
     fun toArtist() = Artist(
         id = ratingKey!!,
         name = title!!,
-        thumb = thumb ?: "",
+        thumb = thumb.orEmpty(),
         bio = summary
     )
 
@@ -55,9 +55,9 @@ data class MetadataDTO(
         title = title!!,
         artistName = originalTitle ?: grandparentTitle!!,
         duration = duration!!,
-        artistThumb = parentThumb ?: "",
-        thumb = thumb ?: "",
-        year = year ?: "",
+        artistThumb = parentThumb.orEmpty(),
+        thumb = thumb.orEmpty(),
+        year = year.orEmpty(),
         albumName = parentTitle!!,
         songUrl = media!![0].part!![0].key!!,
         userRating = userRating ?: Rating.THUMB_GONE,

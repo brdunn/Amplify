@@ -126,6 +126,16 @@
         style="@style/Widget.MaterialComponents.Button.TextButton.Icon" />
 
     <Button
+        android:id="@+id/song_bottom_sheet_lyrics_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="8dp"
+        app:icon="@drawable/ic_lyrics_black_24dp"
+        android:text="Lyrics"
+        android:textAlignment="viewStart"
+        style="@style/Widget.MaterialComponents.Button.TextButton.Icon" />
+
+    <Button
         android:id="@+id/song_bottom_sheet_info_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

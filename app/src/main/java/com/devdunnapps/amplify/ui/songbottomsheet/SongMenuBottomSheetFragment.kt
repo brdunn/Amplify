@@ -12,9 +12,11 @@ import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.databinding.FragmentSongBottomSheetBinding
 import com.devdunnapps.amplify.domain.models.Rating
 import com.devdunnapps.amplify.domain.models.Song
+import com.devdunnapps.amplify.ui.main.MainActivity
 import com.devdunnapps.amplify.utils.PlexUtils
 import com.devdunnapps.amplify.utils.Resource
 import com.devdunnapps.amplify.utils.WhenToPlay
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -78,12 +80,14 @@ class SongMenuBottomSheetFragment : BottomSheetDialogFragment() {
         }
 
         binding.songBottomSheetAlbumBtn.setOnClickListener {
+            (activity as MainActivity).bottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
             val action = MobileNavigationDirections.actionGlobalNavigationAlbum(song.albumId)
             findNavController().navigate(action)
             dismiss()
         }
 
         binding.songBottomSheetArtistBtn.setOnClickListener {
+            (activity as MainActivity).bottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
             val action = MobileNavigationDirections.actionGlobalNavigationArtist(song.artistId)
             findNavController().navigate(action)
             dismiss()
@@ -102,6 +106,16 @@ class SongMenuBottomSheetFragment : BottomSheetDialogFragment() {
         binding.songBottomSheetPlaylistBtn.setOnClickListener {
             dismiss()
             val action = MobileNavigationDirections.actionGlobalNavigationAddToPlaylistBottomSheet(song.id)
+            findNavController().navigate(action)
+        }
+
+        binding.songBottomSheetLyricsBtn.setOnClickListener {
+            dismiss()
+            val action = MobileNavigationDirections.actionGlobalLyricsBottomSheet(
+                song.id,
+                song.title,
+                song.artistName
+            )
             findNavController().navigate(action)
         }
 

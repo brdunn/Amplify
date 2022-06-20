@@ -37,13 +37,14 @@ class ArtistAllAlbumsFragment : Fragment() {
 
         viewModel.artistAlbums.observe(viewLifecycleOwner) { result ->
             if (result is Resource.Success) {
-                val albums = result.data!!
-                val albumsListAdapter = ArtistAllAlbumsListAdapter(albums) { album ->
-                    val action = MobileNavigationDirections.actionGlobalNavigationAlbum(album.id)
-                    findNavController().navigate(action)
-                }
                 binding.albumsProgressBar.visibility = View.INVISIBLE
-                binding.albumsTabRecyclerView.adapter = albumsListAdapter
+                result.data?.let { albums ->
+                    val albumsListAdapter = ArtistAllAlbumsListAdapter(albums) { album ->
+                        val action = MobileNavigationDirections.actionGlobalNavigationAlbum(album.id)
+                        findNavController().navigate(action)
+                    }
+                    binding.albumsTabRecyclerView.adapter = albumsListAdapter
+                }
             }
         }
 
