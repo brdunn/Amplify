@@ -97,4 +97,6 @@
         <item quantity="one">%d Play</item>
         <item quantity="other">%d Plays</item>
     </plurals>
+
+    <string name="singles_and_eps">Singles &amp; EPs</string>
 </resources>

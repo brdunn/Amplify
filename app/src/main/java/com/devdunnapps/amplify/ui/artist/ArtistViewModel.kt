@@ -8,6 +8,7 @@ import com.devdunnapps.amplify.domain.models.Album
 import com.devdunnapps.amplify.domain.models.Artist
 import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.domain.usecases.GetArtistAlbumsUseCase
+import com.devdunnapps.amplify.domain.usecases.GetArtistSinglesEPsUseCase
 import com.devdunnapps.amplify.domain.usecases.GetArtistSongsUseCase
 import com.devdunnapps.amplify.domain.usecases.GetArtistUseCase
 import com.devdunnapps.amplify.utils.MusicServiceConnection
@@ -20,6 +21,7 @@ import javax.inject.Inject
 class ArtistViewModel @Inject constructor(
     application: Application,
     getArtistSongsUseCase: GetArtistSongsUseCase,
+    getArtistSinglesEPsUseCase: GetArtistSinglesEPsUseCase,
     getArtistAlbumsUseCase: GetArtistAlbumsUseCase,
     getArtistUseCase: GetArtistUseCase,
     savedStateHandle: SavedStateHandle,
@@ -29,6 +31,8 @@ class ArtistViewModel @Inject constructor(
     private val artistId: String = savedStateHandle["artistKey"]!!
 
     val artistSongs: LiveData<Resource<List<Song>>> = getArtistSongsUseCase(artistId).asLiveData()
+
+    val artistSinglesEPs = getArtistSinglesEPsUseCase(artistId).asLiveData()
 
     val artistAlbums: LiveData<Resource<List<Album>>> = getArtistAlbumsUseCase(artistId).asLiveData()
 

@@ -92,7 +92,7 @@ class PlexRepositoryImpl @Inject constructor(
     override fun getPlaylists(): Flow<Resource<List<Playlist>>> = flow {
         emit(Resource.Loading())
         try {
-            val playlists = api.getPlaylists(userToken).mediaContainer.metadata!!.map { it.toPlaylist() }
+            val playlists = api.getPlaylists(section, userToken).mediaContainer.metadata!!.map { it.toPlaylist() }
             emit(Resource.Success(playlists))
         } catch(e: HttpException) {
             emit(Resource.Error("Oops, something went wrong!"))
@@ -128,7 +128,7 @@ class PlexRepositoryImpl @Inject constructor(
     override fun getArtistSongs(artistKey: String): Flow<Resource<List<Song>>> = flow {
         emit(Resource.Loading())
         try {
-            val songs = api.getArtistSongs(section, artistKey, userToken).mediaContainer.metadata?.map { it.toSong() }
+            val songs = api.getArtistSongs(section, artistKey, userToken).mediaContainer.metadata?.map { it.toSong() } ?: emptyList()
             emit(Resource.Success(songs))
         } catch(e: HttpException) {
             emit(Resource.Error("Oops, something went wrong!"))
@@ -137,10 +137,23 @@ class PlexRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun getArtistSinglesEPs(artistKey: String) = flow {
+        emit(Resource.Loading())
+        try {
+            val singlesEPs = api.getArtistSinglesEPs(section, artistKey, userToken).mediaContainer.metadata?.map { it.toAlbum() } ?: emptyList()
+            val albums = api.getArtistAlbums(artistKey, userToken).mediaContainer.metadata?.map { it.toAlbum() } ?: emptyList()
+            emit(Resource.Success(singlesEPs.filter { !albums.contains(it) }))
+        } catch(e: HttpException) {
+            emit(Resource.Error("Oops, something went wrong!"))
+        } catch(e: IOException) {
+            emit(Resource.Error("Couldn't load artist's EPS and singles, please check your internet connection."))
+        }
+    }
+
     override fun getArtistAlbums(key: String): Flow<Resource<List<Album>>> = flow {
         emit(Resource.Loading())
         try {
-            val albums = api.getArtistAlbums(key, userToken).mediaContainer.metadata?.map { it.toAlbum() }
+            val albums = api.getArtistAlbums(key, userToken).mediaContainer.metadata?.map { it.toAlbum() } ?: emptyList()
             emit(Resource.Success(albums))
         } catch(e: HttpException) {
             emit(Resource.Error("Oops, something went wrong!"))

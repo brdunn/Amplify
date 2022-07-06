@@ -39,8 +39,9 @@ class ArtistFragment : Fragment(), View.OnClickListener {
         setSystemUI()
 
         loadArtist()
-        loadArtistTopSongs()
         loadArtistTopAlbums()
+        loadArtistTopSinglesEps()
+        loadArtistTopSongs()
 
         binding.artistSeeAllAlbumsBtn.setOnClickListener(this)
         binding.artistSeeAllSongsBtn.setOnClickListener(this)
@@ -58,11 +59,42 @@ class ArtistFragment : Fragment(), View.OnClickListener {
         viewModel.artistAlbums.observe(viewLifecycleOwner) { result ->
             if (result is Resource.Success) {
                 result.data?.let { albums ->
+                    if (albums.isEmpty()) {
+                        binding.apply {
+                            artistAlbumsHeader.visibility = View.GONE
+                            artistSeeAllAlbumsBtn.visibility = View.GONE
+                            artistAlbumsRecyclerView.visibility = View.GONE
+                        }
+                    }
+
                     val artistTopAlbumsListAdapter = ArtistTopAlbumsListAdapter(albums) { album ->
                         val action = MobileNavigationDirections.actionGlobalNavigationAlbum(album.id)
                         findNavController().navigate(action)
                     }
                     binding.artistAlbumsRecyclerView.adapter = artistTopAlbumsListAdapter
+                }
+            }
+        }
+    }
+
+    private fun loadArtistTopSinglesEps() {
+        binding.artistEpsSinglesRecyclerView.addItemDecoration(ArtistAlbumsMargins(resources.getDimensionPixelSize(R.dimen.default_margin)))
+        viewModel.artistSinglesEPs.observe(viewLifecycleOwner) { result ->
+            if (result is Resource.Success) {
+                result.data?.let { singlesEPs ->
+                    if (singlesEPs.isEmpty()) {
+                        binding.apply {
+                            artistSinglesEpsHeader.visibility = View.GONE
+                            artistSeeAllEpsSinglesBtn.visibility = View.GONE
+                            artistEpsSinglesRecyclerView.visibility = View.GONE
+                        }
+                    }
+
+                    val artistTopSinglesEPsListAdapter = ArtistTopAlbumsListAdapter(singlesEPs) { singleEP ->
+                        val action = MobileNavigationDirections.actionGlobalNavigationAlbum(singleEP.id)
+                        findNavController().navigate(action)
+                    }
+                    binding.artistEpsSinglesRecyclerView.adapter = artistTopSinglesEPsListAdapter
                 }
             }
         }

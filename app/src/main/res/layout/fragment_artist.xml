@@ -103,10 +103,44 @@
                 tools:listitem="@layout/item_artist_fragment_album_card" />
 
             <TextView
-                android:id="@+id/artist_top_songs_header"
+                android:id="@+id/artist_singles_eps_header"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/artist_albums_recycler_view"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/artist_see_all_eps_singles_btn"
+                android:layout_marginStart="16dp"
+                android:textStyle="bold"
+                android:text="@string/singles_and_eps"
+                style="@style/TextAppearance.MaterialComponents.Headline4" />
+
+            <Button
+                android:id="@+id/artist_see_all_eps_singles_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/artist_albums_recycler_view"
+                app:layout_constraintStart_toEndOf="@id/artist_singles_eps_header"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="8dp"
+                android:text="@string/artist_expand_section_button"
+                style="@style/Widget.Material3.Button.TextButton" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/artist_eps_singles_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                app:layout_constraintTop_toBottomOf="@id/artist_singles_eps_header"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="5"
+                tools:listitem="@layout/item_artist_fragment_album_card" />
+
+            <TextView
+                android:id="@+id/artist_top_songs_header"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/artist_eps_singles_recycler_view"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/artist_see_all_songs_btn"
                 android:layout_marginStart="16dp"
@@ -119,7 +153,7 @@
                 android:id="@+id/artist_see_all_songs_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/artist_albums_recycler_view"
+                app:layout_constraintTop_toBottomOf="@id/artist_eps_singles_recycler_view"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginEnd="8dp"
                 android:layout_marginTop="32dp"

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -281,20 +282,28 @@ private fun ArtworkTitle(album: Album, onPlayNextClick: () -> Unit, onAddToQueue
                     .padding(start = 4.dp)
             ) {
                 IconButton(
-                    onClick = { onPlayNextClick() }
+                    onClick = {
+                        onPlayNextClick()
+                        Toast.makeText(context, "Playing album next", Toast.LENGTH_SHORT).show()
+                    }
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.PlaylistPlay,
-                        contentDescription = "Play next"
+                        contentDescription = "Play next",
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
                 IconButton(
-                    onClick = { onAddToQueueClick() }
+                    onClick = {
+                        onAddToQueueClick()
+                        Toast.makeText(context, "Added to queue", Toast.LENGTH_SHORT).show()
+                    }
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.QueueMusic,
-                        contentDescription = "Add to queue"
+                        contentDescription = "Add to queue",
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
