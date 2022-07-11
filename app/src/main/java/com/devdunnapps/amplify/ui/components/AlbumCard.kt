@@ -27,10 +27,7 @@ import com.google.android.material.composethemeadapter3.Mdc3Theme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AlbumCard(
-    onClick: () -> Unit,
-    album: Album
-) {
+fun AlbumCard(onClick: () -> Unit, album: Album) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -55,10 +52,11 @@ fun AlbumCard(
                 contentDescription = "Image of ${album.title}",
                 contentScale = ContentScale.Crop
             )
+
             Text(
                 modifier = Modifier.padding(4.dp),
                 text = album.title,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.labelSmall,
                 maxLines = 1
             )
         }

@@ -68,7 +68,7 @@ fun WelcomeScreen(getStartedClick: () -> Unit = {}) {
             Button(
                 onClick = getStartedClick,
             ) {
-                Text(text = "Get Started")
+                Text(text = stringResource(R.string.get_started))
             }
         }
     }

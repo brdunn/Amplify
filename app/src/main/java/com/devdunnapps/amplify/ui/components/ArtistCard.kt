@@ -28,10 +28,7 @@ import com.google.android.material.composethemeadapter3.Mdc3Theme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ArtistCard(
-    onClick: () -> Unit,
-    artist: Artist
-) {
+fun ArtistCard(onClick: () -> Unit, artist: Artist) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -56,10 +53,11 @@ fun ArtistCard(
                 contentDescription = "Image of ${artist.name}",
                 contentScale = ContentScale.Crop
             )
+
             Text(
                 modifier = Modifier.padding(4.dp),
                 text = artist.name,
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.labelLarge,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

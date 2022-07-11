@@ -48,12 +48,14 @@ class LoginFlowViewModel @Inject constructor(
         viewModelScope.launch {
             signInUserUseCase(username, password, token).collect {
                 if (it is Resource.Success) {
-                    PreferencesUtils.saveString(app.applicationContext, PreferencesUtils.PREF_PLEX_USER_TOKEN, it.data!!.authToken)
+                    PreferencesUtils.saveString(
+                        app.applicationContext,
+                        PreferencesUtils.PREF_PLEX_USER_TOKEN, it.data!!.authToken
+                    )
                     _user.value = it
                     getServers()
                 } else if (it is Resource.Error && it.message == "1029") {
                     _twoFactorAuthRequired.postValue(true)
-//                    _user.value = it
                 } else {
                     _user.value = it
                 }

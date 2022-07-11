@@ -5,26 +5,28 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
+import androidx.compose.ui.unit.dp
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.devdunnapps.amplify.MobileNavigationDirections
 import com.devdunnapps.amplify.databinding.FragmentAlbumsBinding
-import com.devdunnapps.amplify.ui.components.AlbumList
-import com.devdunnapps.amplify.ui.components.ErrorScreen
+import com.devdunnapps.amplify.ui.components.AlbumCard
 import com.devdunnapps.amplify.ui.components.LoadingScreen
-import com.devdunnapps.amplify.utils.Resource
 import com.google.android.material.composethemeadapter3.Mdc3Theme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -35,30 +37,19 @@ class AlbumsFragment : Fragment(){
     private val binding get() = _binding!!
     private val viewModel: AlbumsViewModel by viewModels()
 
-    @OptIn(ExperimentalComposeUiApi::class)
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentAlbumsBinding.inflate(inflater, container, false)
 
         setSystemUI()
 
         binding.albumsCompose.setContent {
             Mdc3Theme {
-                Surface(
-                    modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection())
-                ) {
-                    AlbumsScreen(
-                        viewModel = viewModel,
-                        onClick = { album ->
-                            findNavController().navigate(MobileNavigationDirections.actionGlobalNavigationAlbum(album))
-
-                        }
-                    )
-                }
+                AlbumsScreen(
+                    viewModel = viewModel,
+                    onClick = { album ->
+                        findNavController().navigate(MobileNavigationDirections.actionGlobalNavigationAlbum(album))
+                    }
+                )
             }
         }
 
@@ -81,24 +72,31 @@ class AlbumsFragment : Fragment(){
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun AlbumsScreen(
     viewModel: AlbumsViewModel,
     onClick: (String) -> Unit
 ) {
-    val albums by viewModel.albums.collectAsState()
-    when (albums) {
-        is Resource.Loading -> {
-            LoadingScreen()
-        }
-        is Resource.Success -> {
-            AlbumList(
-                albums = albums.data!!,
-                onItemClick = onClick
-            )
-        }
-        is Resource.Error -> {
-            ErrorScreen()
+    val albums = viewModel.albums.collectAsLazyPagingItems()
+
+    if (albums.loadState.refresh is LoadState.Loading)
+        LoadingScreen()
+
+    LazyVerticalGrid(
+        columns = GridCells.Adaptive(100.dp),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection())
+    ) {
+        items(albums.itemCount) { index ->
+            albums[index]?.let {
+                AlbumCard(
+                    onClick = { onClick(it.id) },
+                    album = it
+                )
+            }
         }
     }
 }

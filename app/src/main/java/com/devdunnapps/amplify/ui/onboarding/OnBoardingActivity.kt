@@ -27,7 +27,12 @@ class OnBoardingActivity : AppCompatActivity() {
 
         WindowCompat.setDecorFitsSystemWindows(window,true)
 
-        indicators = arrayOf(binding.introIndicator0, binding.introIndicator1, binding.introIndicator2, binding.introIndicator3)
+        indicators = arrayOf(
+            binding.introIndicator0,
+            binding.introIndicator1,
+            binding.introIndicator2,
+            binding.introIndicator3
+        )
     }
 
     override fun onBackPressed() {
@@ -40,7 +45,12 @@ class OnBoardingActivity : AppCompatActivity() {
     fun updateIndicators(onPageChanged: (Int) -> Int) {
         currentPage = onPageChanged(currentPage)
         for (i in indicators.indices) {
-            indicators[i].setBackgroundResource(if (i == currentPage) R.drawable.indicator_selected else R.drawable.indicator_unselected)
+            indicators[i].setBackgroundResource(
+                if (i == currentPage)
+                    R.drawable.indicator_selected
+                else
+                    R.drawable.indicator_unselected
+            )
         }
     }
 }

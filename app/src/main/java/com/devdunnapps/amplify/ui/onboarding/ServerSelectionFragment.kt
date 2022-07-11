@@ -20,11 +20,13 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
+import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.domain.models.Server
 import com.devdunnapps.amplify.utils.Resource
 import com.google.android.material.composethemeadapter3.Mdc3Theme
@@ -35,15 +37,15 @@ class ServerSelectionFragment: Fragment() {
 
     val viewModel: LoginFlowViewModel by activityViewModels()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-
-        return ComposeView(requireContext()).apply {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
+        ComposeView(requireContext()).apply {
             setContent {
                 Mdc3Theme {
                     ServerSelectionScreen(viewModel = viewModel) { server ->
                         viewModel.selectServer(server)
 
-                        val action = ServerSelectionFragmentDirections.actionServerSelectionFragmentToLibrarySelectionFragment()
+                        val action =
+                            ServerSelectionFragmentDirections.actionServerSelectionFragmentToLibrarySelectionFragment()
                         findNavController().navigate(action)
 
                         (requireActivity() as OnBoardingActivity).updateIndicators { it + 1 }
@@ -51,7 +53,6 @@ class ServerSelectionFragment: Fragment() {
                 }
             }
         }
-    }
 }
 
 @Composable
@@ -62,17 +63,17 @@ private fun ServerSelectionScreen(viewModel: LoginFlowViewModel, onItemClick: (S
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Select Server",
+            text = stringResource(R.string.select_server),
             style = MaterialTheme.typography.headlineLarge
         )
 
-        val servers by viewModel.servers.observeAsState()
+        val servers = viewModel.servers.observeAsState().value
         if (servers is Resource.Success) {
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(0.75f),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items((servers as Resource.Success<List<Server>>).data!!) { section ->
+                items(servers.data!!) { section ->
                     ServerItem(
                         server = section,
                         onClick = onItemClick

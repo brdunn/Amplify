@@ -17,6 +17,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -25,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.utils.Resource
 import com.google.android.material.composethemeadapter3.Mdc3Theme
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,15 +36,14 @@ class LoginInfoFragment: Fragment() {
 
     val viewModel: LoginFlowViewModel by activityViewModels()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return ComposeView(requireContext()).apply {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
+        ComposeView(requireContext()).apply {
             setContent {
                 Mdc3Theme {
                     LoginInfoScreen(viewModel)
                 }
             }
         }
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -71,7 +72,7 @@ fun LoginInfoScreen(viewModel: LoginFlowViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Login",
+            text = stringResource(R.string.login),
             style = MaterialTheme.typography.headlineLarge
         )
 
@@ -83,7 +84,7 @@ fun LoginInfoScreen(viewModel: LoginFlowViewModel) {
             OutlinedTextField(
                 value = username,
                 onValueChange = { username = it },
-                label = { Text("Username") },
+                label = { Text(text = stringResource(R.string.username)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 isError = user is Resource.Error
@@ -93,10 +94,13 @@ fun LoginInfoScreen(viewModel: LoginFlowViewModel) {
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Password") },
+                label = { Text(text = stringResource(R.string.password)) },
                 singleLine = true,
                 visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Next
+                ),
                 trailingIcon = {
                     val image = if (isPasswordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                     IconButton(
@@ -116,7 +120,7 @@ fun LoginInfoScreen(viewModel: LoginFlowViewModel) {
                 OutlinedTextField(
                     value = twoFactorToken,
                     onValueChange = { twoFactorToken = it },
-                    label = { Text("2 Factor Token") },
+                    label = { Text(stringResource(R.string.two_factor_token)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     keyboardActions = KeyboardActions {
@@ -129,14 +133,12 @@ fun LoginInfoScreen(viewModel: LoginFlowViewModel) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = {
-                    viewModel.login(username, password, twoFactorToken)
-                },
+                onClick = { viewModel.login(username, password, twoFactorToken) },
                 enabled = username.isNotEmpty()
                         && password.isNotEmpty()
                         && if (twoFactorAuthRequired) twoFactorToken.isNotEmpty() else true
             ) {
-                Text("Login")
+                Text(text = stringResource(R.string.login))
             }
         }
     }

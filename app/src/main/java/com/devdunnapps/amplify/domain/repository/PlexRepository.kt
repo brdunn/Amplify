@@ -1,17 +1,17 @@
 package com.devdunnapps.amplify.domain.repository
 
-import android.content.Context
+import androidx.paging.PagingSource
 import com.devdunnapps.amplify.domain.models.*
 import com.devdunnapps.amplify.utils.Resource
 import kotlinx.coroutines.flow.Flow
 
 interface PlexRepository {
 
-    fun getArtists(): Flow<Resource<List<Artist>>>
+    fun getArtists(): PagingSource<Int, Artist>
 
-    fun getAlbums(): Flow<Resource<List<Album>>>
+    fun getAlbums(): PagingSource<Int, Album>
 
-    fun getSongs(): Flow<Resource<List<Song>>>
+    fun getSongs(): PagingSource<Int, Song>
 
     fun getSong(songId: String): Flow<Resource<Song>>
 

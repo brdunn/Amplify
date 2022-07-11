@@ -29,6 +29,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -289,7 +290,7 @@ private fun ArtworkTitle(album: Album, onPlayNextClick: () -> Unit, onAddToQueue
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.PlaylistPlay,
-                        contentDescription = "Play next",
+                        contentDescription = stringResource(R.string.play_next),
                         tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
@@ -302,7 +303,7 @@ private fun ArtworkTitle(album: Album, onPlayNextClick: () -> Unit, onAddToQueue
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.QueueMusic,
-                        contentDescription = "Add to queue",
+                        contentDescription = stringResource(R.string.add_to_queue),
                         tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
@@ -323,7 +324,7 @@ private fun PlayControls(onPlayClicked: () -> Unit, onShuffleClicked: () -> Unit
                 .padding(horizontal = 16.dp),
             onClick = onPlayClicked,
         ) {
-            Text(text = "Play")
+            Text(text = stringResource(R.string.play))
         }
 
         Button(
@@ -332,7 +333,7 @@ private fun PlayControls(onPlayClicked: () -> Unit, onShuffleClicked: () -> Unit
                 .padding(horizontal = 16.dp),
             onClick = onShuffleClicked,
         ) {
-            Text(text = "Shuffle")
+            Text(text = stringResource(R.string.shuffle))
         }
     }
 }

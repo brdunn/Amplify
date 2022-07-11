@@ -22,7 +22,7 @@ fun ExpandableText(
     text: String?,
     collapsedLines: Int = 3
 ) {
-    if (text == null || text.isEmpty()) return;
+    if (text.isNullOrBlank()) return
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -33,8 +33,11 @@ fun ExpandableText(
             text = text,
             maxLines = if (isExpanded) Int.MAX_VALUE else collapsedLines,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.animateContentSize().padding(horizontal = 16.dp)
+            modifier = Modifier
+                .animateContentSize()
+                .padding(horizontal = 16.dp)
         )
+
         TextButton(
             onClick = { isExpanded = !isExpanded },
         ) {

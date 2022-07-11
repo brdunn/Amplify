@@ -1,15 +1,14 @@
 package com.devdunnapps.amplify.ui.playlists
 
-import androidx.lifecycle.*
-import com.devdunnapps.amplify.domain.models.Artist
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.devdunnapps.amplify.domain.models.Playlist
-import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.domain.usecases.CreatePlaylistUseCase
 import com.devdunnapps.amplify.domain.usecases.GetPlaylistsUseCase
-import com.devdunnapps.amplify.domain.usecases.GetSongsUseCase
 import com.devdunnapps.amplify.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

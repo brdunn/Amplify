@@ -2,29 +2,25 @@ package com.devdunnapps.amplify.ui.albums
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.devdunnapps.amplify.domain.models.Album
-import com.devdunnapps.amplify.domain.usecases.GetAlbumsUseCase
-import com.devdunnapps.amplify.utils.Resource
+import com.devdunnapps.amplify.domain.repository.PlexRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
+
+private const val PAGE_SIZE = 50
 
 @HiltViewModel
 class AlbumsViewModel @Inject constructor(
-    private val getAlbumsUseCase: GetAlbumsUseCase
+    private val plexRepository: PlexRepository
 ) : ViewModel() {
 
-    private val _albums = MutableStateFlow<Resource<List<Album>>>(Resource.Loading())
-    val albums: StateFlow<Resource<List<Album>>> = _albums
-
-    init {
-        viewModelScope.launch {
-            getAlbumsUseCase().collect {
-                _albums.value = it
-            }
-        }
-    }
+    val albums: Flow<PagingData<Album>> = Pager(
+        config = PagingConfig(pageSize = PAGE_SIZE, enablePlaceholders = false),
+        pagingSourceFactory = { plexRepository.getAlbums() }
+    ).flow.cachedIn(viewModelScope)
 }

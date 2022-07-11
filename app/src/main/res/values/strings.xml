@@ -2,6 +2,14 @@
     <string name="app_name">Amplify</string>
     <string name="app_version">0.1</string>
 
+    <!-- Audio Actions -->
+    <string name="play">Play</string>
+    <string name="shuffle">Shuffle</string>
+
+    <!-- Queue Actions -->
+    <string name="play_next">Play next</string>
+    <string name="add_to_queue">Add to queue</string>
+
     <!-- MainActivity -->
     <string name="title_home">Home</string>
     <string name="title_artists">Artists</string>
@@ -54,7 +62,13 @@
 
     <!-- Onboarding -->
     <string name="app_description">Music player for Plex Media Server</string>
-
+    <string name="get_started">Get Started</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="two_factor_token">2 Factor Token</string>
+    <string name="login">Login</string>
+    <string name="select_server">Select Server</string>
+    <string name="select_library">Select Library</string>
 
     <!-- Settings -->
     <string-array name="theme_titles">

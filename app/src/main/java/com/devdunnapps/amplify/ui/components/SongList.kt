@@ -12,10 +12,7 @@ fun SongsList(
     onItemMenuClick: (String) -> Unit
 ) {
     LazyColumn {
-        items(
-            items = songs,
-            key = { it.id }
-        ) { song ->
+        items(items = songs, key = { it.id }) { song ->
             SongItem(
                 onClick = { onItemClick(song) },
                 song = song,

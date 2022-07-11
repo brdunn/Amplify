@@ -1,5 +1,8 @@
 package com.devdunnapps.amplify.data
 
+import com.devdunnapps.amplify.data.paging.AlbumsPagingSource
+import com.devdunnapps.amplify.data.paging.ArtistsPagingSource
+import com.devdunnapps.amplify.data.paging.SongsPagingSource
 import com.devdunnapps.amplify.domain.models.*
 import com.devdunnapps.amplify.domain.repository.PlexRepository
 import com.devdunnapps.amplify.utils.Resource
@@ -17,41 +20,11 @@ class PlexRepositoryImpl @Inject constructor(
     @Named("library") private val section: String
 ) : PlexRepository {
 
-    override fun getArtists(): Flow<Resource<List<Artist>>> = flow {
-        emit(Resource.Loading())
-        try {
-            val artists = api.getArtists(section, userToken).mediaContainer.metadata?.map { it.toArtist() }
-            emit(Resource.Success(artists))
-        } catch(e: HttpException) {
-            emit(Resource.Error("Oops, something went wrong!"))
-        } catch(e: IOException) {
-            emit(Resource.Error("Couldn't load artists, please check your internet connection."))
-        }
-    }
+    override fun getArtists() = ArtistsPagingSource(userToken, section, api)
 
-    override fun getAlbums(): Flow<Resource<List<Album>>> = flow {
-        emit(Resource.Loading())
-        try {
-            val albums = api.getAlbums(section, userToken).mediaContainer.metadata?.map { it.toAlbum() }
-            emit(Resource.Success(albums))
-        } catch(e: HttpException) {
-            emit(Resource.Error("Oops, something went wrong!"))
-        } catch(e: IOException) {
-            emit(Resource.Error("Couldn't load albums, please check your internet connection."))
-        }
-    }
+    override fun getAlbums() = AlbumsPagingSource(userToken, section, api)
 
-    override fun getSongs(): Flow<Resource<List<Song>>> = flow {
-        emit(Resource.Loading())
-        try {
-            val songs = api.getSongs(section, userToken).mediaContainer.metadata?.map { it.toSong() }
-            emit(Resource.Success(songs))
-        } catch(e: HttpException) {
-            emit(Resource.Error("Oops, something went wrong!"))
-        } catch(e: IOException) {
-            emit(Resource.Error("Couldn't load songs, please check your internet connection."))
-        }
-    }
+    override fun getSongs() = SongsPagingSource(userToken, section, api)
 
     override fun getSong(songId: String): Flow<Resource<Song>> = flow {
         emit(Resource.Loading())

@@ -47,16 +47,15 @@ class PlaylistsFragment : Fragment() {
 
         setSystemUI()
 
-        binding.playlistsCreatePlaylist.setOnClickListener {
-            showCreatePlaylistDialog()
-        }
-
         return binding.root
     }
 
-    @OptIn(ExperimentalComposeUiApi::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.playlistsCreatePlaylist.setOnClickListener {
+            showCreatePlaylistDialog()
+        }
 
         val navBackStackEntry = findNavController().getBackStackEntry(R.id.navigation_playlists)
 
@@ -78,27 +77,18 @@ class PlaylistsFragment : Fragment() {
 
         binding.playlistsCompose.setContent {
             Mdc3Theme {
-                Surface(
-                    modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection())
-                ) {
-                    PlaylistsScreen(
-                        viewModel = viewModel,
-                        onClick = { playlistId ->
-                            val action =
-                                PlaylistsFragmentDirections.actionNavigationPlaylistsToPlaylistFragment(
-                                    playlistId
-                                )
-                            findNavController().navigate(action)
-                        },
-                        onItemMenuClick = { playlistId ->
-                            val action =
-                                PlaylistsFragmentDirections.actionNavigationPlaylistsToPlaylistMenuBottomSheetFragment(
-                                    playlistId
-                                )
-                            findNavController().navigate(action)
-                        }
-                    )
-                }
+                PlaylistsScreen(
+                    viewModel = viewModel,
+                    onClick = { playlistId ->
+                        val action = PlaylistsFragmentDirections.actionNavigationPlaylistsToPlaylistFragment(playlistId)
+                        findNavController().navigate(action)
+                    },
+                    onItemMenuClick = { playlistId ->
+                        val action = PlaylistsFragmentDirections
+                            .actionNavigationPlaylistsToPlaylistMenuBottomSheetFragment(playlistId)
+                        findNavController().navigate(action)
+                    }
+                )
             }
         }
     }
@@ -135,7 +125,8 @@ class PlaylistsFragment : Fragment() {
 
         playlistName.doAfterTextChanged {
             val playlistNameIsNotEmpty = playlistName.text.isNotEmpty()
-            createPlaylistDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = playlistNameIsNotEmpty
+            createPlaylistDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
+                playlistNameIsNotEmpty
         }
     }
 }

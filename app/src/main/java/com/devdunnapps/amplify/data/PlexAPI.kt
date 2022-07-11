@@ -7,24 +7,30 @@ import retrofit2.http.*
 
 interface PlexAPI {
 
-    @Headers("Accept: application/json", "X-Plex-Container-Size: 1")
+    @Headers("Accept: application/json")
     @GET("library/sections/{section}/all")
     suspend fun getArtists(
         @Path("section") section: String,
+        @Query("X-Plex-Container-Size") containerSize: Int,
+        @Query("X-Plex-Container-Start") containerStart: Int,
         @Header("X-Plex-Token") userToken: String
     ): PlexModelDTO
 
-    @Headers("Accept: application/json", "X-Plex-Container-Size: 1")
+    @Headers("Accept: application/json")
     @GET("library/sections/{section}/albums")
     suspend fun getAlbums(
         @Path("section") section: String,
+        @Query("X-Plex-Container-Size") containerSize: Int,
+        @Query("X-Plex-Container-Start") containerStart: Int,
         @Header("X-Plex-Token") userToken: String
     ): PlexModelDTO
 
-    @Headers("Accept: application/json", "X-Plex-Container-Size: 1")
+    @Headers("Accept: application/json")
     @GET("library/sections/{section}/all?type=10&sort=titleSort")
     suspend fun getSongs(
         @Path("section") section: String,
+        @Query("X-Plex-Container-Size") containerSize: Int,
+        @Query("X-Plex-Container-Start") containerStart: Int,
         @Header("X-Plex-Token") userToken: String
     ): PlexModelDTO
 

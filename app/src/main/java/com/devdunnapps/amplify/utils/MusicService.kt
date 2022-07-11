@@ -48,7 +48,7 @@ class MusicService : MediaBrowserServiceCompat() {
 
     private val appAudioAttributes: AudioAttributes = AudioAttributes.Builder()
         .setUsage(C.USAGE_MEDIA)
-        .setContentType(C.CONTENT_TYPE_MUSIC)
+        .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
         .build()
 
     private val exoPlayer: ExoPlayer by lazy {

@@ -43,9 +43,7 @@ fun SongItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         val context = LocalContext.current
-        val artworkUrl = remember {
-            PlexUtils.getInstance(context).getSizedImage(song.thumb, 200, 200)
-        }
+        val artworkUrl = remember { PlexUtils.getInstance(context).getSizedImage(song.thumb, 200, 200) }
 
         Image(
             painter = rememberImagePainter(
