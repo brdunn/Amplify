@@ -103,11 +103,13 @@ dependencies {
     implementation "androidx.paging:paging-compose:$composePagingVersion"
     implementation "androidx.activity:activity-compose:$composeActivityVersion"
     implementation "androidx.compose.material3:material3:$composeMaterial3Version"
+    implementation "androidx.compose.material3:material3-window-size-class:$composeMaterial3Version"
     implementation "com.google.android.material:compose-theme-adapter-3:$composeMaterial3ThemeAdapterVersion"
 
     implementation "io.coil-kt:coil-compose:$coilComposeVersion"
 
     testImplementation "junit:junit:$junitVersion"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
     testImplementation "com.squareup.okhttp3:mockwebserver:$mockWebserverVersion"
 
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitExtVersion"

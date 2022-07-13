@@ -18,8 +18,9 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.PlaylistPlay
 import androidx.compose.material.icons.outlined.QueueMusic
 import androidx.compose.material3.*
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -53,12 +54,11 @@ import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.databinding.FragmentAlbumBinding
 import com.devdunnapps.amplify.domain.models.Album
 import com.devdunnapps.amplify.domain.models.Song
+import com.devdunnapps.amplify.ui.components.ErrorScreen
 import com.devdunnapps.amplify.ui.components.ExpandableText
 import com.devdunnapps.amplify.ui.components.LoadingScreen
-import com.devdunnapps.amplify.utils.PlexUtils
-import com.devdunnapps.amplify.utils.Resource
-import com.devdunnapps.amplify.utils.TimeUtils
-import com.devdunnapps.amplify.utils.WhenToPlay
+import com.devdunnapps.amplify.ui.utils.getCurrentSizeClass
+import com.devdunnapps.amplify.utils.*
 import com.google.android.material.composethemeadapter3.Mdc3Theme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -85,14 +85,8 @@ class AlbumFragment : Fragment() {
                     Surface(
                         modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection())
                     ) {
-                        AlbumPage(
+                        AlbumScreen(
                             viewModel = viewModel,
-                            onPlayNextClick = {
-                                viewModel.playAlbum(WhenToPlay.NEXT, false)
-                            },
-                            onAddToQueueClick = {
-                                viewModel.playAlbum(WhenToPlay.QUEUE, false)
-                            },
                             onSongMenuClick = { songId ->
                                 val action = MobileNavigationDirections.actionGlobalNavigationSongBottomSheet(songId)
                                 findNavController().navigate(action)
@@ -125,69 +119,213 @@ class AlbumFragment : Fragment() {
 }
 
 @Composable
-private fun AlbumPage(
-    viewModel: AlbumViewModel,
+private fun AlbumScreen(viewModel: AlbumViewModel, onSongMenuClick: (String) -> Unit) {
+    val album by viewModel.album.collectAsState()
+
+    when (album) {
+        is Resource.Loading -> LoadingScreen()
+        is Resource.Success -> AlbumScreenContent(
+            model = album.data!!,
+            onPlaySong = { viewModel.playSong(it) },
+            onPlayClicked = { viewModel.playAlbum(WhenToPlay.NOW, false) },
+            onShuffleClicked = { viewModel.playAlbum(WhenToPlay.NOW, true) },
+            onPlayNextClick = { viewModel.playAlbum(WhenToPlay.NEXT, false) },
+            onAddToQueueClick = { viewModel.playAlbum(WhenToPlay.QUEUE, false) },
+            onSongMenuClick = onSongMenuClick
+        )
+        is Resource.Error -> ErrorScreen()
+    }
+}
+
+@Composable
+private fun AlbumScreenContent(
+    model: AlbumScreenUIModel,
+    onPlaySong: (Song) -> Unit,
+    onPlayClicked: () -> Unit,
+    onShuffleClicked: () -> Unit,
     onPlayNextClick: () -> Unit,
     onSongMenuClick: (String) -> Unit,
     onAddToQueueClick: () -> Unit
 ) {
-    val album by viewModel.album.observeAsState(Resource.Loading())
-    val songs by viewModel.songs.observeAsState(Resource.Loading())
-
-    if (album is Resource.Success && songs is Resource.Success) {
+    if (getCurrentSizeClass() == WindowWidthSizeClass.Compact) {
         LazyColumn{
             item {
                 AlbumHeader(
-                    viewModel = viewModel,
-                    album = album.data!!,
+                    model = model,
+                    onPlayClicked = onPlayClicked,
+                    onShuffleClicked = onShuffleClicked,
                     onPlayNextClick = onPlayNextClick,
                     onAddToQueueClick = onAddToQueueClick
                 )
             }
 
-            itemsIndexed(
-                items = songs.data!!
-            ) { index, song ->
+            itemsIndexed(items = model.songs) { index, song ->
                 AlbumSong(
                     song = song,
                     albumPos = index + 1,
-                    onClick = { viewModel.playSong(song) },
+                    onClick = { onPlaySong(song) },
                     onMenuClick = onSongMenuClick
                 )
             }
 
             item {
-                AlbumFooter(album = album.data!!)
+                AlbumFooter(album = model.album)
             }
         }
     } else {
-        LoadingScreen()
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(modifier = Modifier.weight(1f)) {
+                AlbumHeaderTablet(
+                    model = model,
+                    onPlayClicked = onPlayClicked,
+                    onShuffleClicked = onShuffleClicked,
+                    onPlayNextClick = onPlayNextClick,
+                    onAddToQueueClick = onAddToQueueClick
+                )
+            }
+
+            LazyColumn(modifier = Modifier.weight(1f)) {
+                itemsIndexed(items = model.songs) { index, song ->
+                    AlbumSong(
+                        song = song,
+                        albumPos = index + 1,
+                        onClick = { onPlaySong(song) },
+                        onMenuClick = onSongMenuClick
+                    )
+                }
+
+                item {
+                    AlbumFooter(album = model.album)
+                }
+            }
+        }
     }
 }
 
 @Composable
-private fun AlbumHeader(
-    viewModel: AlbumViewModel,
-    album: Album,
+private fun AlbumHeaderTablet(
+    model: AlbumScreenUIModel,
+    onPlayClicked: () -> Unit,
+    onShuffleClicked: () -> Unit,
     onPlayNextClick: () -> Unit,
     onAddToQueueClick: () -> Unit
 ) {
     Column {
-        ArtworkTitle(
-            album = album,
+        ArtworkTitleTablet(
+            album = model.album,
             onPlayNextClick = onPlayNextClick,
             onAddToQueueClick = onAddToQueueClick
         )
 
         PlayControls(
-            onPlayClicked = { viewModel.playAlbum(WhenToPlay.NOW, false) },
-            onShuffleClicked = { viewModel.playAlbum(WhenToPlay.NOW, true) }
+            onPlayClicked = onPlayClicked,
+            onShuffleClicked = onShuffleClicked
         )
 
         AlbumDurationMetadata(
-            viewModel = viewModel,
-            album = album
+            model = model
         )
+    }
+}
+
+@Composable
+private fun AlbumHeader(
+    model: AlbumScreenUIModel,
+    onPlayClicked: () -> Unit,
+    onShuffleClicked: () -> Unit,
+    onPlayNextClick: () -> Unit,
+    onAddToQueueClick: () -> Unit
+) {
+    Column {
+        ArtworkTitle(
+            album = model.album,
+            onPlayNextClick = onPlayNextClick,
+            onAddToQueueClick = onAddToQueueClick
+        )
+
+        PlayControls(
+            onPlayClicked = onPlayClicked,
+            onShuffleClicked = onShuffleClicked
+        )
+
+        AlbumDurationMetadata(
+            model = model
+        )
+    }
+}
+
+@Composable
+private fun ArtworkTitleTablet(album: Album, onPlayNextClick: () -> Unit, onAddToQueueClick: () -> Unit) {
+    Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        val context = LocalContext.current
+        val imageUrl = remember { PlexUtils.getInstance(context).addKeyAndAddress(album.thumb) }
+        Image(
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .aspectRatio(1F)
+                .clip(shape = RoundedCornerShape(4.dp)),
+            painter = rememberImagePainter(
+                data = imageUrl,
+                imageLoader = LocalImageLoader.current,
+                builder = {
+                    placeholder(R.drawable.ic_albums_black_24dp)
+                    error(R.drawable.ic_albums_black_24dp)
+                }
+            ),
+            contentDescription = null,
+            contentScale = ContentScale.FillWidth
+        )
+
+        Text(
+            text = album.title,
+            style = MaterialTheme.typography.titleLarge,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 2
+        )
+
+        Text(
+            text = buildAnnotatedString {
+                append("by ")
+                withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                    append(album.artistName)
+                }
+            },
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        Text(
+            maxLines = 1,
+            text =  "Album • ${album.year}"
+        )
+
+        Row {
+            IconButton(
+                onClick = {
+                    onPlayNextClick()
+                    Toast.makeText(context, "Playing album next", Toast.LENGTH_SHORT).show()
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.PlaylistPlay,
+                    contentDescription = stringResource(R.string.play_next),
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
+
+            IconButton(
+                onClick = {
+                    onAddToQueueClick()
+                    Toast.makeText(context, "Added to queue", Toast.LENGTH_SHORT).show()
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.QueueMusic,
+                    contentDescription = stringResource(R.string.add_to_queue),
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
+        }
     }
 }
 
@@ -339,7 +477,7 @@ private fun PlayControls(onPlayClicked: () -> Unit, onShuffleClicked: () -> Unit
 }
 
 @Composable
-private fun AlbumDurationMetadata(viewModel: AlbumViewModel, album: Album) {
+private fun AlbumDurationMetadata(model: AlbumScreenUIModel) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
@@ -348,16 +486,10 @@ private fun AlbumDurationMetadata(viewModel: AlbumViewModel, album: Album) {
     ) {
         val resources = LocalContext.current.resources
         Text(
-            text = resources.getQuantityString(R.plurals.album_track_count, album.numSongs, album.numSongs)
+            text = resources.getQuantityString(R.plurals.album_track_count, model.album.numSongs, model.album.numSongs)
         )
 
-        val albumDuration by viewModel.albumDuration.observeAsState()
-        albumDuration?.let {
-            val duration = TimeUtils.millisecondsToMinutes(it)
-            Text(
-                text = resources.getQuantityString(R.plurals.album_duration, duration, duration)
-            )
-        }
+        Text(text = resources.getQuantityString(R.plurals.album_duration, model.duration, model.duration))
     }
 }
 

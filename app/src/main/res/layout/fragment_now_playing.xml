@@ -10,21 +10,21 @@
 
     <ImageView
         android:id="@+id/song_menu"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:maxWidth="500dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         app:layout_constraintBottom_toTopOf="@id/albumArtwork"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="16dp"
         android:paddingHorizontal="16dp"
         android:src="@drawable/ic_menu_18dp"
-        app:tint="@android:color/white"
+        app:tint="@color/md_theme_onSurface"
         android:background="?android:attr/selectableItemBackgroundBorderless"/>
 
     <ImageView
         android:id="@+id/albumArtwork"
         android:layout_height="0dp"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
+        app:layout_constraintWidth_max="300dp"
         app:layout_constraintDimensionRatio="1:1"
         android:layout_marginTop="100dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -52,8 +52,8 @@
     <TextView
         android:id="@+id/song_artist"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
         android:layout_width="match_parent"
+        android:layout_marginHorizontal="24dp"
         android:textAlignment="center"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -154,6 +154,7 @@
         app:layout_constraintTop_toBottomOf="@id/play_pause_btn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginTop="32dp"
         android:src="@drawable/ic_expand_36dp"
         android:contentDescription="@string/now_playing_collapse_content_desc"

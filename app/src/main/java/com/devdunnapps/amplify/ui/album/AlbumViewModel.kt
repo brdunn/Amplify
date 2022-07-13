@@ -2,17 +2,18 @@ package com.devdunnapps.amplify.ui.album
 
 import android.os.Bundle
 import android.support.v4.media.session.PlaybackStateCompat
-import androidx.lifecycle.*
-import com.devdunnapps.amplify.R
-import com.devdunnapps.amplify.domain.models.Album
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.domain.usecases.GetAlbumSongsUseCase
 import com.devdunnapps.amplify.domain.usecases.GetAlbumUseCase
 import com.devdunnapps.amplify.utils.MusicServiceConnection
 import com.devdunnapps.amplify.utils.Resource
+import com.devdunnapps.amplify.utils.TimeUtils
 import com.devdunnapps.amplify.utils.WhenToPlay
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.io.Serializable
 import javax.inject.Inject
@@ -27,27 +28,31 @@ class AlbumViewModel @Inject constructor(
 
     private val albumId: String = savedStateHandle["albumId"]!!
 
-    val album: LiveData<Resource<Album>> = getAlbumUseCase(albumId).asLiveData()
-
-    private var _songs = MutableLiveData<Resource<List<Song>>>()
-    val songs: LiveData<Resource<List<Song>>> = _songs
-
-    private var _albumDuration = MutableLiveData<Long>()
-    val albumDuration: LiveData<Long> = _albumDuration
+    private val _album: MutableStateFlow<Resource<AlbumScreenUIModel>> = MutableStateFlow(Resource.Loading())
+    val album: StateFlow<Resource<AlbumScreenUIModel>> = _album.asStateFlow()
 
     init {
         viewModelScope.launch {
-            getAlbumSongsUseCase(albumId).collect {
-                if (it is Resource.Success) {
-                    var duration = 0L
-                    for (song in it.data!!) {
-                        duration += song.duration
-                    }
-                    _albumDuration.value = duration
-                }
+            combine(getAlbumUseCase(albumId), getAlbumSongsUseCase(albumId)) { album, songs ->
+                when {
+                    album is Resource.Error -> _album.emit(Resource.Error(album.message.orEmpty()))
+                    songs is Resource.Error -> _album.emit(Resource.Error(songs.message.orEmpty()))
+                    album is Resource.Success && songs is Resource.Success -> {
+                        var duration = 0L
+                        songs.data!!.forEach { duration += it.duration }
 
-                _songs.value = it
-            }
+                        _album.emit(
+                            Resource.Success(
+                                AlbumScreenUIModel(
+                                    album = album.data!!,
+                                    songs = songs.data,
+                                    duration = TimeUtils.millisecondsToMinutes(duration)
+                                )
+                            )
+                        )
+                    }
+                }
+            }.collect()
         }
     }
 
@@ -72,7 +77,8 @@ class AlbumViewModel @Inject constructor(
 
     private fun collectAlbumBundle(): Bundle {
         return Bundle().apply {
-            putSerializable("songs", songs.value!!.data as Serializable)
+            val albumContent = _album.value as? Resource.Success<AlbumScreenUIModel> ?: return@apply
+            putSerializable("songs", albumContent.data?.songs as Serializable)
         }
     }
 }

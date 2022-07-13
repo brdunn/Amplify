@@ -2,15 +2,16 @@ package com.devdunnapps.amplify.data
 
 import com.devdunnapps.amplify.domain.repository.PlexRepository
 import com.devdunnapps.amplify.utils.Resource
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectIndexed
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import okhttp3.OkHttpClient
-
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class PlexRepositoryImplTest {
 
     private lateinit var repository: PlexRepository
@@ -32,44 +33,7 @@ class PlexRepositoryImplTest {
     }
 
     @Test
-    fun `Get Artists Successfully`() = runBlocking {
-        repository.getArtists().collectIndexed { index, response ->
-            if (index == 1) {
-                assert(response is Resource.Success)
-                val artists = response.data!!
-                assert(artists.size == 4)
-                assert(artists[0].name == "10,000 Maniacs")
-            }
-        }
-    }
-
-    @Test
-    fun `Get Albums Successfully`() = runBlocking {
-        repository.getAlbums().collectIndexed { index, response ->
-            if (index == 1) {
-                assert(response is Resource.Success)
-                val albums = response.data!!
-                assert(albums.size == 3)
-                assert(albums[0].title == "8 Mile: Music From and Inspired by the Motion Picture")
-            }
-        }
-    }
-
-    @Test
-    fun `Get Songs Successfully`() = runBlocking {
-        repository.getSongs().collectIndexed { index, value ->
-            if (index == 1) {
-                assert(value is Resource.Success)
-
-                val songs = value.data!!
-                assert(songs.size == 2)
-                assert(songs[0].title == "The (After) Life of the Party")
-            }
-        }
-    }
-
-    @Test
-    fun `Get Song Successfully`() = runBlocking {
+    fun `Get Song Successfully`() = runTest {
         repository.getSong(TEST_SONG_ID).collectIndexed { index, response ->
             if (index == 0) {
                 assert(response is Resource.Loading)
@@ -83,7 +47,7 @@ class PlexRepositoryImplTest {
     }
 
     @Test
-    fun `Get Album Songs Successfully`() = runBlocking {
+    fun `Get Album Songs Successfully`() = runTest {
         repository.getAlbumSongs(TEST_ALBUM_ID).collectIndexed { index, response ->
             if (index == 0) {
                 assert(response is Resource.Loading)
@@ -98,22 +62,7 @@ class PlexRepositoryImplTest {
     }
 
     @Test
-    fun `Get Playlists Successfully`() = runBlocking {
-        repository.getPlaylists().collectIndexed { index, response ->
-            if (index == 0) {
-                assert(response is Resource.Loading)
-            } else if (index == 1) {
-                assert(response is Resource.Success)
-                val playlists = response.data!!
-                assert(playlists.size == 3)
-                assert(playlists[0].id == "46993")
-                assert(playlists[0].numSongs == 16)
-            }
-        }
-    }
-
-    @Test
-    fun `Get Playlist Successfully`() = runBlocking {
+    fun `Get Playlist Successfully`() = runTest {
         repository.getPlaylist(TEST_PLAYLIST_ID).collectIndexed { index, response ->
             if (index == 0) {
                 assert(response is Resource.Loading)
@@ -127,7 +76,7 @@ class PlexRepositoryImplTest {
     }
 
     @Test
-    fun `Get Playlist Songs Successfully`() = runBlocking {
+    fun `Get Playlist Songs Successfully`() = runTest {
         repository.getPlaylistSongs(TEST_PLAYLIST_ID).collectIndexed { index, response ->
             if (index == 0) {
                 assert(response is Resource.Loading)
@@ -141,7 +90,7 @@ class PlexRepositoryImplTest {
     }
 
     @Test
-    fun `Get Artist Songs Successfully`() = runBlocking {
+    fun `Get Artist Songs Successfully`() = runTest {
         repository.getArtistSongs(TEST_ARTIST_ID).collectIndexed { index, response ->
             if (index == 0) {
                 assert(response is Resource.Loading)
@@ -155,7 +104,7 @@ class PlexRepositoryImplTest {
     }
 
     @Test
-    fun `Get Artist Successfully`() = runBlocking {
+    fun `Get Artist Successfully`() = runTest {
         repository.getArtist(TEST_ARTIST_ID).collectIndexed { index, response ->
             if (index == 0) {
                 assert(response is Resource.Loading)
@@ -169,7 +118,7 @@ class PlexRepositoryImplTest {
     }
 
     @Test
-    fun `Add Song to Playlist Successfully`() = runBlocking {
+    fun `Add Song to Playlist Successfully`() = runTest {
         repository.addSongToPlaylist(TEST_SONG_ID, TEST_PLAYLIST_ID).collectIndexed { index, response ->
             if (index == 0) {
                 assert(response is Resource.Loading)
@@ -179,7 +128,7 @@ class PlexRepositoryImplTest {
     }
 
     @Test
-    fun `Remove Song From Playlist Successfully`() = runBlocking {
+    fun `Remove Song From Playlist Successfully`() = runTest {
         repository.removeSongFromPlaylist("44562", TEST_PLAYLIST_ID).collectIndexed { index, response ->
             if (index == 0) {
                 assert(response is Resource.Loading)
@@ -189,7 +138,7 @@ class PlexRepositoryImplTest {
     }
 
     @Test
-    fun `Delete Playlist Successfully`() = runBlocking {
+    fun `Delete Playlist Successfully`() = runTest {
         repository.deletePlaylist(TEST_PLAYLIST_ID).collectIndexed { index, response ->
             if (index == 0) {
                 assert(response is Resource.Loading)
@@ -199,7 +148,7 @@ class PlexRepositoryImplTest {
     }
 
     @Test
-    fun `Create Playlist Successfully`() = runBlocking {
+    fun `Create Playlist Successfully`() = runTest {
         repository.createPlaylist(TEST_PLAYLIST_TITLE).collectIndexed { index, response ->
             if (index == 0) {
                 assert(response is Resource.Loading)
@@ -213,7 +162,7 @@ class PlexRepositoryImplTest {
     }
 
     @Test
-    fun `Search Library Successfully`() = runBlocking {
+    fun `Search Library Successfully`() = runTest {
         repository.searchLibrary(TEST_SEARCH_LIBRARY_QUERY).collectIndexed { index, response ->
             if (index == 0) {
                 assert(response is Resource.Loading)
@@ -228,7 +177,7 @@ class PlexRepositoryImplTest {
     }
 
     @Test
-    fun `Rate Song Successfully`() = runBlocking {
+    fun `Rate Song Successfully`() = runTest {
         repository.rateSong(TEST_SONG_ID, 10).collectIndexed { index, response ->
             if (index == 0) {
                 assert(response is Resource.Loading)
@@ -239,7 +188,7 @@ class PlexRepositoryImplTest {
     }
 
     @Test
-    fun `Listen to Song Successfully`() = runBlocking {
+    fun `Listen to Song Successfully`() = runTest {
         repository.markSongAsListened(TEST_SONG_ID).collectIndexed { index, response ->
             if (index == 0) {
                 assert(response is Resource.Loading)

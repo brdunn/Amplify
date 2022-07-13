@@ -29,7 +29,7 @@ class PlexRepositoryImpl @Inject constructor(
     override fun getSong(songId: String): Flow<Resource<Song>> = flow {
         emit(Resource.Loading())
         try {
-            val song = api.getSong(songId, userToken).mediaContainer.metadata!![0].toSong()
+            val song = api.getSong(songId, userToken).mediaContainer.metadata?.get(0)?.toSong()
             emit(Resource.Success(song))
         } catch(e: HttpException) {
             emit(Resource.Error("Oops, something went wrong!"))
@@ -41,7 +41,7 @@ class PlexRepositoryImpl @Inject constructor(
     override fun getAlbum(key: String): Flow<Resource<Album>> = flow {
         emit(Resource.Loading())
         try {
-            val album = api.getAlbum(key, userToken).mediaContainer.metadata!![0].toAlbum()
+            val album = api.getAlbum(key, userToken).mediaContainer.metadata?.get(0)?.toAlbum()
             emit(Resource.Success(album))
         } catch(e: HttpException) {
             emit(Resource.Error("Oops, something went wrong!"))
@@ -53,7 +53,7 @@ class PlexRepositoryImpl @Inject constructor(
     override fun getAlbumSongs(key: String): Flow<Resource<List<Song>>> = flow {
         emit(Resource.Loading())
         try {
-            val songs = api.getAlbumSongs(key, userToken).mediaContainer.metadata!!.map { it.toSong() }
+            val songs = api.getAlbumSongs(key, userToken).mediaContainer.metadata?.map { it.toSong() } ?: emptyList()
             emit(Resource.Success(songs))
         } catch(e: HttpException) {
             emit(Resource.Error("Oops, something went wrong!"))
@@ -65,7 +65,8 @@ class PlexRepositoryImpl @Inject constructor(
     override fun getPlaylists(): Flow<Resource<List<Playlist>>> = flow {
         emit(Resource.Loading())
         try {
-            val playlists = api.getPlaylists(section, userToken).mediaContainer.metadata!!.map { it.toPlaylist() }
+            val playlists =
+                api.getPlaylists(section, userToken).mediaContainer.metadata?.map { it.toPlaylist() } ?: emptyList()
             emit(Resource.Success(playlists))
         } catch(e: HttpException) {
             emit(Resource.Error("Oops, something went wrong!"))
@@ -77,7 +78,7 @@ class PlexRepositoryImpl @Inject constructor(
     override fun getPlaylist(playlistId: String): Flow<Resource<Playlist>> = flow {
         emit(Resource.Loading())
         try {
-            val playlist = api.getPlaylist(playlistId, userToken).mediaContainer.metadata!![0].toPlaylist()
+            val playlist = api.getPlaylist(playlistId, userToken).mediaContainer.metadata?.get(0)?.toPlaylist()
             emit(Resource.Success(playlist))
         } catch(e: HttpException) {
             emit(Resource.Error("Oops, something went wrong!"))
@@ -89,7 +90,7 @@ class PlexRepositoryImpl @Inject constructor(
     override fun getPlaylistSongs(key: String): Flow<Resource<List<Song>>> = flow {
         emit(Resource.Loading())
         try {
-            val songs = api.getPlaylistSongs(key, userToken).mediaContainer.metadata?.map { it.toSong() } ?: emptyList()
+            val songs = api.getPlaylistSongs(key, userToken).mediaContainer.metadata?.map { it.toSong() }
             emit(Resource.Success(songs))
         } catch(e: HttpException) {
             emit(Resource.Error("Oops, something went wrong!"))
@@ -101,8 +102,12 @@ class PlexRepositoryImpl @Inject constructor(
     override fun getArtistSongs(artistKey: String): Flow<Resource<List<Song>>> = flow {
         emit(Resource.Loading())
         try {
-            val songs = api.getArtistSongs(section, artistKey, userToken).mediaContainer.metadata?.map { it.toSong() } ?: emptyList()
-            emit(Resource.Success(songs))
+            val metadata = api.getArtistSongs(section, artistKey, userToken).mediaContainer.metadata
+            if (metadata == null) {
+                emit(Resource.Error("Artist with specified ID does not exist"))
+                return@flow
+            }
+            emit(Resource.Success(metadata.map { it.toSong() }))
         } catch(e: HttpException) {
             emit(Resource.Error("Oops, something went wrong!"))
         } catch(e: IOException) {
@@ -138,8 +143,12 @@ class PlexRepositoryImpl @Inject constructor(
     override fun getArtist(key: String): Flow<Resource<Artist>> = flow {
         emit(Resource.Loading())
         try {
-            val artist = api.getArtist(key, userToken).mediaContainer.metadata!![0].toArtist()
-            emit(Resource.Success(artist))
+            val metadata = api.getArtist(key, userToken).mediaContainer.metadata
+            if (metadata == null) {
+                emit(Resource.Error("Artist with specified ID does not exist"))
+                return@flow
+            }
+            emit(Resource.Success(metadata[0].toArtist()))
         } catch(e: HttpException) {
             emit(Resource.Error("Oops, something went wrong!"))
         } catch(e: IOException) {
@@ -165,8 +174,14 @@ class PlexRepositoryImpl @Inject constructor(
         emit(Resource.Loading())
         try {
             // Plex uses a unique "playlistItemID" so we must search the playlist for the playlistItemID of the song with the given songId
-            val playlistSongs = api.getPlaylistSongs(playlistId, userToken).mediaContainer.metadata!!
-            val playlistItemId = playlistSongs.find { it.ratingKey == songId }!!.playlistItemID!!
+            val playlistSongs = api.getPlaylistSongs(playlistId, userToken).mediaContainer.metadata
+            val playlistItemId = playlistSongs?.find { it.ratingKey == songId }?.playlistItemID
+
+            if (playlistItemId == null) {
+                emit(Resource.Error("Could not remove item from specified playlist"))
+                return@flow
+            }
+
             api.removeSongFromPlaylist(playlistId, playlistItemId, userToken)
             emit(Resource.Success())
         } catch(e: HttpException) {
@@ -183,7 +198,7 @@ class PlexRepositoryImpl @Inject constructor(
             for (stream in streams) {
                 val isTextLyric = stream.streamType == 4 && stream.format.equals("txt")
                 if (isTextLyric) {
-                    // TODO("Does it negate the benefits of coroutines?")
+                    // TODO: fix blocking call
                     val rawLyrics = api.getSongLyrics(stream.id!!, userToken).string()
                     val lyrics = Lyric(songId, rawLyrics)
                     emit(Resource.Success(lyrics))
@@ -215,7 +230,7 @@ class PlexRepositoryImpl @Inject constructor(
     override fun createPlaylist(playlistTitle: String): Flow<Resource<Playlist>> = flow {
         emit(Resource.Loading())
         try {
-            val apiResponse = api.createPlaylist(playlistTitle, userToken).mediaContainer.metadata!![0].toPlaylist()
+            val apiResponse = api.createPlaylist(playlistTitle, userToken).mediaContainer.metadata?.get(0)?.toPlaylist()
             emit(Resource.Success(apiResponse))
         } catch(e: HttpException) {
             emit(Resource.Error("Oops, something went wrong!"))

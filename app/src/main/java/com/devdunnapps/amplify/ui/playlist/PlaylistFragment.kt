@@ -43,7 +43,7 @@ class PlaylistFragment : Fragment(), PlaylistListAdapter.ItemClickListener, View
                 val songs = result.data!!
                 playlistAdapter = PlaylistListAdapter(requireContext(), requireArguments().getString("playlistId")!!, songs)
                 playlistAdapter?.setClickListener(this@PlaylistFragment)
-                binding.songsTabRecyclerView.layoutManager = LinearLayoutManager(container!!.context)
+                binding.songsTabRecyclerView.layoutManager = LinearLayoutManager(requireContext())
                 binding.songsTabRecyclerView.adapter = playlistAdapter
                 binding.songsProgressBar.visibility = View.INVISIBLE
 
