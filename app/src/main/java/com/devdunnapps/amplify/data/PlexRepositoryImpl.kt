@@ -90,7 +90,7 @@ class PlexRepositoryImpl @Inject constructor(
     override fun getPlaylistSongs(key: String): Flow<Resource<List<Song>>> = flow {
         emit(Resource.Loading())
         try {
-            val songs = api.getPlaylistSongs(key, userToken).mediaContainer.metadata?.map { it.toSong() }
+            val songs = api.getPlaylistSongs(key, userToken).mediaContainer.metadata?.map { it.toSong() } ?: emptyList()
             emit(Resource.Success(songs))
         } catch(e: HttpException) {
             emit(Resource.Error("Oops, something went wrong!"))
