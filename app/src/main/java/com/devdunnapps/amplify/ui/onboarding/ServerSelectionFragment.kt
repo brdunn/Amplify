@@ -2,7 +2,6 @@ package com.devdunnapps.amplify.ui.onboarding
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,12 +9,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -90,7 +87,7 @@ private fun ServerItem(server: Server, onClick: (Server) -> Unit) {
         onClick = { onClick(server) }
     ) {
         Text(
-            text = "${server.address}\nLocal Only: ${server.localConnectionsOnly}\nProxy: ${server.proxyConnectionsAllowed}",
+            text = "${server.name}\n${server.address}\nLocal Only: ${server.localConnectionsOnly}\nProxy: ${server.proxyConnectionsAllowed}",
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center
         )

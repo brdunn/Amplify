@@ -8,7 +8,8 @@ data class ConnectionDTO(
     val relay: Boolean
 ) {
 
-    fun toServer() = Server(
+    fun toServer(serverName: String) = Server(
+        name = serverName,
         address = uri,
         localConnectionsOnly = local,
         proxyConnectionsAllowed = relay

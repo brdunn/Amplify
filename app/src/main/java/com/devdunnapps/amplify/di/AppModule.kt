@@ -2,6 +2,10 @@ package com.devdunnapps.amplify.di
 
 import android.content.ComponentName
 import android.content.Context
+import android.os.Build
+import android.provider.Settings
+import com.devdunnapps.amplify.BuildConfig
+import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.data.*
 import com.devdunnapps.amplify.domain.repository.PlexRepository
 import com.devdunnapps.amplify.domain.repository.PlexTVRepository
@@ -14,6 +18,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Named
@@ -32,12 +37,29 @@ object AppModule {
         )
     }
 
+    fun getOKHTTPClient(context: Context): OkHttpClient = OkHttpClient.Builder()
+        .addInterceptor {
+            val request = it.request().newBuilder()
+                .addHeader("Accept", "application/json")
+                .addHeader("X-Plex-Product", context.getString(R.string.app_name))
+                .addHeader("X-Plex-Version", BuildConfig.VERSION_NAME)
+                .addHeader("X-Plex-Platform", "Android")
+                .addHeader("X-Plex-Platform-Version", Build.VERSION.SDK_INT.toString())
+                .addHeader("X-Plex-Device", Build.MODEL)
+                .addHeader("X-Plex-Device-Name", Settings.Global.getString(context.contentResolver, "device_name"))
+                .addHeader("X-Plex-Client-Identifier", Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID))
+                .build()
+            it.proceed(request)
+        }
+        .build()
+
     @Provides
     @Singleton
-    fun providePlexTVAPI(): PlexTVAPI {
+    fun providePlexTVAPI(@ApplicationContext context: Context): PlexTVAPI {
         return Retrofit.Builder()
             .baseUrl("https://plex.tv/")
             .addConverterFactory(GsonConverterFactory.create())
+            .client(getOKHTTPClient(context))
             .build()
             .create(PlexTVAPI::class.java)
     }
@@ -55,6 +77,7 @@ object AppModule {
         return Retrofit.Builder()
             .baseUrl(url)
             .addConverterFactory(GsonConverterFactory.create())
+            .client(getOKHTTPClient(context))
             .build()
             .create(PlexAPI::class.java)
     }

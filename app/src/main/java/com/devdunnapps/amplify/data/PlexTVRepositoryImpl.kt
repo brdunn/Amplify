@@ -3,6 +3,7 @@ package com.devdunnapps.amplify.data
 import android.content.Context
 import com.devdunnapps.amplify.data.models.ErrorsDTO
 import com.devdunnapps.amplify.data.models.SigninDTO
+import com.devdunnapps.amplify.di.AppModule
 import com.devdunnapps.amplify.domain.models.LibrarySection
 import com.devdunnapps.amplify.domain.models.Server
 import com.devdunnapps.amplify.domain.models.User
@@ -31,6 +32,7 @@ class PlexTVRepositoryImpl @Inject constructor(
         val libraryAPI = Retrofit.Builder()
             .baseUrl(url)
             .addConverterFactory(GsonConverterFactory.create())
+            .client(AppModule.getOKHTTPClient(context))
             .build()
             .create(PlexAPI::class.java)
         try {
@@ -75,7 +77,7 @@ class PlexTVRepositoryImpl @Inject constructor(
         val servers: MutableList<Server> = mutableListOf()
         for (resource in resources) {
             for (connection in resource.connections) {
-                servers.add(connection.toServer())
+                servers.add(connection.toServer(resource.name))
             }
         }
         emit(Resource.Success(servers.toList()))
