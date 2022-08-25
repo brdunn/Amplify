@@ -91,13 +91,14 @@ object AppModule {
 
     @Provides
     @Singleton
+    @Named("plexToken")
     fun provideUserToken(@ApplicationContext context: Context): String {
         return PreferencesUtils.readSharedSetting(context, PreferencesUtils.PREF_PLEX_USER_TOKEN) ?: ""
     }
 
     @Provides
     @Singleton
-    fun providePlexRepository(api: PlexAPI, userToken: String, @Named("library") library: String): PlexRepository {
+    fun providePlexRepository(api: PlexAPI, @Named("plexToken") userToken: String, @Named("library") library: String): PlexRepository {
         return PlexRepositoryImpl(api, userToken, library)
     }
 

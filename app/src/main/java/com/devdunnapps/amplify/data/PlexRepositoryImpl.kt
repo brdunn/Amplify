@@ -16,7 +16,7 @@ import javax.inject.Named
 
 class PlexRepositoryImpl @Inject constructor(
     private val api: PlexAPI,
-    private val userToken: String,
+    @Named("plexToken") private val userToken: String,
     @Named("library") private val section: String
 ) : PlexRepository {
 
