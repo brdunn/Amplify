@@ -4,17 +4,18 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
-import com.bumptech.glide.Glide
+import coil.ImageLoader
+import coil.request.ImageRequest
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.ui.main.MainActivity
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
 import kotlinx.coroutines.*
-import java.util.concurrent.Future
 
 const val NOTIFICATION_LARGE_ICON_SIZE = 144
 
@@ -92,12 +93,12 @@ class NotificationManager(
         }
 
         private suspend fun resolveUriToBitmap(uri: Uri): Bitmap? = withContext(Dispatchers.IO) {
-            Glide.with(context)
-                .asBitmap()
-                .load(uri)
+            val request = ImageRequest.Builder(context)
+                .data(uri)
                 .error(R.drawable.ic_albums_black_24dp)
-                .submit(NOTIFICATION_LARGE_ICON_SIZE, NOTIFICATION_LARGE_ICON_SIZE)
-                .get()
+                .size(NOTIFICATION_LARGE_ICON_SIZE)
+                .build()
+            (ImageLoader(context).execute(request).drawable as BitmapDrawable).bitmap
         }
     }
 }

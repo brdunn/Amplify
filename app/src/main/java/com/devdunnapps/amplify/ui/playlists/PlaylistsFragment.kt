@@ -7,7 +7,8 @@ import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -29,7 +30,7 @@ import com.devdunnapps.amplify.databinding.FragmentPlaylistsBinding
 import com.devdunnapps.amplify.domain.models.Playlist
 import com.devdunnapps.amplify.ui.components.ErrorScreen
 import com.devdunnapps.amplify.ui.components.LoadingScreen
-import com.devdunnapps.amplify.ui.components.PlaylistList
+import com.devdunnapps.amplify.ui.components.PlaylistItem
 import com.devdunnapps.amplify.utils.Resource
 import com.google.android.material.composethemeadapter3.Mdc3Theme
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -151,6 +152,26 @@ private fun PlaylistsScreen(
         }
         is Resource.Error -> {
             ErrorScreen()
+        }
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun PlaylistList(
+    playlists: List<Playlist>,
+    onItemClick: (String) -> Unit,
+    onItemMenuClick: (String) -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection())
+    ) {
+        items(items = playlists, key = { it.id }) { playlist ->
+            PlaylistItem(
+                onClick = onItemClick,
+                playlist = playlist,
+                onItemMenuClick = onItemMenuClick
+            )
         }
     }
 }

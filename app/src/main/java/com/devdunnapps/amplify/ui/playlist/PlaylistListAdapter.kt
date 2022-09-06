@@ -8,7 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import coil.load
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.utils.PlexUtils
@@ -50,10 +50,9 @@ class PlaylistListAdapter(
 
         val thumbKey = songs[position].thumb
         val imageUrl = PlexUtils.getInstance(context).addKeyAndAddress(thumbKey)
-        Glide.with(viewHolder.imageViewArtwork.context)
-            .load(imageUrl)
-            .placeholder(R.drawable.ic_albums_black_24dp)
-            .into(viewHolder.imageViewArtwork)
+        viewHolder.imageViewArtwork.load(imageUrl) {
+            placeholder(R.drawable.ic_albums_black_24dp)
+        }
     }
 
     override fun getItemCount(): Int {

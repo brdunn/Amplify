@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.bumptech.glide.Glide
+import coil.load
 import com.devdunnapps.amplify.MobileNavigationDirections
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.databinding.FragmentSongBottomSheetBinding
@@ -39,10 +39,9 @@ class SongMenuBottomSheetFragment : BottomSheetDialogFragment() {
                     binding.songBottomSheetArtist.text = song.artistName
 
                     val url = PlexUtils.getInstance(requireActivity()).addKeyAndAddress(song.thumb)
-                    Glide.with(binding.songBottomSheetAlbumArt)
-                        .load(url)
-                        .error(R.drawable.ic_albums_black_24dp)
-                        .into(binding.songBottomSheetAlbumArt)
+                    binding.songBottomSheetAlbumArt.load(url) {
+                        error(R.drawable.ic_albums_black_24dp)
+                    }
 
                     when (song.userRating) {
                         Rating.THUMB_UP -> {

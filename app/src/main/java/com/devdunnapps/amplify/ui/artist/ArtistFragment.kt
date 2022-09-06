@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.bumptech.glide.Glide
+import coil.load
 import com.devdunnapps.amplify.MobileNavigationDirections
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.databinding.FragmentArtistBinding
@@ -114,7 +114,10 @@ class ArtistFragment : Fragment(), View.OnClickListener {
                     }
                 }
 
-                setArtistImage(artist.thumb)
+                val imageUrl = PlexUtils.getInstance(requireActivity()).addKeyAndAddress(artist.thumb)
+                binding.artistPicture.load(imageUrl) {
+                    placeholder(R.drawable.ic_artists_black_24dp)
+                }
             }
         }
     }
@@ -136,17 +139,6 @@ class ArtistFragment : Fragment(), View.OnClickListener {
                 binding.artistShuffleBtn.setOnClickListener(this)
             }
         }
-    }
-
-    /**
-     * Sets the image of the artist at the top of the fragment
-     */
-    private fun setArtistImage(url: String) {
-        val imageUrl = PlexUtils.getInstance(requireActivity()).addKeyAndAddress(url)
-        Glide.with(binding.artistPicture.context)
-            .load(imageUrl)
-            .placeholder(R.drawable.ic_artists_black_24dp)
-            .into(binding.artistPicture)
     }
 
     /**

@@ -2,9 +2,8 @@ ext {
     agpVersion = "7.2.1"
     kotlinVersion = "1.7.10"
 
-    glideVersion = "4.13.0"
     retrofitVersion = "2.9.0"
-    coilComposeVersion = "1.4.0"
+    coilVersion = "2.2.0"
     mockWebserverVersion = "4.9.2"
     junitVersion = "4.13.2"
     coroutinesVersion = "1.6.3"

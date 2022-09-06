@@ -22,7 +22,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
-import com.bumptech.glide.Glide
+import coil.load
 import com.devdunnapps.amplify.MobileNavigationDirections
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.databinding.ActivityMainBinding
@@ -78,10 +78,10 @@ class MainActivity : AppCompatActivity() {
                 binding.nowPlayingBox.nowPlayingBoxSong.text = metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE)
                 binding.nowPlayingBox.nowPlayingBoxArtist.text = metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST)
 
-                Glide.with(applicationContext)
-                    .load(Uri.parse(metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI)))
-                    .error(R.drawable.ic_albums_black_24dp)
-                    .into(binding.nowPlayingBox.nowPlayingAlbumArtwork)
+                val imageUrl = Uri.parse(metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI))
+                binding.nowPlayingBox.nowPlayingAlbumArtwork.load(imageUrl) {
+                    error(R.drawable.ic_albums_black_24dp)
+                }
             }
         }
 

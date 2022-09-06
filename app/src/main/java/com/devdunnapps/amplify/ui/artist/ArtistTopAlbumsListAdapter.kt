@@ -3,7 +3,7 @@ package com.devdunnapps.amplify.ui.artist
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import coil.load
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.databinding.ItemArtistFragmentAlbumCardBinding
 import com.devdunnapps.amplify.domain.models.Album
@@ -30,10 +30,10 @@ class ArtistTopAlbumsListAdapter(
 
             val imageUrl = PlexUtils
                 .getInstance(binding.artistAlbumCardPicture.context).addKeyAndAddress(album.thumb)
-            Glide.with(binding.artistAlbumCardPicture)
-                .load(imageUrl)
-                .error(R.drawable.ic_albums_black_24dp)
-                .into(binding.artistAlbumCardPicture)
+
+            binding.artistAlbumCardPicture.load(imageUrl) {
+                error(R.drawable.ic_albums_black_24dp)
+            }
 
             binding.root.setOnClickListener { onClick(album) }
         }

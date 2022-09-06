@@ -14,11 +14,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.palette.graphics.Palette
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
+import coil.ImageLoader
+import coil.request.ImageRequest
 import com.devdunnapps.amplify.MobileNavigationDirections
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.databinding.FragmentNowPlayingBinding
@@ -115,14 +112,13 @@ class NowPlayingFragment : Fragment() {
 
         // load album art
         val imageURI = metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI)
-        Glide.with(this).load(imageURI).listener(object : RequestListener<Drawable> {
-            override fun onLoadFailed(e: GlideException?, model: Any, target: Target<Drawable>, isFirstResource: Boolean) = false
-
-            override fun onResourceReady(resource: Drawable, model: Any, target: Target<Drawable>, dataSource: DataSource, isFirstResource: Boolean): Boolean {
-                setColors(resource)
-                return false
+        val request = ImageRequest.Builder(requireContext())
+            .data(imageURI)
+            .target { drawable ->
+                setColors(drawable)
             }
-        }).into(binding.albumArtwork)
+            .build()
+        ImageLoader(requireContext()).enqueue(request)
 
         // set time markers
         val songDurationMillis = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)

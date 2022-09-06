@@ -80,10 +80,6 @@ dependencies {
 
     implementation "com.google.android.material:material:$materialVersion"
 
-    implementation "com.github.bumptech.glide:glide:$glideVersion"
-    implementation "com.github.bumptech.glide:annotations:$glideVersion"
-    kapt "com.github.bumptech.glide:compiler:$glideVersion"
-
     implementation "com.google.android.exoplayer:exoplayer-core:$exoPlayerVersion"
     implementation "com.google.android.exoplayer:exoplayer-ui:$exoPlayerVersion"
     implementation "com.google.android.exoplayer:extension-mediasession:$exoPlayerVersion"
@@ -106,7 +102,8 @@ dependencies {
     implementation "androidx.compose.material3:material3-window-size-class:$composeMaterial3Version"
     implementation "com.google.android.material:compose-theme-adapter-3:$composeMaterial3ThemeAdapterVersion"
 
-    implementation "io.coil-kt:coil-compose:$coilComposeVersion"
+    implementation "io.coil-kt:coil:$coilVersion"
+    implementation "io.coil-kt:coil-compose:$coilVersion"
 
     testImplementation "junit:junit:$junitVersion"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"

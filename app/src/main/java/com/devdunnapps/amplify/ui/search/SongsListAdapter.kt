@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import coil.load
 import com.devdunnapps.amplify.MobileNavigationDirections
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.databinding.ItemSongBinding
@@ -32,10 +32,9 @@ class SongsListAdapter(
 
             val imageUrl = PlexUtils.getInstance(binding.songCardAlbumArtwork.context)
                 .getSizedImage(song.thumb, 200, 200)
-            Glide.with(binding.songCardAlbumArtwork)
-                .load(imageUrl)
-                .placeholder(R.drawable.ic_albums_black_24dp)
-                .into(binding.songCardAlbumArtwork)
+            binding.songCardAlbumArtwork.load(imageUrl) {
+                placeholder(R.drawable.ic_albums_black_24dp)
+            }
 
             binding.root.setOnClickListener { onClick(song) }
         }

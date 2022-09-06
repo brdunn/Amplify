@@ -5,9 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -24,7 +25,7 @@ import com.devdunnapps.amplify.databinding.FragmentArtistAllSongsBinding
 import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.ui.components.ErrorScreen
 import com.devdunnapps.amplify.ui.components.LoadingScreen
-import com.devdunnapps.amplify.ui.components.SongsList
+import com.devdunnapps.amplify.ui.components.SongItem
 import com.devdunnapps.amplify.utils.Resource
 import com.google.android.material.composethemeadapter3.Mdc3Theme
 import dagger.hilt.android.AndroidEntryPoint
@@ -97,7 +98,7 @@ private fun ArtistAllSongsScreen(
             LoadingScreen()
         }
         is Resource.Success -> {
-            SongsList(
+            ArtistAllSongsList(
                 songs = songs.data!!,
                 onItemClick = onClick,
                 onItemMenuClick = onItemMenuClick
@@ -105,6 +106,23 @@ private fun ArtistAllSongsScreen(
         }
         is Resource.Error -> {
             ErrorScreen()
+        }
+    }
+}
+
+@Composable
+fun ArtistAllSongsList(
+    songs: List<Song>,
+    onItemClick: (Song) -> Unit,
+    onItemMenuClick: (String) -> Unit
+) {
+    LazyColumn {
+        items(items = songs, key = { it.id }) { song ->
+            SongItem(
+                onClick = { onItemClick(song) },
+                song = song,
+                onItemMenuClick = onItemMenuClick
+            )
         }
     }
 }
