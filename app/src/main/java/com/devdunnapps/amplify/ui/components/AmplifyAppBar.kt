@@ -1,6 +1,5 @@
 package com.devdunnapps.amplify.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -16,21 +15,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.android.material.composethemeadapter3.Mdc3Theme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AmplifyAppBar(
     title: String,
     onNavigateToSearch: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    onNavigateToAbout: () -> Unit,
-    scrollBehavior: TopAppBarScrollBehavior? = null
+    onNavigateToAbout: () -> Unit
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
-    val backgroundColors = TopAppBarDefaults.centerAlignedTopAppBarColors()
-    val backgroundColor = backgroundColors.containerColor(
-        scrollFraction = scrollBehavior?.scrollFraction ?: 0f
-    ).value
 
-    Box(modifier = Modifier.background(backgroundColor)) {
+    Box {
         SmallTopAppBar(
             modifier = Modifier.statusBarsPadding(),
             title = { Text(text = title) },

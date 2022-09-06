@@ -58,6 +58,7 @@ class LoginInfoFragment: Fragment() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginInfoScreen(viewModel: LoginFlowViewModel) {
     var username by rememberSaveable { mutableStateOf("") }
