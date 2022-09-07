@@ -115,6 +115,7 @@ class NowPlayingFragment : Fragment() {
         val request = ImageRequest.Builder(requireContext())
             .data(imageURI)
             .target { drawable ->
+                binding.albumArtwork.setImageDrawable(drawable)
                 setColors(drawable)
             }
             .build()
