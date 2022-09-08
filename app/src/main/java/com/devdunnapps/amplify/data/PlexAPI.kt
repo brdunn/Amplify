@@ -61,8 +61,7 @@ interface PlexAPI {
         @Header("X-Plex-Token") userToken: String
     ): PlexModelDTO
 
-    @Headers("X-Plex-Container-Size: 1")
-    @GET("library/sections/{section}/all?album.subformat!=Compilation,Live&type=9")
+    @GET("library/sections/{section}/all?format=EP,Single&type=9&resolveTags=1&sort=year:desc,originallyAvailableAt:desc,artist.titleSort:desc,album.titleSort,album.index,album.id,album.originallyAvailableAt")
     suspend fun getArtistSinglesEPs(
         @Path("section") section: String,
         @Query("artist.id") key: String,
@@ -77,9 +76,10 @@ interface PlexAPI {
         @Header("X-Plex-Token") userToken: String
     ): PlexModelDTO
 
-    @GET("library/metadata/{key}/children")
+    @GET("library/sections/{section}/all?format!=EP,Single&type=9&resolveTags=1&sort=year:desc,originallyAvailableAt:desc,artist.titleSort:desc,album.titleSort,album.index,album.id,album.originallyAvailableAt")
     suspend fun getArtistAlbums(
-        @Path("key") key: String,
+        @Path("section") section: String,
+        @Query("artist.id") key: String,
         @Header("X-Plex-Token") userToken: String
     ): PlexModelDTO
 

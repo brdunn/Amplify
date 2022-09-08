@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="match_parent"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
     tools:context=".ui.main.MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -20,8 +19,8 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
-        android:layout_height="match_parent"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -32,34 +31,34 @@
                 android:id="@+id/artist_picture"
                 android:layout_width="match_parent"
                 android:layout_height="320dp"
+                android:foreground="@drawable/artist_picture_gradient"
                 android:scaleType="centerCrop"
-                app:layout_constraintTop_toTopOf="parent"
-                android:foreground="@drawable/artist_picture_gradient" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/artist_name"
+                style="@style/TextAppearance.MaterialComponents.Headline3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/artist_shuffle_btn"
                 android:layout_marginBottom="24dp"
+                android:ellipsize="end"
+                android:maxLines="2"
                 android:textAlignment="center"
                 android:textStyle="bold"
-                android:maxLines="2"
-                android:ellipsize="end"
-                tools:text="Ben Folds"
-                style="@style/TextAppearance.MaterialComponents.Headline3" />
+                app:layout_constraintBottom_toTopOf="@id/artist_shuffle_btn"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="Ben Folds" />
 
             <Button
                 android:id="@+id/artist_shuffle_btn"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/artist_picture"
+                android:text="@string/artist_shuffle_btn"
                 app:layout_constraintBottom_toBottomOf="@id/artist_picture"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:text="@string/artist_shuffle_btn" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/artist_picture" />
 
             <androidx.compose.ui.platform.ComposeView
                 android:id="@+id/artist_bio_compose"
@@ -70,105 +69,105 @@
 
             <TextView
                 android:id="@+id/artist_albums_header"
+                style="@style/TextAppearance.MaterialComponents.Headline4"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/artist_bio_compose"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/artist_see_all_albums_btn"
                 android:layout_marginStart="16dp"
-                android:textStyle="bold"
                 android:text="@string/artist_albums_header"
-                style="@style/TextAppearance.MaterialComponents.Headline4" />
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/artist_see_all_albums_btn"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/artist_bio_compose" />
 
             <Button
                 android:id="@+id/artist_see_all_albums_btn"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/artist_bio_compose"
-                app:layout_constraintStart_toEndOf="@id/artist_albums_header"
-                app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginEnd="8dp"
                 android:text="@string/artist_expand_section_button"
-                style="@style/Widget.Material3.Button.TextButton" />
+                app:layout_constraintBottom_toBottomOf="@id/artist_albums_header"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/artist_albums_header" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/artist_albums_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false"
-                app:layout_constraintTop_toBottomOf="@id/artist_albums_header"
                 android:orientation="horizontal"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintTop_toBottomOf="@id/artist_albums_header"
                 tools:itemCount="5"
                 tools:listitem="@layout/item_artist_fragment_album_card" />
 
             <TextView
                 android:id="@+id/artist_singles_eps_header"
+                style="@style/TextAppearance.MaterialComponents.Headline4"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/artist_albums_recycler_view"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/artist_see_all_eps_singles_btn"
                 android:layout_marginStart="16dp"
-                android:textStyle="bold"
                 android:text="@string/singles_and_eps"
-                style="@style/TextAppearance.MaterialComponents.Headline4" />
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/artist_see_all_eps_singles_btn"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/artist_albums_recycler_view" />
 
             <Button
                 android:id="@+id/artist_see_all_eps_singles_btn"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/artist_albums_recycler_view"
-                app:layout_constraintStart_toEndOf="@id/artist_singles_eps_header"
-                app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginEnd="8dp"
                 android:text="@string/artist_expand_section_button"
-                style="@style/Widget.Material3.Button.TextButton" />
+                app:layout_constraintBottom_toBottomOf="@id/artist_singles_eps_header"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/artist_singles_eps_header" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/artist_eps_singles_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false"
-                app:layout_constraintTop_toBottomOf="@id/artist_singles_eps_header"
                 android:orientation="horizontal"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintTop_toBottomOf="@id/artist_singles_eps_header"
                 tools:itemCount="5"
                 tools:listitem="@layout/item_artist_fragment_album_card" />
 
             <TextView
                 android:id="@+id/artist_top_songs_header"
+                style="@style/TextAppearance.MaterialComponents.Headline4"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/artist_eps_singles_recycler_view"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/artist_see_all_songs_btn"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="32dp"
-                android:textStyle="bold"
                 android:text="@string/artist_top_songs_header"
-                style="@style/TextAppearance.MaterialComponents.Headline4" />
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/artist_see_all_songs_btn"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/artist_eps_singles_recycler_view" />
 
             <Button
                 android:id="@+id/artist_see_all_songs_btn"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/artist_eps_singles_recycler_view"
-                app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginEnd="8dp"
-                android:layout_marginTop="32dp"
                 android:text="@string/artist_expand_section_button"
-                style="@style/Widget.Material3.Button.TextButton" />
+                app:layout_constraintBottom_toBottomOf="@id/artist_top_songs_header"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/artist_top_songs_header" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/artist_top_songs_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                app:layout_constraintTop_toBottomOf="@id/artist_top_songs_header"
                 android:layout_marginTop="16dp"
+                android:nestedScrollingEnabled="false"
                 android:orientation="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintTop_toBottomOf="@id/artist_top_songs_header"
                 tools:itemCount="5"
                 tools:listitem="@layout/item_song" />
 

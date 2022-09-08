@@ -118,9 +118,9 @@ class PlexRepositoryImpl @Inject constructor(
     override fun getArtistSinglesEPs(artistKey: String) = flow {
         emit(Resource.Loading())
         try {
-            val singlesEPs = api.getArtistSinglesEPs(section, artistKey, userToken).mediaContainer.metadata?.map { it.toAlbum() } ?: emptyList()
-            val albums = api.getArtistAlbums(artistKey, userToken).mediaContainer.metadata?.map { it.toAlbum() } ?: emptyList()
-            emit(Resource.Success(singlesEPs.filter { !albums.contains(it) }))
+            val singlesEPs = api.getArtistSinglesEPs(section, artistKey, userToken).mediaContainer.metadata
+                ?.map { it.toAlbum() } ?: emptyList()
+            emit(Resource.Success(singlesEPs))
         } catch(e: HttpException) {
             emit(Resource.Error("Oops, something went wrong!"))
         } catch(e: IOException) {
@@ -131,7 +131,8 @@ class PlexRepositoryImpl @Inject constructor(
     override fun getArtistAlbums(key: String): Flow<Resource<List<Album>>> = flow {
         emit(Resource.Loading())
         try {
-            val albums = api.getArtistAlbums(key, userToken).mediaContainer.metadata?.map { it.toAlbum() } ?: emptyList()
+            val albums = api.getArtistAlbums(section, key, userToken).mediaContainer.metadata
+                ?.map { it.toAlbum() } ?: emptyList()
             emit(Resource.Success(albums))
         } catch(e: HttpException) {
             emit(Resource.Error("Oops, something went wrong!"))
