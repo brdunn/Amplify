@@ -14,6 +14,10 @@ import com.devdunnapps.amplify.domain.usecases.GetArtistUseCase
 import com.devdunnapps.amplify.utils.MusicServiceConnection
 import com.devdunnapps.amplify.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import java.io.Serializable
 import javax.inject.Inject
 
@@ -30,13 +34,36 @@ class ArtistViewModel @Inject constructor(
 
     private val artistId: String = savedStateHandle["artistKey"]!!
 
-    val artistSongs: LiveData<Resource<List<Song>>> = getArtistSongsUseCase(artistId).asLiveData()
+    private val _artistSongs = MutableStateFlow<Resource<List<Song>>>(Resource.Loading())
+    val artistSongs = _artistSongs.asStateFlow()
 
-    val artistSinglesEPs = getArtistSinglesEPsUseCase(artistId).asLiveData()
+    private val _artistSinglesEPs = MutableStateFlow<Resource<List<Album>>>(Resource.Loading())
+    val artistSinglesEPs = _artistSinglesEPs.asStateFlow()
 
-    val artistAlbums: LiveData<Resource<List<Album>>> = getArtistAlbumsUseCase(artistId).asLiveData()
+    private val _artistAlbums = MutableStateFlow<Resource<List<Album>>>(Resource.Loading())
+    val artistAlbums = _artistAlbums.asStateFlow()
 
-    val artist: LiveData<Resource<Artist>> = getArtistUseCase(artistId).asLiveData()
+    val artist = getArtistUseCase(artistId).asLiveData()
+
+    init {
+        viewModelScope.launch {
+            getArtistSongsUseCase(artistId).collect {
+                _artistSongs.emit(it)
+            }
+        }
+
+        viewModelScope.launch {
+            getArtistAlbumsUseCase(artistId).collect {
+                _artistAlbums.emit(it)
+            }
+        }
+
+        viewModelScope.launch {
+            getArtistSinglesEPsUseCase(artistId).collect {
+                _artistSinglesEPs.emit(it)
+            }
+        }
+    }
 
     fun playSong(song: Song) {
         val bundle = Bundle()
@@ -49,9 +76,10 @@ class ArtistViewModel @Inject constructor(
         musicServiceConnection.transportControls.sendCustomAction("play_songs_now", collectAlbumBundle())
     }
 
-    private fun collectAlbumBundle(): Bundle {
+    private fun collectAlbumBundle(): Bundle? {
+        val currentValue = _artistSongs.value as? Resource.Success ?: return null
         return Bundle().apply {
-            putSerializable("songs", artistSongs.value!!.data as Serializable)
+            putSerializable("songs", currentValue.data as Serializable)
         }
     }
 }

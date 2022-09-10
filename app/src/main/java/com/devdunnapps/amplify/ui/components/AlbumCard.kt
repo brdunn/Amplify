@@ -1,11 +1,10 @@
 package com.devdunnapps.amplify.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,11 +13,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.LocalImageLoader
-import coil.compose.rememberImagePainter
+import coil.compose.AsyncImage
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.domain.models.Album
 import com.devdunnapps.amplify.utils.PlexUtils
@@ -32,25 +31,20 @@ fun AlbumCard(onClick: () -> Unit, album: Album) {
     ) {
         val context = LocalContext.current
         val imageUrl = remember { PlexUtils.getInstance(context).getSizedImage(album.thumb, 300, 300) }
-        Image(
+        AsyncImage(
             modifier = Modifier
                 .aspectRatio(1f)
                 .clip(RoundedCornerShape(6.dp)),
-            painter = rememberImagePainter(
-                data = imageUrl,
-                imageLoader = LocalImageLoader.current,
-                builder = {
-                    placeholder(R.drawable.ic_albums_black_24dp)
-                    error(R.drawable.ic_albums_black_24dp)
-                }
-            ),
-            contentDescription = "Image of ${album.title}",
+            model = imageUrl,
+            placeholder = painterResource(R.drawable.ic_albums_black_24dp),
+            error = painterResource(R.drawable.ic_albums_black_24dp),
+            contentDescription = null,
             contentScale = ContentScale.Crop
         )
 
         Text(
             text = album.title,
-            style = MaterialTheme.typography.labelSmall,
+            style = MaterialTheme.typography.bodySmall,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1
         )

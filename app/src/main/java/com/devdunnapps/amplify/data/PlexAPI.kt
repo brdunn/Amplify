@@ -73,6 +73,7 @@ interface PlexAPI {
     suspend fun getArtistSongs(
         @Path("section") section: String,
         @Query("artist.id") key: String,
+        @Query("limit") number: Int,
         @Header("X-Plex-Token") userToken: String
     ): PlexModelDTO
 

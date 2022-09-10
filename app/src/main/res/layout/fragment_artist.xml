@@ -67,109 +67,23 @@
                 android:layout_marginTop="36dp"
                 app:layout_constraintTop_toBottomOf="@id/artist_shuffle_btn" />
 
-            <TextView
-                android:id="@+id/artist_albums_header"
-                style="@style/TextAppearance.MaterialComponents.Headline4"
-                android:layout_width="0dp"
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/artist_albums_compose_view"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:text="@string/artist_albums_header"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@id/artist_see_all_albums_btn"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/artist_bio_compose" />
 
-            <Button
-                android:id="@+id/artist_see_all_albums_btn"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="@string/artist_expand_section_button"
-                app:layout_constraintBottom_toBottomOf="@id/artist_albums_header"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/artist_albums_header" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/artist_albums_recycler_view"
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/artist_eps_singles_compose_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                android:orientation="horizontal"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintTop_toBottomOf="@id/artist_albums_header"
-                tools:itemCount="5"
-                tools:listitem="@layout/item_artist_fragment_album_card" />
+                app:layout_constraintTop_toBottomOf="@id/artist_albums_compose_view" />
 
-            <TextView
-                android:id="@+id/artist_singles_eps_header"
-                style="@style/TextAppearance.MaterialComponents.Headline4"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:text="@string/singles_and_eps"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@id/artist_see_all_eps_singles_btn"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/artist_albums_recycler_view" />
-
-            <Button
-                android:id="@+id/artist_see_all_eps_singles_btn"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="@string/artist_expand_section_button"
-                app:layout_constraintBottom_toBottomOf="@id/artist_singles_eps_header"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/artist_singles_eps_header" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/artist_eps_singles_recycler_view"
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/artist_top_songs_compose_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                android:orientation="horizontal"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintTop_toBottomOf="@id/artist_singles_eps_header"
-                tools:itemCount="5"
-                tools:listitem="@layout/item_artist_fragment_album_card" />
-
-            <TextView
-                android:id="@+id/artist_top_songs_header"
-                style="@style/TextAppearance.MaterialComponents.Headline4"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="32dp"
-                android:text="@string/artist_top_songs_header"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@id/artist_see_all_songs_btn"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/artist_eps_singles_recycler_view" />
-
-            <Button
-                android:id="@+id/artist_see_all_songs_btn"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="@string/artist_expand_section_button"
-                app:layout_constraintBottom_toBottomOf="@id/artist_top_songs_header"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/artist_top_songs_header" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/artist_top_songs_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:nestedScrollingEnabled="false"
-                android:orientation="vertical"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintTop_toBottomOf="@id/artist_top_songs_header"
-                tools:itemCount="5"
-                tools:listitem="@layout/item_song" />
+                app:layout_constraintTop_toBottomOf="@id/artist_eps_singles_compose_view" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

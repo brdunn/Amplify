@@ -10,5 +10,6 @@ class GetArtistSongsUseCase @Inject constructor(
     private val repository: PlexRepository
 ){
 
-    operator fun invoke(artistKey: String): Flow<Resource<List<Song>>> = repository.getArtistSongs(artistKey)
+    operator fun invoke(artistKey: String, number: Int = -1): Flow<Resource<List<Song>>> =
+        repository.getArtistSongs(artistKey, number)
 }

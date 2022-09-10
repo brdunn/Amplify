@@ -28,6 +28,7 @@
     <string name="artist_shuffle_btn">Shuffle</string>
     <string name="artist_expand_section_button">See All</string>
     <string name="artist_albums_header">Albums</string>
+    <string name="artist_singles_eps_header">Singles &amp; EPs</string>
     <string name="artist_top_songs_header">Top Songs</string>
 
     <!-- Artist Albums horizontal list -->
@@ -113,4 +114,5 @@
     </plurals>
 
     <string name="singles_and_eps">Singles &amp; EPs</string>
+    <string name="view_all">View All</string>
 </resources>

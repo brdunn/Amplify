@@ -25,7 +25,7 @@ interface PlexRepository {
 
     fun getPlaylistSongs(key: String): Flow<Resource<List<Song>>>
 
-    fun getArtistSongs(artistKey: String): Flow<Resource<List<Song>>>
+    fun getArtistSongs(artistKey: String, number: Int): Flow<Resource<List<Song>>>
 
     fun getArtistSinglesEPs(artistKey: String): Flow<Resource<List<Album>>>
 

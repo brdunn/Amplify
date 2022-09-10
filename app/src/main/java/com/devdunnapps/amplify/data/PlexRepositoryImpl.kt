@@ -99,10 +99,10 @@ class PlexRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getArtistSongs(artistKey: String): Flow<Resource<List<Song>>> = flow {
+    override fun getArtistSongs(artistKey: String, number: Int): Flow<Resource<List<Song>>> = flow {
         emit(Resource.Loading())
         try {
-            val metadata = api.getArtistSongs(section, artistKey, userToken).mediaContainer.metadata
+            val metadata = api.getArtistSongs(section, artistKey, number, userToken).mediaContainer.metadata
             if (metadata == null) {
                 emit(Resource.Error("Artist with specified ID does not exist"))
                 return@flow
