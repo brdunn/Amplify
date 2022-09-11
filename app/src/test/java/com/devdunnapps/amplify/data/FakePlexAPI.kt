@@ -18,7 +18,7 @@ class FakePlexAPI: Interceptor {
             uri.endsWith("playlists?playlistType=audio&smart=false") -> GET_PLAYLISTS_JSON
             uri.endsWith("playlists/$TEST_PLAYLIST_ID") -> GET_PLAYLIST_JSON
             uri.endsWith("playlists/$TEST_PLAYLIST_ID/items") -> GET_PLAYLIST_SONGS_JSON
-            uri.endsWith("library/sections/3/all?group=title&sort=ratingCount:desc&type=10&artist.id=$TEST_ARTIST_ID") -> GET_ARTIST_SONGS_JSON
+            uri.endsWith("library/sections/3/all?group=title&sort=ratingCount:desc&type=10&artist.id=$TEST_ARTIST_ID&limit=-1") -> GET_ARTIST_SONGS_JSON
             uri.endsWith("identity") -> GET_IDENTITY_JSON
             uri.endsWith("playlists/$TEST_PLAYLIST_ID/items?uri=server://$TEST_SERVER_ID/com.plexapp.plugins.library/library/metadata/$TEST_SONG_ID") -> GET_PLAYLIST_JSON
             uri.endsWith("playlists/$TEST_PLAYLIST_ID") -> ""
