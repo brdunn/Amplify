@@ -30,14 +30,4 @@
 
     <color name="seed">#018786</color>
     <color name="error">#BA1B1B</color>
-
-    <!-- Artist -->
-    <color name="artist_gradient_start">#FFFFFFFF</color>
-    <color name="artist_gradient_middle">#66FFFFFF</color>
-    <color name="artist_gradient_end">#00FFFFFF</color>
-
-    <!-- Album -->
-    <color name="album_gradient_start">#FFFFFFFF</color>
-    <color name="album_gradient_middle">#99FFFFFF</color>
-    <color name="album_gradient_end">#44FFFFFF</color>
 </resources>

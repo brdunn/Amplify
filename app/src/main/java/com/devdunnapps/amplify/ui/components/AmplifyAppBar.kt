@@ -1,6 +1,5 @@
 package com.devdunnapps.amplify.ui.components
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.DropdownMenu
@@ -25,38 +24,38 @@ fun AmplifyAppBar(
 ) {
     var isMenuExpanded by remember { mutableStateOf(false) }
 
-    Box {
-        SmallTopAppBar(
-            modifier = Modifier.statusBarsPadding(),
-            title = { Text(text = title) },
-            actions = {
-                IconButton(onClick = onNavigateToSearch) {
-                    Icon(
-                        imageVector = Icons.Filled.Search,
-                        contentDescription = "Search"
-                    )
+    TopAppBar(
+        modifier = Modifier.statusBarsPadding(),
+        title = { Text(text = title) },
+        actions = {
+            IconButton(onClick = onNavigateToSearch) {
+                Icon(
+                    imageVector = Icons.Filled.Search,
+                    contentDescription = "Search"
+                )
+            }
+
+            IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = "More options"
+                )
+            }
+
+            DropdownMenu(
+                expanded = isMenuExpanded,
+                onDismissRequest = { isMenuExpanded = false },
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
+                DropdownMenuItem(onClick = onNavigateToSettings) {
+                    Text(text = "Settings")
                 }
-                IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = "More options"
-                    )
-                }
-                DropdownMenu(
-                    expanded = isMenuExpanded,
-                    onDismissRequest = { isMenuExpanded = false },
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                ) {
-                    DropdownMenuItem(onClick = onNavigateToSettings) {
-                        Text(text = "Settings")
-                    }
-                    DropdownMenuItem(onClick = onNavigateToAbout) {
-                        Text(text = "About")
-                    }
+                DropdownMenuItem(onClick = onNavigateToAbout) {
+                    Text(text = "About")
                 }
             }
-        )
-    }
+        }
+    )
 }
 
 @Preview

@@ -43,7 +43,8 @@ class ArtistViewModel @Inject constructor(
     private val _artistAlbums = MutableStateFlow<Resource<List<Album>>>(Resource.Loading())
     val artistAlbums = _artistAlbums.asStateFlow()
 
-    val artist = getArtistUseCase(artistId).asLiveData()
+    private val _artist = MutableStateFlow<Resource<Artist>>(Resource.Loading())
+    val artist = _artist.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -61,6 +62,12 @@ class ArtistViewModel @Inject constructor(
         viewModelScope.launch {
             getArtistSinglesEPsUseCase(artistId).collect {
                 _artistSinglesEPs.emit(it)
+            }
+        }
+
+        viewModelScope.launch {
+            getArtistUseCase(artistId).collect {
+                _artist.emit(it)
             }
         }
     }

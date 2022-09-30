@@ -1,34 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    tools:layout_width="150dp"
-    style="?attr/materialCardViewElevatedStyle">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:layout_width="150dp">
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/artist_card_picture"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        tools:src="@drawable/ic_artists_black_24dp" />
 
-        <ImageView
-            android:id="@+id/artist_card_picture"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            tools:src="@drawable/ic_artists_black_24dp"/>
+    <TextView
+        android:id="@+id/artist_card_artist"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        tools:text="Artist Name" />
 
-        <TextView
-            android:id="@+id/artist_card_artist"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="4dp"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:textSize="18sp"
-            tools:text="Artist Name" />
-
-    </LinearLayout>
-</com.google.android.material.card.MaterialCardView>
+</LinearLayout>

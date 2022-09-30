@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -12,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -39,8 +42,8 @@ fun ArtistCard(onClick: () -> Unit, artist: Artist) {
                 .aspectRatio(1f)
                 .clip(CircleShape),
             model = imageUrl,
-            placeholder = painterResource(R.drawable.ic_artists_black_24dp),
-            error = painterResource(R.drawable.ic_artists_black_24dp),
+            placeholder = rememberVectorPainter(Icons.Filled.AccountCircle),
+            error = rememberVectorPainter(Icons.Filled.AccountCircle),
             contentDescription = null,
             contentScale = ContentScale.Crop
         )

@@ -1,7 +1,5 @@
 package com.devdunnapps.amplify.ui.playlists
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devdunnapps.amplify.domain.models.Playlist
@@ -9,6 +7,8 @@ import com.devdunnapps.amplify.domain.usecases.CreatePlaylistUseCase
 import com.devdunnapps.amplify.domain.usecases.GetPlaylistsUseCase
 import com.devdunnapps.amplify.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,8 +18,8 @@ class PlaylistsViewModel @Inject constructor(
     private val createPlaylistUseCase: CreatePlaylistUseCase
 ) : ViewModel() {
 
-    private val _playlists = MutableLiveData<Resource<List<Playlist>>>()
-    val playlists: LiveData<Resource<List<Playlist>>> = _playlists
+    private val _playlists = MutableStateFlow<Resource<List<Playlist>>>(Resource.Loading())
+    val playlists = _playlists.asStateFlow()
 
     init {
         gatherPlaylists()

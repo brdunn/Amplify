@@ -27,15 +27,4 @@
     <color name="md_theme_inverseOnSurface">#191C1C</color>
     <color name="md_theme_inverseSurface">#E0E3E2</color>
     <color name="md_theme_primaryInverse">#006A69</color>
-
-
-    <!-- Artist -->
-    <color name="artist_gradient_start">#FF121212</color>
-    <color name="artist_gradient_middle">#66121212</color>
-    <color name="artist_gradient_end">#00121212</color>
-
-    <!-- Album -->
-    <color name="album_gradient_start">#FF121212</color>
-    <color name="album_gradient_middle">#99121212</color>
-    <color name="album_gradient_end">#44121212</color>
 </resources>

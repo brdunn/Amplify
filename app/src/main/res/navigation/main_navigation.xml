@@ -83,6 +83,10 @@
         <argument
             android:name="artistId"
             app:argType="string" />
+        <argument
+            android:name="isSinglesEPs"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </fragment>
 
     <fragment

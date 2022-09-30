@@ -6,10 +6,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.devdunnapps.amplify.domain.models.Album
 import com.devdunnapps.amplify.domain.usecases.GetArtistAlbumsUseCase
+import com.devdunnapps.amplify.domain.usecases.GetArtistSinglesEPsUseCase
 import com.devdunnapps.amplify.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -17,6 +19,7 @@ import javax.inject.Inject
 class ArtistAllAlbumsViewModel @Inject constructor(
     application: Application,
     getArtistAlbumsUseCase: GetArtistAlbumsUseCase,
+    getArtistSinglesEPsUseCase: GetArtistSinglesEPsUseCase,
     savedStateHandle: SavedStateHandle
 ) : AndroidViewModel(application) {
 
@@ -27,8 +30,15 @@ class ArtistAllAlbumsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            getArtistAlbumsUseCase(artistId).collect {
-                _artistAlbums.emit(it)
+            val shouldLoadSinglesEPs: Boolean = savedStateHandle["isSinglesEPs"] ?: false
+            if (shouldLoadSinglesEPs) {
+                getArtistSinglesEPsUseCase(artistId).collect {
+                    _artistAlbums.emit(it)
+                }
+            } else {
+                getArtistAlbumsUseCase(artistId).collect {
+                    _artistAlbums.emit(it)
+                }
             }
         }
     }

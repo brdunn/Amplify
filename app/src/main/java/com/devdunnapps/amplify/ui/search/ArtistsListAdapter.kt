@@ -25,7 +25,8 @@ class ArtistsListAdapter(
             val imageUrl = PlexUtils.getInstance(binding.artistCardPicture.context)
                 .addKeyAndAddress(artist.thumb)
             binding.artistCardPicture.load(imageUrl) {
-                placeholder(R.drawable.ic_albums_black_24dp)
+                placeholder(R.drawable.ic_artists_black_24dp)
+                error(R.drawable.ic_artists_black_24dp)
             }
 
             binding.root.setOnClickListener { onClick(artist) }

@@ -10,8 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -61,8 +60,8 @@ class PlaylistsFragment : Fragment() {
         val navBackStackEntry = findNavController().getBackStackEntry(R.id.navigation_playlists)
 
         val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME && navBackStackEntry.savedStateHandle.contains("refreshData")) {
-                val playlistsShouldBeRefreshed = navBackStackEntry.savedStateHandle.get<Boolean>("refreshData")!!
+            if (event == Lifecycle.Event.ON_RESUME) {
+                val playlistsShouldBeRefreshed = navBackStackEntry.savedStateHandle.get<Boolean>("refreshData") ?: false
                 if (playlistsShouldBeRefreshed) {
                     viewModel.gatherPlaylists()
                 }
@@ -126,8 +125,7 @@ class PlaylistsFragment : Fragment() {
 
         playlistName.doAfterTextChanged {
             val playlistNameIsNotEmpty = playlistName.text.isNotEmpty()
-            createPlaylistDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled =
-                playlistNameIsNotEmpty
+            createPlaylistDialog.getButton(AlertDialog.BUTTON_POSITIVE).isEnabled = playlistNameIsNotEmpty
         }
     }
 }
@@ -138,14 +136,13 @@ private fun PlaylistsScreen(
     onClick: (String) -> Unit,
     onItemMenuClick: (String) -> Unit
 ) {
-    val playlists by viewModel.playlists.observeAsState(Resource.Loading())
-    when (playlists) {
+    when (val playlists = viewModel.playlists.collectAsState().value) {
         is Resource.Loading -> {
             LoadingScreen()
         }
         is Resource.Success -> {
             PlaylistList(
-                playlists = (playlists as Resource.Success<List<Playlist>>).data!!,
+                playlists = playlists.data!!,
                 onItemClick = onClick,
                 onItemMenuClick = onItemMenuClick
             )

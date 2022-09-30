@@ -34,6 +34,7 @@ class SongsListAdapter(
                 .getSizedImage(song.thumb, 200, 200)
             binding.songCardAlbumArtwork.load(imageUrl) {
                 placeholder(R.drawable.ic_albums_black_24dp)
+                error(R.drawable.ic_albums_black_24dp)
             }
 
             binding.root.setOnClickListener { onClick(song) }

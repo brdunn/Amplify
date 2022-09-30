@@ -20,12 +20,13 @@ import com.google.android.material.composethemeadapter3.Mdc3Theme
 @Composable
 fun ExpandableText(
     text: String?,
+    modifier: Modifier = Modifier,
     collapsedLines: Int = 3
 ) {
     if (text.isNullOrBlank()) return
 
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         var isExpanded by remember { mutableStateOf(false) }

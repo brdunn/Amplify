@@ -26,6 +26,7 @@ class AlbumsListAdapter(
                 .getInstance(binding.albumCardArtwork.context).addKeyAndAddress(album.thumb)
             binding.albumCardArtwork.load(imageUrl) {
                 placeholder(R.drawable.ic_albums_black_24dp)
+                error(R.drawable.ic_albums_black_24dp)
             }
 
             binding.root.setOnClickListener { onClick(album) }
