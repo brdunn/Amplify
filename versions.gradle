@@ -1,6 +1,6 @@
 ext {
     agpVersion = "7.2.1"
-    kotlinVersion = "1.7.10"
+    kotlinVersion = "1.7.20"
 
     retrofitVersion = "2.9.0"
     coilVersion = "2.2.0"
@@ -24,11 +24,11 @@ ext {
 
     // compose
     composeVersion = "1.2.1"
-    composeCompilerVersion = "1.3.1"
+    composeCompilerVersion = "1.3.2"
     composePagingVersion = "1.0.0-alpha16"
     composeActivityVersion = "1.6.0"
-    composeMaterial3Version = "1.0.0-beta03"
-    composeMaterial3ThemeAdapterVersion = "1.0.19"
+    composeMaterial3Version = "1.0.0-rc01"
+    composeMaterial3ThemeAdapterVersion = "1.0.20"
 
     // google
     materialVersion = "1.7.0-rc01"

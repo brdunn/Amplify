@@ -106,6 +106,7 @@
 
     <!-- Search Fragment -->
     <string name="search_hint">Search Library</string>
+    <string name="search_zero_state_title">No Search Results</string>
 
     <!-- SongMenuBottomSheetFragment -->
     <plurals name="song_play_count">

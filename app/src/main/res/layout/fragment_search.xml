@@ -45,19 +45,10 @@
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginStart="16dp"
                 android:textStyle="bold"
-                android:text="Songs"
-                style="@style/TextAppearance.MaterialComponents.Headline5"/>
-
-            <TextView
-                android:id="@+id/search_results_songs_no_results"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/search_results_songs_header"
-                android:layout_marginStart="16dp"
-                android:text="No songs found"
-                tools:visibility="invisible"
-                style="@style/TextAppearance.MaterialComponents.Body1"/>
+                android:text="@string/title_songs"
+                android:visibility="gone"
+                tools:visibility="visible"
+                style="@style/TextAppearance.Material3.HeadlineSmall"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/search_results_songs"
@@ -78,19 +69,10 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:textStyle="bold"
-                android:text="Albums"
-                style="@style/TextAppearance.MaterialComponents.Headline5"/>
-
-            <TextView
-                android:id="@+id/search_results_albums_no_results"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/search_results_albums_header"
-                android:layout_marginStart="16dp"
-                android:text="No albums found"
-                tools:visibility="invisible"
-                style="@style/TextAppearance.MaterialComponents.Body1"/>
+                android:text="@string/title_albums"
+                android:visibility="gone"
+                tools:visibility="visible"
+                style="@style/TextAppearance.Material3.HeadlineSmall"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/search_results_albums"
@@ -112,19 +94,10 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:textStyle="bold"
-                android:text="Artists"
-                style="@style/TextAppearance.MaterialComponents.Headline5"/>
-
-            <TextView
-                android:id="@+id/search_results_artists_no_results"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/search_results_artists_header"
-                android:layout_marginStart="16dp"
-                android:text="No artists found"
-                tools:visibility="invisible"
-                style="@style/TextAppearance.MaterialComponents.Body1"/>
+                android:text="@string/title_playlists"
+                android:visibility="gone"
+                tools:visibility="visible"
+                style="@style/TextAppearance.Material3.HeadlineSmall"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/search_results_artists"
@@ -146,19 +119,10 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:textStyle="bold"
-                android:text="Playlists"
-                style="@style/TextAppearance.MaterialComponents.Headline5"/>
-
-            <TextView
-                android:id="@+id/search_results_playlists_no_results"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/search_results_playlists_header"
-                android:layout_marginStart="16dp"
-                android:text="No playlists found"
-                tools:visibility="invisible"
-                style="@style/TextAppearance.MaterialComponents.Body1"/>
+                android:text="@string/title_playlists"
+                android:visibility="gone"
+                tools:visibility="visible"
+                style="@style/TextAppearance.Material3.HeadlineSmall"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/search_results_playlists"
@@ -169,6 +133,20 @@
                 tools:listitem="@layout/item_playlist"
                 tools:itemCount="3"
                 android:nestedScrollingEnabled="false"/>
+
+            <TextView
+                android:id="@+id/search_empty_results"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:textStyle="bold"
+                android:text="@string/search_zero_state_title"
+                android:visibility="visible"
+                tools:visibility="invisible"
+                style="@style/TextAppearance.Material3.HeadlineMedium"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

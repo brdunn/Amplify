@@ -51,40 +51,45 @@ class SearchFragment: Fragment() {
 
         viewModel.searchResults.observe(viewLifecycleOwner) { result ->
             if (result is Resource.Success) {
-                val songs = result.data!!.songs
-                binding.searchResultsSongsNoResults.visibility = if (songs.isEmpty()) View.VISIBLE else View.INVISIBLE
+                val data = result.data ?: return@observe
 
-                val songsListAdapter = SongsListAdapter(songs) { song ->
+                val zeroStateVisible =
+                    data.songs.isEmpty() && data.albums.isEmpty() && data.artists.isEmpty() && data.playlists.isEmpty()
+
+                binding.searchEmptyResults.visibility = if (zeroStateVisible) View.INVISIBLE else View.INVISIBLE
+
+                val songs = result.data.songs
+                binding.searchResultsSongsHeader.visibility = if (songs.isEmpty()) View.GONE else View.VISIBLE
+
+                binding.searchResultsSongs.adapter = SongsListAdapter(songs) { song ->
                     viewModel.playSong(song)
                 }
-                binding.searchResultsSongs.adapter = songsListAdapter
 
                 val albums = result.data.albums
-                binding.searchResultsAlbumsNoResults.visibility = if (albums.isEmpty()) View.VISIBLE else View.INVISIBLE
+                binding.searchResultsAlbumsHeader.visibility = if (albums.isEmpty()) View.GONE else View.VISIBLE
 
-                val albumsListAdapter = AlbumsListAdapter(albums) { album ->
+                binding.searchResultsAlbums.adapter = AlbumsListAdapter(albums) { album ->
                     val action = MobileNavigationDirections.actionGlobalNavigationAlbum(album.id)
                     findNavController().navigate(action)
                 }
-                binding.searchResultsAlbums.adapter = albumsListAdapter
 
                 val artists = result.data.artists
-                binding.searchResultsArtistsNoResults.visibility = if (artists.isEmpty()) View.VISIBLE else View.INVISIBLE
+                binding.searchResultsArtistsHeader.visibility =
+                    if (artists.isEmpty()) View.GONE else View.VISIBLE
 
-                val artistsListAdapter = ArtistsListAdapter(artists) { artist ->
+                binding.searchResultsArtists.adapter = ArtistsListAdapter(artists) { artist ->
                     val action = MobileNavigationDirections.actionGlobalNavigationArtist(artist.id)
                     findNavController().navigate(action)
                 }
-                binding.searchResultsArtists.adapter = artistsListAdapter
 
                 val playlists = result.data.playlists
-                binding.searchResultsPlaylistsNoResults.visibility = if (playlists.isEmpty()) View.VISIBLE else View.INVISIBLE
+                binding.searchResultsPlaylistsHeader.visibility =
+                    if (playlists.isEmpty()) View.GONE else View.VISIBLE
 
-                val playlistsListAdapter = PlaylistsAdapter(playlists) { playlist ->
+                binding.searchResultsPlaylists.adapter = PlaylistsAdapter(playlists) { playlist ->
                     val action = SearchFragmentDirections.actionSearchFragmentToNavigationPlaylist(playlist.id)
                     findNavController().navigate(action)
                 }
-                binding.searchResultsPlaylists.adapter = playlistsListAdapter
             }
         }
 
@@ -95,7 +100,7 @@ class SearchFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // automatically show the software keyboard
-        val imm: InputMethodManager = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.showSoftInput(binding.search, InputMethodManager.SHOW_IMPLICIT)
     }
 
