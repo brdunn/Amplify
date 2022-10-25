@@ -11,6 +11,8 @@ import com.devdunnapps.amplify.utils.MusicServiceConnection
 import com.devdunnapps.amplify.utils.Resource
 import com.devdunnapps.amplify.utils.WhenToPlay
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.io.Serializable
@@ -29,8 +31,8 @@ class PlaylistViewModel @Inject constructor(
     private val _playlist = MutableLiveData<Resource<Playlist>>()
     val playlist: LiveData<Resource<Playlist>> = _playlist
 
-    private val _playlistSongs = MutableLiveData<Resource<List<Song>>>()
-    val playlistSongs: LiveData<Resource<List<Song>>> = _playlistSongs
+    private val _playlistSongs: MutableStateFlow<Resource<List<Song>>> = MutableStateFlow(Resource.Loading())
+    val playlistSongs = _playlistSongs.asStateFlow()
 
     init {
         gatherPlaylist()

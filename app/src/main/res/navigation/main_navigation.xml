@@ -8,25 +8,25 @@
     <fragment
         android:id="@+id/navigation_artists"
         android:name="com.devdunnapps.amplify.ui.artists.ArtistsFragment"
-        android:label="@string/title_artists"
+        android:label="@string/artists"
         tools:layout="@layout/fragment_artists" />
 
     <fragment
         android:id="@+id/navigation_albums"
         android:name="com.devdunnapps.amplify.ui.albums.AlbumsFragment"
-        android:label="@string/title_albums"
+        android:label="@string/albums"
         tools:layout="@layout/fragment_albums" />
 
     <fragment
         android:id="@+id/navigation_songs"
         android:name="com.devdunnapps.amplify.ui.songs.SongsFragment"
-        android:label="@string/title_songs"
+        android:label="@string/songs"
         tools:layout="@layout/fragment_songs" />
 
     <fragment
         android:id="@+id/navigation_playlists"
         android:name="com.devdunnapps.amplify.ui.playlists.PlaylistsFragment"
-        android:label="@string/title_playlists"
+        android:label="@string/playlists"
         tools:layout="@layout/fragment_playlists" >
         <action
             android:id="@+id/action_navigation_playlists_to_playlistFragment"

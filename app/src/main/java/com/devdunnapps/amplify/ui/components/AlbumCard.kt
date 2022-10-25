@@ -24,9 +24,9 @@ import com.devdunnapps.amplify.utils.PlexUtils
 import com.google.android.material.composethemeadapter3.Mdc3Theme
 
 @Composable
-fun AlbumCard(onClick: () -> Unit, album: Album) {
+fun AlbumCard(onClick: () -> Unit, album: Album, modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier.clickable { onClick() },
+        modifier = modifier.clickable { onClick() },
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         val context = LocalContext.current

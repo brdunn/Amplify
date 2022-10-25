@@ -5,6 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.runtime.collectAsState
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
@@ -12,19 +16,22 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.databinding.FragmentPlaylistBinding
+import com.devdunnapps.amplify.ui.components.ErrorScreen
+import com.devdunnapps.amplify.ui.components.LoadingScreen
+import com.devdunnapps.amplify.ui.components.SongItem
 import com.devdunnapps.amplify.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class PlaylistFragment : Fragment(), PlaylistListAdapter.ItemClickListener, View.OnClickListener {
+class PlaylistFragment : Fragment(), View.OnClickListener {
 
     private var _binding: FragmentPlaylistBinding? = null
     private val binding get() = _binding!!
-    private var playlistAdapter: PlaylistListAdapter? = null
     private val viewModel: PlaylistViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -32,23 +39,32 @@ class PlaylistFragment : Fragment(), PlaylistListAdapter.ItemClickListener, View
 
         setSystemUI()
 
+        val playlistId = requireArguments().getString("playlistId")!!
+
         viewModel.playlist.observe(viewLifecycleOwner) { result ->
             if (result is Resource.Success) {
                 binding.playlistToolbar.title = result.data!!.title
             }
         }
 
-        viewModel.playlistSongs.observe(viewLifecycleOwner) { result ->
-            if (result is Resource.Success) {
-                val songs = result.data!!
-                playlistAdapter = PlaylistListAdapter(requireContext(), requireArguments().getString("playlistId")!!, songs)
-                playlistAdapter?.setClickListener(this@PlaylistFragment)
-                binding.songsTabRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-                binding.songsTabRecyclerView.adapter = playlistAdapter
-                binding.songsProgressBar.visibility = View.INVISIBLE
-
-                if (songs.isEmpty()) {
-                    binding.playlistEmptyText.visibility = View.VISIBLE
+        binding.playlistSongs.setContent {
+            when (val playlistSongs = viewModel.playlistSongs.collectAsState().value) {
+                is Resource.Loading -> LoadingScreen()
+                is Resource.Error -> ErrorScreen()
+                is Resource.Success -> {
+                    LazyColumn {
+                        itemsIndexed(playlistSongs.data!!) { index, song ->
+                            SongItem(
+                                song = song,
+                                onClick = { viewModel.playSong(index) },
+                                onItemMenuClick = {
+                                    val action = PlaylistFragmentDirections
+                                        .actionNavigationPlaylistToPlaylistSongMenuBottomSheetFragment(song, playlistId)
+                                    findNavController().navigate(action)
+                                }
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -84,11 +100,6 @@ class PlaylistFragment : Fragment(), PlaylistListAdapter.ItemClickListener, View
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        playlistAdapter = null
-    }
-
-    override fun onItemClick(view: View?, position: Int) {
-        viewModel.playSong(position)
     }
 
     /**

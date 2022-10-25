@@ -8,6 +8,27 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.forEach
@@ -15,17 +36,28 @@ import androidx.core.view.updatePadding
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
 import com.devdunnapps.amplify.MobileNavigationDirections
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.databinding.FragmentSearchBinding
-import com.devdunnapps.amplify.ui.utils.RecyclerViewGridItemMargins
+import com.devdunnapps.amplify.domain.models.Album
+import com.devdunnapps.amplify.domain.models.Artist
+import com.devdunnapps.amplify.domain.models.Playlist
+import com.devdunnapps.amplify.domain.models.SearchResults
+import com.devdunnapps.amplify.domain.models.Song
+import com.devdunnapps.amplify.ui.components.AlbumCard
+import com.devdunnapps.amplify.ui.components.ArtistCard
+import com.devdunnapps.amplify.ui.components.Carousel
+import com.devdunnapps.amplify.ui.components.ErrorScreen
+import com.devdunnapps.amplify.ui.components.LoadingScreen
+import com.devdunnapps.amplify.ui.components.PlaylistItem
+import com.devdunnapps.amplify.ui.components.SongItem
 import com.devdunnapps.amplify.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SearchFragment: Fragment() {
+class SearchFragment : Fragment() {
 
     private var _binding: FragmentSearchBinding? = null
     private val binding get() = _binding!!
@@ -38,58 +70,17 @@ class SearchFragment: Fragment() {
 
         setSystemUI()
 
-        binding.searchResultsAlbums.layoutManager = GridLayoutManager(requireContext(), 3)
-        binding.searchResultsAlbums.addItemDecoration(RecyclerViewGridItemMargins(resources.getDimensionPixelSize(R.dimen.eight_margin)))
-        binding.searchResultsArtists.layoutManager = GridLayoutManager(requireContext(), 3)
-        binding.searchResultsArtists.addItemDecoration(RecyclerViewGridItemMargins(resources.getDimensionPixelSize(R.dimen.eight_margin)))
-
         binding.search.requestFocus()
-
         binding.search.doOnTextChanged { text, _, _, _ ->
             viewModel.search(text.toString())
         }
 
-        viewModel.searchResults.observe(viewLifecycleOwner) { result ->
-            if (result is Resource.Success) {
-                val data = result.data ?: return@observe
-
-                val zeroStateVisible =
-                    data.songs.isEmpty() && data.albums.isEmpty() && data.artists.isEmpty() && data.playlists.isEmpty()
-
-                binding.searchEmptyResults.visibility = if (zeroStateVisible) View.INVISIBLE else View.INVISIBLE
-
-                val songs = result.data.songs
-                binding.searchResultsSongsHeader.visibility = if (songs.isEmpty()) View.GONE else View.VISIBLE
-
-                binding.searchResultsSongs.adapter = SongsListAdapter(songs) { song ->
-                    viewModel.playSong(song)
-                }
-
-                val albums = result.data.albums
-                binding.searchResultsAlbumsHeader.visibility = if (albums.isEmpty()) View.GONE else View.VISIBLE
-
-                binding.searchResultsAlbums.adapter = AlbumsListAdapter(albums) { album ->
-                    val action = MobileNavigationDirections.actionGlobalNavigationAlbum(album.id)
-                    findNavController().navigate(action)
-                }
-
-                val artists = result.data.artists
-                binding.searchResultsArtistsHeader.visibility =
-                    if (artists.isEmpty()) View.GONE else View.VISIBLE
-
-                binding.searchResultsArtists.adapter = ArtistsListAdapter(artists) { artist ->
-                    val action = MobileNavigationDirections.actionGlobalNavigationArtist(artist.id)
-                    findNavController().navigate(action)
-                }
-
-                val playlists = result.data.playlists
-                binding.searchResultsPlaylistsHeader.visibility =
-                    if (playlists.isEmpty()) View.GONE else View.VISIBLE
-
-                binding.searchResultsPlaylists.adapter = PlaylistsAdapter(playlists) { playlist ->
-                    val action = SearchFragmentDirections.actionSearchFragmentToNavigationPlaylist(playlist.id)
-                    findNavController().navigate(action)
-                }
+        binding.searchResults.setContent {
+            when (val result = viewModel.searchResults.collectAsState().value) {
+                is Resource.Loading -> LoadingScreen()
+                is Resource.Error -> ErrorScreen()
+                is Resource.Success ->
+                    SearchResultsContent(results = result.data!!, onPlaySong = { viewModel.playSong(it) })
             }
         }
 
@@ -126,5 +117,134 @@ class SearchFragment: Fragment() {
         (activity as AppCompatActivity).supportActionBar!!.setDisplayShowHomeEnabled(true)
 
         setHasOptionsMenu(true)
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+private fun SearchResultsContent(results: SearchResults, onPlaySong: (Song) -> Unit) {
+    val songs = results.songs
+    val albums = results.albums
+    val artists = results.artists
+    val playlists = results.playlists
+    val zeroStateVisible = songs.isEmpty() && albums.isEmpty() && artists.isEmpty() && playlists.isEmpty()
+
+    if (zeroStateVisible) {
+        SearchResultsZeroState()
+    } else {
+        LazyColumn(modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection())) {
+            if (songs.isNotEmpty())
+                item { SongsSearchResults(songs = songs, onPlaySong = onPlaySong) }
+
+            if (albums.isNotEmpty())
+                item { AlbumsSearchResults(albums = albums) }
+
+            if (artists.isNotEmpty())
+                item { ArtistsSearchResults(artists = artists) }
+
+            if (playlists.isNotEmpty())
+                item { PlaylistsSearchResults(playlists = playlists) }
+        }
+    }
+}
+
+
+@Composable
+fun SearchResultsZeroState() {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Text(
+            text = stringResource(R.string.search_zero_state_title),
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.align(Alignment.Center)
+        )
+    }
+}
+
+@Composable
+private fun SongsSearchResults(songs: List<Song>, onPlaySong: (Song) -> Unit) {
+    val localView = LocalView.current
+
+    Carousel(title = stringResource(R.string.songs)) {
+        Column {
+            songs.forEach { song ->
+                SongItem(
+                    song = song,
+                    onClick = { onPlaySong(song) },
+                    onItemMenuClick = {
+                        val action = MobileNavigationDirections.actionGlobalNavigationSongBottomSheet(song.id)
+                        localView.findNavController().navigate(action)
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun AlbumsSearchResults(albums: List<Album>) {
+    val localView = LocalView.current
+
+    Carousel(title = stringResource(R.string.albums)) {
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp)
+        ) {
+            items(albums) { album ->
+                AlbumCard(
+                    album = album,
+                    onClick = {
+                        val action = MobileNavigationDirections.actionGlobalNavigationAlbum(album.id)
+                        localView.findNavController().navigate(action)
+                    },
+                    modifier = Modifier.width(100.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ArtistsSearchResults(artists: List<Artist>) {
+    val localView = LocalView.current
+
+    Carousel(title = stringResource(R.string.artists)) {
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp)
+        ) {
+            items(artists) { artist ->
+                ArtistCard(
+                    artist = artist,
+                    onClick = {
+                        val action = MobileNavigationDirections.actionGlobalNavigationArtist(artist.id)
+                        localView.findNavController().navigate(action)
+                    },
+                    modifier = Modifier.width(100.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PlaylistsSearchResults(playlists: List<Playlist>) {
+    val localView = LocalView.current
+
+    Carousel(title = stringResource(R.string.playlists)) {
+        Column {
+            playlists.forEach { playlist ->
+                PlaylistItem(
+                    playlist = playlist,
+                    onClick = {
+                        val action = SearchFragmentDirections.actionSearchFragmentToNavigationPlaylist(playlist.id)
+                        localView.findNavController().navigate(action)
+                    },
+                    onItemMenuClick = {
+                        val action = MobileNavigationDirections.actionGlobalPlaylistMenuBottomSheetFragment(playlist.id)
+                        localView.findNavController().navigate(action)
+                    }
+                )
+            }
+        }
     }
 }

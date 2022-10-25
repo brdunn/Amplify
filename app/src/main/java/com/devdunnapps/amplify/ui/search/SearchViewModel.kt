@@ -11,6 +11,8 @@ import com.devdunnapps.amplify.domain.usecases.SearchLibraryUseCase
 import com.devdunnapps.amplify.utils.MusicServiceConnection
 import com.devdunnapps.amplify.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,8 +22,17 @@ class SearchViewModel @Inject constructor(
     private val musicServiceConnection: MusicServiceConnection
 ) : ViewModel() {
 
-    private val _searchResults = MutableLiveData<Resource<SearchResults>>()
-    val searchResults: LiveData<Resource<SearchResults>> get() = _searchResults
+    private val _searchResults: MutableStateFlow<Resource<SearchResults>> = MutableStateFlow(
+        Resource.Success(
+            SearchResults(
+                songs = emptyList(),
+                albums = emptyList(),
+                artists = emptyList(),
+                playlists = emptyList()
+            )
+        )
+    )
+    val searchResults = _searchResults.asStateFlow()
 
     fun search(query: String) {
         viewModelScope.launch {

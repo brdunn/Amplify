@@ -23,15 +23,15 @@ ext {
     espressoVersion = "3.4.0"
 
     // compose
-    composeVersion = "1.2.1"
+    composeVersion = "1.3.0"
     composeCompilerVersion = "1.3.2"
-    composePagingVersion = "1.0.0-alpha16"
-    composeActivityVersion = "1.6.0"
-    composeMaterial3Version = "1.0.0-rc01"
-    composeMaterial3ThemeAdapterVersion = "1.0.20"
+    composePagingVersion = "1.0.0-alpha17"
+    composeActivityVersion = "1.6.1"
+    composeMaterial3Version = "1.0.0"
+    composeMaterial3ThemeAdapterVersion = "1.0.21"
 
     // google
-    materialVersion = "1.7.0-rc01"
+    materialVersion = "1.7.0"
     hiltVersion = "2.42"
     exoPlayerVersion = "2.18.1"
 }

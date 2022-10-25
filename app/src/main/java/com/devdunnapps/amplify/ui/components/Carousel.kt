@@ -23,7 +23,7 @@ fun Carousel(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = modifier) {
         Row(modifier = Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text(text = title, style = MaterialTheme.typography.headlineMedium, modifier = Modifier.weight(1f))
+            Text(text = title, style = MaterialTheme.typography.headlineSmall, modifier = Modifier.weight(1f))
 
             onViewAllClick?.let {
                 TextButton(onClick = it) {

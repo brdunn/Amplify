@@ -11,11 +11,11 @@
     <string name="add_to_queue">Add to queue</string>
 
     <!-- MainActivity -->
-    <string name="title_home">Home</string>
-    <string name="title_artists">Artists</string>
-    <string name="title_albums">Albums</string>
-    <string name="title_songs">Songs</string>
-    <string name="title_playlists">Playlists</string>
+    <string name="home">Home</string>
+    <string name="artists">Artists</string>
+    <string name="albums">Albums</string>
+    <string name="songs">Songs</string>
+    <string name="playlists">Playlists</string>
     <string name="main_activity_play_pause_content_desc">Play or pause current track</string>
 
     <string name="sample_summary">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras quis elit egestas, vulputate tellus vitae, ultricies nisi. Suspendisse quis sollicitudin erat. Vivamus eu maximus purus. Vivamus quis lacus sem. Praesent rhoncus porttitor lacus nec fringilla. Proin euismod semper odio, et lobortis purus volutpat maximus. Nulla a feugiat massa. Suspendisse vel felis egestas, consectetur mauris sit amet, semper lacus. Aliquam ut metus mi. Morbi a rutrum tellus. Donec vitae luctus nisi. Etiam aliquam elementum felis ut venenatis. Fusce tempor porta purus ut commodo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.</string>

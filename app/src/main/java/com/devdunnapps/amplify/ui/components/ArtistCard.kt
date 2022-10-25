@@ -29,9 +29,9 @@ import com.devdunnapps.amplify.utils.PlexUtils
 import com.google.android.material.composethemeadapter3.Mdc3Theme
 
 @Composable
-fun ArtistCard(onClick: () -> Unit, artist: Artist) {
+fun ArtistCard(onClick: () -> Unit, artist: Artist, modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier.clickable { onClick() },
+        modifier = modifier.clickable { onClick() },
         verticalArrangement = Arrangement.spacedBy(4.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
