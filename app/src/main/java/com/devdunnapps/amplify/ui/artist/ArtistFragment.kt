@@ -108,10 +108,11 @@ class ArtistFragment : Fragment() {
                                         findNavController().navigate(action)
                                     },
                                     onViewAllClick = {
-                                        val action = ArtistFragmentDirections.actionNavigationArtistToNavigationArtistAllAlbums(
-                                            artistId = args.artistKey,
-                                            isSinglesEPs = true
-                                        )
+                                        val action =
+                                            ArtistFragmentDirections.actionNavigationArtistToNavigationArtistAllAlbums(
+                                                artistId = args.artistKey,
+                                                isSinglesEPs = true
+                                            )
                                         findNavController().navigate(action)
                                     }
                                 )

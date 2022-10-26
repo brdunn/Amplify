@@ -174,7 +174,8 @@ class PlexRepositoryImpl @Inject constructor(
     override fun removeSongFromPlaylist(songId: String, playlistId: String): Flow<Resource<Playlist>> = flow {
         emit(Resource.Loading())
         try {
-            // Plex uses a unique "playlistItemID" so we must search the playlist for the playlistItemID of the song with the given songId
+            // Plex uses a unique "playlistItemID" so we must search the playlist for the playlistItemID of the song
+            // with the given songId
             val playlistSongs = api.getPlaylistSongs(playlistId, userToken).mediaContainer.metadata
             val playlistItemId = playlistSongs?.find { it.ratingKey == songId }?.playlistItemID
 

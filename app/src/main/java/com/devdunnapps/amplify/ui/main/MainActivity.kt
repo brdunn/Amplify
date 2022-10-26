@@ -66,7 +66,8 @@ class MainActivity : AppCompatActivity() {
             } else if (it.state == PlaybackStateCompat.STATE_PLAYING) {
                 binding.nowPlayingBox.nowPlayingPlayPause.setImageResource(R.drawable.ic_pause_24dp)
 
-                val marginInDp = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 64f, resources.displayMetrics).toInt()
+                val marginInDp =
+                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 64f, resources.displayMetrics).toInt()
                 (binding.navContentFrame.layoutParams as CoordinatorLayout.LayoutParams).setMargins(0, 0, 0, marginInDp)
 
                 binding.nowPlayingBox.bottomSheet.visibility = View.VISIBLE

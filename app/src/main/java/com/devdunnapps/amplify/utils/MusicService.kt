@@ -180,7 +180,8 @@ class MusicService : MediaBrowserServiceCompat() {
             currentSongID = (mediaItem?.localConfiguration?.tag as Song).id
 
             // TODO: only mark an item as played if the entire song has been played
-            val hiltEntryPoint = EntryPointAccessors.fromApplication(applicationContext, MusicServiceEntryPoint::class.java)
+            val hiltEntryPoint =
+                EntryPointAccessors.fromApplication(applicationContext, MusicServiceEntryPoint::class.java)
             serviceScope.launch {
                 hiltEntryPoint.repository().markSongAsListened(currentSongID!!).collect()
             }

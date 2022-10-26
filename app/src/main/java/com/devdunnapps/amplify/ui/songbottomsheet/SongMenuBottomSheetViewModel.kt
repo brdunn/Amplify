@@ -2,7 +2,11 @@ package com.devdunnapps.amplify.ui.songbottomsheet
 
 import android.os.Bundle
 import android.support.v4.media.session.PlaybackStateCompat
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.domain.usecases.GetSongUseCase
 import com.devdunnapps.amplify.domain.usecases.RateSongUseCase
@@ -10,10 +14,8 @@ import com.devdunnapps.amplify.utils.MusicServiceConnection
 import com.devdunnapps.amplify.utils.Resource
 import com.devdunnapps.amplify.utils.WhenToPlay
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.io.Serializable
-import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel

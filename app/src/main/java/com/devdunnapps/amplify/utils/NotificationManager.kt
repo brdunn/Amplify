@@ -15,7 +15,11 @@ import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.ui.main.MainActivity
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 const val NOTIFICATION_LARGE_ICON_SIZE = 144
 

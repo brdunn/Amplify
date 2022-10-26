@@ -1,10 +1,10 @@
 package com.devdunnapps.amplify.ui.playlists
 
-import androidx.lifecycle.*
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.devdunnapps.amplify.domain.models.Playlist
 import com.devdunnapps.amplify.domain.usecases.DeletePlaylistUseCase
-import com.devdunnapps.amplify.domain.usecases.GetPlaylistSongsUseCase
-import com.devdunnapps.amplify.domain.usecases.GetPlaylistSongsUseCase_Factory
 import com.devdunnapps.amplify.domain.usecases.GetPlaylistUseCase
 import com.devdunnapps.amplify.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

@@ -38,7 +38,9 @@ class MusicServiceConnection(context: Context, serviceComponent: ComponentName) 
 
     private lateinit var mediaController: MediaControllerCompat
 
-    private inner class MediaBrowserConnectionCallback(private val context: Context) : MediaBrowserCompat.ConnectionCallback() {
+    private inner class MediaBrowserConnectionCallback(
+        private val context: Context
+    ) : MediaBrowserCompat.ConnectionCallback() {
 
         override fun onConnected() {
             mediaController = MediaControllerCompat(context, mediaBrowser.sessionToken).apply {
