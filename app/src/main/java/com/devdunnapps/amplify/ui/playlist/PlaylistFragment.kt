@@ -27,6 +27,7 @@ import com.devdunnapps.amplify.ui.components.LoadingScreen
 import com.devdunnapps.amplify.ui.components.SongItem
 import com.devdunnapps.amplify.ui.components.ZeroStateScreen
 import com.devdunnapps.amplify.utils.Resource
+import com.google.android.material.composethemeadapter3.Mdc3Theme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -55,18 +56,20 @@ class PlaylistFragment : Fragment(), View.OnClickListener {
         }
 
         binding.playlistSongs.setContent {
-            when (val playlistSongs = viewModel.playlistSongs.collectAsState().value) {
-                is Resource.Loading -> LoadingScreen()
-                is Resource.Error -> ErrorScreen()
-                is Resource.Success -> PlaylistContent(
-                    songs = playlistSongs.data!!,
-                    onSongClick = { viewModel.playSong(it) },
-                    onSongMenuClick = { song ->
-                        val action = PlaylistFragmentDirections
-                            .actionNavigationPlaylistToPlaylistSongMenuBottomSheetFragment(song, playlistId)
-                        findNavController().navigate(action)
-                    }
-                )
+            Mdc3Theme {
+                when (val playlistSongs = viewModel.playlistSongs.collectAsState().value) {
+                    is Resource.Loading -> LoadingScreen()
+                    is Resource.Error -> ErrorScreen()
+                    is Resource.Success -> PlaylistContent(
+                        songs = playlistSongs.data!!,
+                        onSongClick = { viewModel.playSong(it) },
+                        onSongMenuClick = { song ->
+                            val action = PlaylistFragmentDirections
+                                .actionNavigationPlaylistToPlaylistSongMenuBottomSheetFragment(song, playlistId)
+                            findNavController().navigate(action)
+                        }
+                    )
+                }
             }
         }
 
