@@ -9,19 +9,14 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -54,6 +49,7 @@ import com.devdunnapps.amplify.ui.components.PlaylistItem
 import com.devdunnapps.amplify.ui.components.SongItem
 import com.devdunnapps.amplify.ui.components.ZeroStateScreen
 import com.devdunnapps.amplify.utils.Resource
+import com.google.android.material.composethemeadapter3.Mdc3Theme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -76,11 +72,13 @@ class SearchFragment : Fragment() {
         }
 
         binding.searchResults.setContent {
-            when (val result = viewModel.searchResults.collectAsState().value) {
-                is Resource.Loading -> LoadingScreen()
-                is Resource.Error -> ErrorScreen()
-                is Resource.Success ->
-                    SearchResultsContent(results = result.data!!, onPlaySong = { viewModel.playSong(it) })
+            Mdc3Theme {
+                when (val result = viewModel.searchResults.collectAsState().value) {
+                    is Resource.Loading -> LoadingScreen()
+                    is Resource.Error -> ErrorScreen()
+                    is Resource.Success ->
+                        SearchResultsContent(results = result.data!!, onPlaySong = { viewModel.playSong(it) })
+                }
             }
         }
 
