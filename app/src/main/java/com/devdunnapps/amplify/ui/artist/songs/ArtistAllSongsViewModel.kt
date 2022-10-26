@@ -1,29 +1,42 @@
 package com.devdunnapps.amplify.ui.artist.songs
 
-import android.app.Application
 import android.os.Bundle
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.domain.usecases.GetArtistSongsUseCase
 import com.devdunnapps.amplify.utils.MusicServiceConnection
 import com.devdunnapps.amplify.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ArtistAllSongsViewModel @Inject constructor(
-    application: Application,
-    getArtistSongsUseCase: GetArtistSongsUseCase,
+    private val getArtistSongsUseCase: GetArtistSongsUseCase,
     savedStateHandle: SavedStateHandle,
     private val musicServiceConnection: MusicServiceConnection
-) : AndroidViewModel(application) {
+) : ViewModel() {
 
     private val artistId: String = savedStateHandle["artistId"]!!
 
-    val artistSongs: LiveData<Resource<List<Song>>> = getArtistSongsUseCase(artistId).asLiveData()
+    private val _artistSongs = MutableStateFlow<Resource<List<Song>>>(Resource.Loading())
+    val artistSongs = _artistSongs.asStateFlow()
+
+    init {
+        getArtistSongs()
+    }
+
+    private fun getArtistSongs() {
+        viewModelScope.launch {
+            getArtistSongsUseCase(artistId).collect {
+
+            }
+        }
+    }
 
     fun playSong(song: Song) {
         val bundle = Bundle()

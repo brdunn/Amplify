@@ -3,11 +3,13 @@ package com.devdunnapps.amplify.ui.nowplaying
 import android.os.Handler
 import android.os.Looper
 import android.support.v4.media.session.PlaybackStateCompat
+import androidx.compose.runtime.MutableState
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.devdunnapps.amplify.utils.MusicServiceConnection
 import com.devdunnapps.amplify.utils.currentPlayBackPosition
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,10 +20,10 @@ class NowPlayingViewModel @Inject constructor(
     val playbackState = musicServiceConnection.playbackState
     val metadata = musicServiceConnection.nowPlaying
 
-    val shuffleMode: MutableLiveData<Int> = MutableLiveData(PlaybackStateCompat.SHUFFLE_MODE_NONE)
-    val repeatMode: MutableLiveData<Int> = MutableLiveData(PlaybackStateCompat.REPEAT_MODE_NONE)
+    val shuffleMode: MutableStateFlow<Int> = MutableStateFlow(PlaybackStateCompat.SHUFFLE_MODE_NONE)
+    val repeatMode: MutableStateFlow<Int> = MutableStateFlow(PlaybackStateCompat.REPEAT_MODE_NONE)
 
-    val mediaPosition:MutableLiveData<Long> = MutableLiveData(0)
+    val mediaPosition: MutableStateFlow<Long> = MutableStateFlow(0)
     private val handler = Handler(Looper.getMainLooper())
     private var updatePosition = true
 
@@ -79,7 +81,7 @@ class NowPlayingViewModel @Inject constructor(
     private fun checkPlaybackPosition(): Boolean = handler.postDelayed({
         val currPosition = playbackState.value!!.currentPlayBackPosition
         if (mediaPosition.value != currPosition)
-            mediaPosition.postValue(currPosition)
+            mediaPosition.value = currPosition
         if (updatePosition)
             checkPlaybackPosition()
     }, 500)

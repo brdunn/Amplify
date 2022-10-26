@@ -1,8 +1,6 @@
 package com.devdunnapps.amplify.ui.search
 
 import android.os.Bundle
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devdunnapps.amplify.domain.models.SearchResults

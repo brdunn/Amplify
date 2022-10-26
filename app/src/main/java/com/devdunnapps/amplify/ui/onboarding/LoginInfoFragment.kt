@@ -12,7 +12,6 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,11 +24,15 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.utils.Resource
 import com.google.android.material.composethemeadapter3.Mdc3Theme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class LoginInfoFragment: Fragment() {
@@ -47,12 +50,16 @@ class LoginInfoFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.user.observe(viewLifecycleOwner) { resource ->
-            if (resource is Resource.Success) {
-                val action = LoginInfoFragmentDirections.actionLoginInfoFragmentToServerSelectionFragment()
-                findNavController().navigate(action)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.user.collect { resource ->
+                    if (resource is Resource.Success) {
+                        val action = LoginInfoFragmentDirections.actionLoginInfoFragmentToServerSelectionFragment()
+                        findNavController().navigate(action)
 
-                (requireActivity() as OnBoardingActivity).updateIndicators { it + 1 }
+                        (requireActivity() as OnBoardingActivity).updateIndicators { it + 1 }
+                    }
+                }
             }
         }
     }
@@ -65,7 +72,7 @@ fun LoginInfoScreen(viewModel: LoginFlowViewModel) {
     var password by rememberSaveable { mutableStateOf("") }
     var twoFactorToken by rememberSaveable { mutableStateOf("") }
 
-    val user by viewModel.user.observeAsState()
+    val user by viewModel.user.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -116,7 +123,7 @@ fun LoginInfoScreen(viewModel: LoginFlowViewModel) {
                 isError = user is Resource.Error
             )
 
-            val twoFactorAuthRequired by viewModel.twoFactorAuthRequired.observeAsState(false)
+            val twoFactorAuthRequired by viewModel.twoFactorAuthRequired.collectAsState()
             if (twoFactorAuthRequired) {
                 OutlinedTextField(
                     value = twoFactorToken,

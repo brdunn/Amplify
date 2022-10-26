@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -16,16 +16,19 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.navigation.findNavController
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.databinding.FragmentPlaylistBinding
+import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.ui.components.ErrorScreen
 import com.devdunnapps.amplify.ui.components.LoadingScreen
 import com.devdunnapps.amplify.ui.components.SongItem
+import com.devdunnapps.amplify.ui.components.ZeroStateScreen
 import com.devdunnapps.amplify.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class PlaylistFragment : Fragment(), View.OnClickListener {
@@ -41,9 +44,13 @@ class PlaylistFragment : Fragment(), View.OnClickListener {
 
         val playlistId = requireArguments().getString("playlistId")!!
 
-        viewModel.playlist.observe(viewLifecycleOwner) { result ->
-            if (result is Resource.Success) {
-                binding.playlistToolbar.title = result.data!!.title
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                viewModel.playlist.collect { result ->
+                    if (result is Resource.Success) {
+                        binding.playlistToolbar.title = result.data!!.title
+                    }
+                }
             }
         }
 
@@ -51,21 +58,15 @@ class PlaylistFragment : Fragment(), View.OnClickListener {
             when (val playlistSongs = viewModel.playlistSongs.collectAsState().value) {
                 is Resource.Loading -> LoadingScreen()
                 is Resource.Error -> ErrorScreen()
-                is Resource.Success -> {
-                    LazyColumn {
-                        itemsIndexed(playlistSongs.data!!) { index, song ->
-                            SongItem(
-                                song = song,
-                                onClick = { viewModel.playSong(index) },
-                                onItemMenuClick = {
-                                    val action = PlaylistFragmentDirections
-                                        .actionNavigationPlaylistToPlaylistSongMenuBottomSheetFragment(song, playlistId)
-                                    findNavController().navigate(action)
-                                }
-                            )
-                        }
+                is Resource.Success -> PlaylistContent(
+                    songs = playlistSongs.data!!,
+                    onSongClick = { viewModel.playSong(it) },
+                    onSongMenuClick = { song ->
+                        val action = PlaylistFragmentDirections
+                            .actionNavigationPlaylistToPlaylistSongMenuBottomSheetFragment(song, playlistId)
+                        findNavController().navigate(action)
                     }
-                }
+                )
             }
         }
 
@@ -132,3 +133,24 @@ class PlaylistFragment : Fragment(), View.OnClickListener {
         viewModel.playPlaylist(shuffle = true)
     }
 }
+
+@Composable
+private fun PlaylistContent(songs: List<Song>, onSongClick: (Song) -> Unit, onSongMenuClick: (Song) -> Unit) {
+    if (songs.isEmpty()) {
+        PlaylistZeroState()
+    } else {
+        LazyColumn {
+            items(songs) { song ->
+                SongItem(
+                    song = song,
+                    onClick = { onSongClick(song) },
+                    onItemMenuClick = { onSongMenuClick(song) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PlaylistZeroState() =
+    ZeroStateScreen(title = R.string.playlist_zero_state_title)

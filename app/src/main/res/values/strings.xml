@@ -46,6 +46,7 @@
     <string name="create_playlist_dialog_confirm">Create</string>
     <string name="create_playlist_dialog_cancel">Cancel</string>
     <string name="create_playlist_dialog_hint">Playlist Name</string>
+    <string name="playlist_zero_state_title">This playlist is empty</string>
 
     <!-- Album Fragment -->
     <string name="album_play_btn">Play</string>
@@ -102,7 +103,7 @@
     <string name="now_playing_menu_to_lyrics">Lyrics</string>
     <string name="now_playing_menu_to_artist">Go to artist</string>
     <string name="now_playing_menu_to_album">Go to album</string>
-    <string name="now_playing_menu_add_to_playlist">Add to Playlist</string>
+    <string name="add_to_playlist">Add to Playlist</string>
 
     <!-- Search Fragment -->
     <string name="search_hint">Search Library</string>

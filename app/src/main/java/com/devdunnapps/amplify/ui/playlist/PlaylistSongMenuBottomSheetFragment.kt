@@ -5,6 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import coil.load
 import com.devdunnapps.amplify.MobileNavigationDirections
@@ -16,19 +19,19 @@ import com.devdunnapps.amplify.utils.Resource
 import com.devdunnapps.amplify.utils.WhenToPlay
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class PlaylistSongMenuBottomSheetFragment : BottomSheetDialogFragment() {
 
     private var _binding: FragmentPlaylistSongBottomSheetBinding? = null
     private val binding get() = _binding!!
-    private lateinit var song: Song
     private val viewModel: PlaylistSongBottomSheetViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
        _binding = FragmentPlaylistSongBottomSheetBinding.inflate(inflater, container, false)
 
-        song = requireArguments().getSerializable("song") as Song
+        val song = requireArguments().getSerializable("song") as Song
 
         binding.playlistBottomSheetTitle.text = song.title
         binding.songBottomSheetArtist.text = song.artistName
@@ -62,10 +65,13 @@ class PlaylistSongMenuBottomSheetFragment : BottomSheetDialogFragment() {
 
         binding.songBottomSheetPlaylistBtn.setOnClickListener {
             viewModel.removeSongFromPlaylist()
-            viewModel.isSongRemovedComplete.observe(viewLifecycleOwner) { result ->
-                if (result is Resource.Success) {
-                    findNavController().previousBackStackEntry?.savedStateHandle?.set("refreshData", true)
-                    dismiss()
+
+            lifecycleScope.launch {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    viewModel.closeObservable.collect {
+                        findNavController().previousBackStackEntry?.savedStateHandle?.set("refreshData", true)
+                        dismiss()
+                    }
                 }
             }
         }

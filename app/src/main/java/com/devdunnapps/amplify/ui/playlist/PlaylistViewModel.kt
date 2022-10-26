@@ -2,7 +2,9 @@ package com.devdunnapps.amplify.ui.playlist
 
 import android.os.Bundle
 import android.support.v4.media.session.PlaybackStateCompat
-import androidx.lifecycle.*
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.devdunnapps.amplify.domain.models.Playlist
 import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.domain.usecases.GetPlaylistSongsUseCase
@@ -13,7 +15,6 @@ import com.devdunnapps.amplify.utils.WhenToPlay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.io.Serializable
 import javax.inject.Inject
@@ -28,8 +29,8 @@ class PlaylistViewModel @Inject constructor(
 
     private val playlistId: String = savedStateHandle["playlistId"]!!
 
-    private val _playlist = MutableLiveData<Resource<Playlist>>()
-    val playlist: LiveData<Resource<Playlist>> = _playlist
+    private val _playlist: MutableStateFlow<Resource<Playlist>> = MutableStateFlow(Resource.Loading())
+    val playlist = _playlist.asStateFlow()
 
     private val _playlistSongs: MutableStateFlow<Resource<List<Song>>> = MutableStateFlow(Resource.Loading())
     val playlistSongs = _playlistSongs.asStateFlow()
@@ -55,9 +56,9 @@ class PlaylistViewModel @Inject constructor(
         }
     }
 
-    fun playSong(songIndex: Int) {
+    fun playSong(song: Song) {
         val bundle = Bundle()
-        bundle.putSerializable("song", playlistSongs.value!!.data!![songIndex])
+        bundle.putSerializable("song", song)
         musicServiceConnection.transportControls.sendCustomAction("play_song", bundle)
     }
 

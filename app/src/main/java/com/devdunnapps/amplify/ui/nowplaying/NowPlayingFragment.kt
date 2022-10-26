@@ -12,6 +12,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.palette.graphics.Palette
 import coil.ImageLoader
@@ -25,6 +28,7 @@ import com.devdunnapps.amplify.utils.TimeUtils
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.slider.Slider
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class NowPlayingFragment : Fragment() {
@@ -55,24 +59,39 @@ class NowPlayingFragment : Fragment() {
             }
         }
 
-        viewModel.shuffleMode.observe(viewLifecycleOwner) { shuffleMode ->
-            when (shuffleMode) {
-                PlaybackStateCompat.SHUFFLE_MODE_NONE -> binding.shuffleBtn.setImageResource(R.drawable.ic_shuffle_off_36dp)
-                PlaybackStateCompat.SHUFFLE_MODE_ALL -> binding.shuffleBtn.setImageResource(R.drawable.ic_shuffle_on_36dp)
-            }
-        }
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.shuffleMode.collect { shuffleMode ->
+                        when (shuffleMode) {
+                            PlaybackStateCompat.SHUFFLE_MODE_NONE ->
+                                binding.shuffleBtn.setImageResource(R.drawable.ic_shuffle_off_36dp)
+                            PlaybackStateCompat.SHUFFLE_MODE_ALL ->
+                                binding.shuffleBtn.setImageResource(R.drawable.ic_shuffle_on_36dp)
+                        }
+                    }
+                }
 
-        viewModel.repeatMode.observe(viewLifecycleOwner) { repeatMode ->
-            when (repeatMode) {
-                PlaybackStateCompat.REPEAT_MODE_NONE -> binding.repeatBtn.setImageResource(R.drawable.ic_repeat_none_36dp)
-                PlaybackStateCompat.REPEAT_MODE_ONE -> binding.repeatBtn.setImageResource(R.drawable.ic_repeat_one_36dp)
-                PlaybackStateCompat.REPEAT_MODE_ALL -> binding.repeatBtn.setImageResource(R.drawable.ic_repeat_all_36dp)
-            }
-        }
+                launch {
+                    viewModel.repeatMode.collect { repeatMode ->
+                        when (repeatMode) {
+                            PlaybackStateCompat.REPEAT_MODE_NONE ->
+                                binding.repeatBtn.setImageResource(R.drawable.ic_repeat_none_36dp)
+                            PlaybackStateCompat.REPEAT_MODE_ONE ->
+                                binding.repeatBtn.setImageResource(R.drawable.ic_repeat_one_36dp)
+                            PlaybackStateCompat.REPEAT_MODE_ALL ->
+                                binding.repeatBtn.setImageResource(R.drawable.ic_repeat_all_36dp)
+                        }
+                    }
+                }
 
-        viewModel.mediaPosition.observe(viewLifecycleOwner) { position ->
-            binding.seekBar.value = (position / 1000).toFloat()
-            binding.curPosition.text = TimeUtils.millisecondsToTime(position)
+                launch {
+                    viewModel.mediaPosition.collect { position ->
+                        binding.seekBar.value = (position / 1000).toFloat()
+                        binding.curPosition.text = TimeUtils.millisecondsToTime(position)
+                    }
+                }
+            }
         }
 
         binding.seekBar.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {

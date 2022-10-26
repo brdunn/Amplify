@@ -8,22 +8,47 @@ import com.devdunnapps.amplify.domain.usecases.GetPlaylistSongsUseCase_Factory
 import com.devdunnapps.amplify.domain.usecases.GetPlaylistUseCase
 import com.devdunnapps.amplify.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class PlaylistMenuBottomSheetViewModel @Inject constructor(
-    getPlaylistUseCase: GetPlaylistUseCase,
+    private val getPlaylistUseCase: GetPlaylistUseCase,
     private val deletePlaylistUseCase: DeletePlaylistUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val playlistId: String = savedStateHandle["playlistId"]!!
 
-    val playlist: LiveData<Resource<Playlist>> = getPlaylistUseCase(playlistId).asLiveData()
+    private val _playlist = MutableStateFlow<Resource<Playlist>>(Resource.Loading())
+    val playlist = _playlist.asStateFlow()
 
-    lateinit var isPlaylistDeletionComplete: LiveData<Resource<Playlist>>
+    private val _closeObservable = MutableSharedFlow<Unit>()
+    val closeObservable = _closeObservable.asSharedFlow()
+
+    init {
+        getPlaylist()
+    }
+
+    private fun getPlaylist() {
+        viewModelScope.launch {
+            getPlaylistUseCase(playlistId).collect {
+                _playlist.emit(it)
+            }
+        }
+    }
 
     fun deletePlaylist() {
-        isPlaylistDeletionComplete = deletePlaylistUseCase(playlistId).asLiveData()
+        viewModelScope.launch {
+            deletePlaylistUseCase(playlistId).collect {
+                if (it is Resource.Success)
+                    _closeObservable.emit(Unit)
+            }
+        }
     }
 }

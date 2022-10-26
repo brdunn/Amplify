@@ -5,14 +5,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
@@ -21,26 +26,24 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.domain.models.LibrarySection
 import com.devdunnapps.amplify.ui.main.MainActivity
 import com.devdunnapps.amplify.utils.Resource
 import com.google.android.material.composethemeadapter3.Mdc3Theme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class LibrarySelectionFragment: Fragment() {
 
     val viewModel: LoginFlowViewModel by activityViewModels()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        viewModel.server.observe(viewLifecycleOwner) {
-            if (it is Resource.Success) {
-                viewModel.getLibraries()
-            }
-        }
-
-        return ComposeView(requireContext()).apply {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
+        ComposeView(requireContext()).apply {
             setContent {
                 Mdc3Theme {
                     LibrarySelectionScreen(viewModel = viewModel) { libraryKey ->
@@ -53,7 +56,6 @@ class LibrarySelectionFragment: Fragment() {
                 }
             }
         }
-    }
 }
 
 @Composable
@@ -70,7 +72,7 @@ private fun LibrarySelectionScreen(viewModel: LoginFlowViewModel, onItemClick: (
             style = MaterialTheme.typography.headlineLarge
         )
 
-        val librarySections = viewModel.libraries.observeAsState().value
+        val librarySections by viewModel.libraries.collectAsState()
         if (librarySections is Resource.Success) {
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(0.75f)

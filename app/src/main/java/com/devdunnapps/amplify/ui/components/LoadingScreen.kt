@@ -10,9 +10,9 @@ import androidx.compose.ui.tooling.preview.Preview
 
 @Preview
 @Composable
-fun LoadingScreen() {
+fun LoadingScreen(modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         CircularProgressIndicator(
             modifier = Modifier.align(Alignment.Center)

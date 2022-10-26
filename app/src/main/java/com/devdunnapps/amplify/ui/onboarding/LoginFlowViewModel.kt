@@ -2,8 +2,6 @@ package com.devdunnapps.amplify.ui.onboarding
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.devdunnapps.amplify.domain.models.LibrarySection
 import com.devdunnapps.amplify.domain.models.Server
@@ -14,7 +12,8 @@ import com.devdunnapps.amplify.domain.usecases.SignInUserUseCase
 import com.devdunnapps.amplify.utils.PreferencesUtils
 import com.devdunnapps.amplify.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,23 +25,33 @@ class LoginFlowViewModel @Inject constructor(
     private val app: Application
 ): AndroidViewModel(app) {
 
-    private val _user = MutableLiveData<Resource<User>>(Resource.Loading())
-    val user: LiveData<Resource<User>> = _user
+    private val _user = MutableStateFlow<Resource<User>>(Resource.Loading())
+    val user = _user.asStateFlow()
 
-    private val _twoFactorAuthRequired = MutableLiveData(false)
-    val twoFactorAuthRequired: LiveData<Boolean> = _twoFactorAuthRequired
+    private val _twoFactorAuthRequired = MutableStateFlow(false)
+    val twoFactorAuthRequired = _twoFactorAuthRequired.asStateFlow()
 
-    private val _servers = MutableLiveData<Resource<List<Server>>>()
-    val servers: LiveData<Resource<List<Server>>> = _servers
+    private val _servers = MutableStateFlow<Resource<List<Server>>>(Resource.Loading())
+    val servers = _servers.asStateFlow()
 
-    private val _server = MutableLiveData<Resource<Server>>()
-    val server: LiveData<Resource<Server>> = _server
+    private val _server = MutableStateFlow<Resource<Server>>(Resource.Loading())
+    val server = _server.asStateFlow()
 
-    private val _libraries = MutableLiveData<Resource<List<LibrarySection>>>()
-    val libraries: LiveData<Resource<List<LibrarySection>>> = _libraries
+    private val _libraries = MutableStateFlow<Resource<List<LibrarySection>>>(Resource.Loading())
+    val libraries = _libraries.asStateFlow()
 
-    private val _library = MutableLiveData<Resource<LibrarySection>>()
-    val library: LiveData<Resource<LibrarySection>> = _library
+    private val _library = MutableStateFlow<Resource<LibrarySection>>(Resource.Loading())
+    val library = _library.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            server.collect {
+                if (it is Resource.Success) {
+                    getLibraries()
+                }
+            }
+        }
+    }
 
     fun login(username: String, password: String, token: String) {
         viewModelScope.launch {
@@ -55,7 +64,7 @@ class LoginFlowViewModel @Inject constructor(
                     _user.value = it
                     getServers()
                 } else if (it is Resource.Error && it.message == "1029") {
-                    _twoFactorAuthRequired.postValue(true)
+                    _twoFactorAuthRequired.emit(true)
                 } else {
                     _user.value = it
                 }
@@ -65,7 +74,7 @@ class LoginFlowViewModel @Inject constructor(
 
     private fun getServers() {
         viewModelScope.launch {
-            getUsersServersUseCase(_user.value!!.data!!.authToken).collect {
+            getUsersServersUseCase(_user.value.data!!.authToken).collect {
                 _servers.value = it
             }
         }
@@ -76,7 +85,7 @@ class LoginFlowViewModel @Inject constructor(
         _server.value = Resource.Success(server)
     }
 
-    fun getLibraries() {
+    private fun getLibraries() {
         viewModelScope.launch {
             getLibrarySectionsUseCase().collect {
                 _libraries.value = it

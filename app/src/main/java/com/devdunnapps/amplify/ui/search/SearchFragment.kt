@@ -37,7 +37,6 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import com.devdunnapps.amplify.MobileNavigationDirections
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.databinding.FragmentSearchBinding
@@ -53,6 +52,7 @@ import com.devdunnapps.amplify.ui.components.ErrorScreen
 import com.devdunnapps.amplify.ui.components.LoadingScreen
 import com.devdunnapps.amplify.ui.components.PlaylistItem
 import com.devdunnapps.amplify.ui.components.SongItem
+import com.devdunnapps.amplify.ui.components.ZeroStateScreen
 import com.devdunnapps.amplify.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -148,17 +148,9 @@ private fun SearchResultsContent(results: SearchResults, onPlaySong: (Song) -> U
     }
 }
 
-
 @Composable
-fun SearchResultsZeroState() {
-    Box(modifier = Modifier.fillMaxSize()) {
-        Text(
-            text = stringResource(R.string.search_zero_state_title),
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.align(Alignment.Center)
-        )
-    }
-}
+private fun SearchResultsZeroState() =
+    ZeroStateScreen(title = R.string.search_zero_state_title)
 
 @Composable
 private fun SongsSearchResults(songs: List<Song>, onPlaySong: (Song) -> Unit) {
