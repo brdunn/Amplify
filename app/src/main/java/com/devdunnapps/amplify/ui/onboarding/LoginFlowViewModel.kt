@@ -34,24 +34,8 @@ class LoginFlowViewModel @Inject constructor(
     private val _servers = MutableStateFlow<Resource<List<Server>>>(Resource.Loading())
     val servers = _servers.asStateFlow()
 
-    private val _server = MutableStateFlow<Resource<Server>>(Resource.Loading())
-    val server = _server.asStateFlow()
-
     private val _libraries = MutableStateFlow<Resource<List<LibrarySection>>>(Resource.Loading())
     val libraries = _libraries.asStateFlow()
-
-    private val _library = MutableStateFlow<Resource<LibrarySection>>(Resource.Loading())
-    val library = _library.asStateFlow()
-
-    init {
-        viewModelScope.launch {
-            server.collect {
-                if (it is Resource.Success) {
-                    getLibraries()
-                }
-            }
-        }
-    }
 
     fun login(username: String, password: String, token: String) {
         viewModelScope.launch {
@@ -82,7 +66,8 @@ class LoginFlowViewModel @Inject constructor(
 
     fun selectServer(server: Server) {
         PreferencesUtils.saveString(app.applicationContext, PreferencesUtils.PREF_PLEX_SERVER_ADDRESS, server.address)
-        _server.value = Resource.Success(server)
+
+        getLibraries()
     }
 
     private fun getLibraries() {

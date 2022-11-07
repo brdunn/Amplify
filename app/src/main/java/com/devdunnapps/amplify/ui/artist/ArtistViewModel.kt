@@ -32,7 +32,7 @@ class ArtistViewModel @Inject constructor(
     private val musicServiceConnection: MusicServiceConnection
 ) : AndroidViewModel(application) {
 
-    private val artistId: String = savedStateHandle["artistKey"]!!
+    private val artistId = ArtistFragmentArgs.fromSavedStateHandle(savedStateHandle).artistKey
 
     private val _artistSongs = MutableStateFlow<Resource<List<Song>>>(Resource.Loading())
     val artistSongs = _artistSongs.asStateFlow()

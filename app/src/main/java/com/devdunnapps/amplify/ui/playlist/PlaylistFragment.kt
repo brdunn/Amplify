@@ -46,7 +46,7 @@ class PlaylistFragment : Fragment(), View.OnClickListener {
         val playlistId = requireArguments().getString("playlistId")!!
 
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 viewModel.playlist.collect { result ->
                     if (result is Resource.Success) {
                         binding.playlistToolbar.title = result.data!!.title

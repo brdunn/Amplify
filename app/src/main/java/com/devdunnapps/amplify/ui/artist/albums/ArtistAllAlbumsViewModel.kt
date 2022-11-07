@@ -11,7 +11,6 @@ import com.devdunnapps.amplify.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,15 +22,15 @@ class ArtistAllAlbumsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : AndroidViewModel(application) {
 
-    private val artistId: String = savedStateHandle["artistId"]!!
+    private val navArgs = ArtistAllAlbumsFragmentArgs.fromSavedStateHandle(savedStateHandle)
+    private val artistId = navArgs.artistId
 
     private val _artistAlbums = MutableStateFlow<Resource<List<Album>>>(Resource.Loading())
     val artistAlbums = _artistAlbums.asStateFlow()
 
     init {
         viewModelScope.launch {
-            val shouldLoadSinglesEPs: Boolean = savedStateHandle["isSinglesEPs"] ?: false
-            if (shouldLoadSinglesEPs) {
+            if (navArgs.isSinglesEPs) {
                 getArtistSinglesEPsUseCase(artistId).collect {
                     _artistAlbums.emit(it)
                 }

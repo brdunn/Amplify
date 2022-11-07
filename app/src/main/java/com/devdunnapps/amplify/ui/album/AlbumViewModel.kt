@@ -30,10 +30,10 @@ class AlbumViewModel @Inject constructor(
     private val musicServiceConnection: MusicServiceConnection
 ) : ViewModel() {
 
-    private val albumId: String = savedStateHandle["albumId"]!!
+    private val albumId = AlbumFragmentArgs.fromSavedStateHandle(savedStateHandle).albumId
 
-    private val _album: MutableStateFlow<Resource<AlbumScreenUIModel>> = MutableStateFlow(Resource.Loading())
-    val album: StateFlow<Resource<AlbumScreenUIModel>> = _album.asStateFlow()
+    private val _album = MutableStateFlow<Resource<AlbumScreenUIModel>>(Resource.Loading())
+    val album = _album.asStateFlow()
 
     init {
         viewModelScope.launch {

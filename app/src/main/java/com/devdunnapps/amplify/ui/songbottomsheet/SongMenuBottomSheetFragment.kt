@@ -5,6 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import coil.load
 import com.devdunnapps.amplify.MobileNavigationDirections
@@ -19,6 +22,7 @@ import com.devdunnapps.amplify.utils.WhenToPlay
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SongMenuBottomSheetFragment : BottomSheetDialogFragment() {
@@ -29,52 +33,56 @@ class SongMenuBottomSheetFragment : BottomSheetDialogFragment() {
     private val viewModel: SongMenuBottomSheetViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-       _binding = FragmentSongBottomSheetBinding.inflate(inflater, container, false)
+        _binding = FragmentSongBottomSheetBinding.inflate(inflater, container, false)
 
-        viewModel.song.observe(viewLifecycleOwner) { response ->
-            when (response) {
-                is Resource.Success -> {
-                    song = response.data!!
-                    binding.songBottomSheetTitle.text = song.title
-                    binding.songBottomSheetArtist.text = song.artistName
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.song.collect { response ->
+                    when (response) {
+                        is Resource.Success -> {
+                            song = response.data!!
+                            binding.songBottomSheetTitle.text = song.title
+                            binding.songBottomSheetArtist.text = song.artistName
 
-                    val url = PlexUtils.getInstance(requireActivity()).addKeyAndAddress(song.thumb)
-                    binding.songBottomSheetAlbumArt.load(url) {
-                        error(R.drawable.ic_albums_black_24dp)
-                    }
+                            val url = PlexUtils.getInstance(requireActivity()).addKeyAndAddress(song.thumb)
+                            binding.songBottomSheetAlbumArt.load(url) {
+                                error(R.drawable.ic_albums_black_24dp)
+                            }
 
-                    when (song.userRating) {
-                        Rating.THUMB_UP -> {
-                            binding.songBottomSheetThumbDown.setImageResource(R.drawable.ic_thumb_down_24dp_outlined)
-                            binding.songBottomSheetThumbUp.setImageResource(R.drawable.ic_thumb_up_24dp)
-                        }
-                        Rating.THUMB_DOWN -> {
-                            binding.songBottomSheetThumbDown.setImageResource(R.drawable.ic_thumb_down_24dp)
-                            binding.songBottomSheetThumbUp.setImageResource(R.drawable.ic_thumb_up_24dp_outlined)
-                        }
-                        else -> {
-                            binding.songBottomSheetThumbDown.setImageResource(R.drawable.ic_thumb_down_24dp_outlined)
-                            binding.songBottomSheetThumbUp.setImageResource(R.drawable.ic_thumb_up_24dp_outlined)
-                        }
-                    }
+                            when (song.userRating) {
+                                Rating.THUMB_UP -> {
+                                    binding.songBottomSheetThumbDown.setImageResource(R.drawable.ic_thumb_down_24dp_outlined)
+                                    binding.songBottomSheetThumbUp.setImageResource(R.drawable.ic_thumb_up_24dp)
+                                }
+                                Rating.THUMB_DOWN -> {
+                                    binding.songBottomSheetThumbDown.setImageResource(R.drawable.ic_thumb_down_24dp)
+                                    binding.songBottomSheetThumbUp.setImageResource(R.drawable.ic_thumb_up_24dp_outlined)
+                                }
+                                else -> {
+                                    binding.songBottomSheetThumbDown.setImageResource(R.drawable.ic_thumb_down_24dp_outlined)
+                                    binding.songBottomSheetThumbUp.setImageResource(R.drawable.ic_thumb_up_24dp_outlined)
+                                }
+                            }
 
-                    binding.songBottomSheetThumbDown.setOnClickListener {
-                        if (song.userRating == Rating.THUMB_DOWN) {
-                            viewModel.rateSong(Rating.THUMB_GONE)
-                        } else {
-                            viewModel.rateSong(Rating.THUMB_DOWN)
-                        }
-                    }
+                            binding.songBottomSheetThumbDown.setOnClickListener {
+                                if (song.userRating == Rating.THUMB_DOWN) {
+                                    viewModel.rateSong(Rating.THUMB_GONE)
+                                } else {
+                                    viewModel.rateSong(Rating.THUMB_DOWN)
+                                }
+                            }
 
-                    binding.songBottomSheetThumbUp.setOnClickListener {
-                        if (song.userRating == Rating.THUMB_UP) {
-                            viewModel.rateSong(Rating.THUMB_GONE)
-                        } else {
-                            viewModel.rateSong(Rating.THUMB_UP)
+                            binding.songBottomSheetThumbUp.setOnClickListener {
+                                if (song.userRating == Rating.THUMB_UP) {
+                                    viewModel.rateSong(Rating.THUMB_GONE)
+                                } else {
+                                    viewModel.rateSong(Rating.THUMB_UP)
+                                }
+                            }
                         }
+                        else -> Unit
                     }
                 }
-                else -> Unit
             }
         }
 
@@ -103,14 +111,13 @@ class SongMenuBottomSheetFragment : BottomSheetDialogFragment() {
         }
 
         binding.songBottomSheetPlaylistBtn.setOnClickListener {
-            dismiss()
-            val action = MobileNavigationDirections.actionGlobalNavigationAddToPlaylistBottomSheet(song.id)
+            val action =
+                SongMenuBottomSheetFragmentDirections.actionNavigationSongBottomSheetToAddToPlaylistBottomSheet(song.id)
             findNavController().navigate(action)
         }
 
         binding.songBottomSheetLyricsBtn.setOnClickListener {
-            dismiss()
-            val action = MobileNavigationDirections.actionGlobalLyricsBottomSheet(
+            val action = SongMenuBottomSheetFragmentDirections.actionNavigationSongBottomSheetToSongLyrics(
                 song.id,
                 song.title,
                 song.artistName
@@ -119,7 +126,6 @@ class SongMenuBottomSheetFragment : BottomSheetDialogFragment() {
         }
 
         binding.songBottomSheetInfoBtn.setOnClickListener {
-            dismiss()
             val action = SongMenuBottomSheetFragmentDirections
                 .actionNavigationSongBottomSheetToSongAdditionalInfoBottomSheetFragment(song)
             findNavController().navigate(action)

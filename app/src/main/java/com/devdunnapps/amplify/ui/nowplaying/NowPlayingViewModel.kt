@@ -32,7 +32,7 @@ class NowPlayingViewModel @Inject constructor(
     }
 
     fun togglePlayingState() {
-        if (playbackState.value!!.state == PlaybackStateCompat.STATE_PLAYING) {
+        if (playbackState.value.state == PlaybackStateCompat.STATE_PLAYING) {
             musicServiceConnection.transportControls.pause()
         } else {
             musicServiceConnection.transportControls.play()
@@ -79,7 +79,7 @@ class NowPlayingViewModel @Inject constructor(
     }
 
     private fun checkPlaybackPosition(): Boolean = handler.postDelayed({
-        val currPosition = playbackState.value!!.currentPlayBackPosition
+        val currPosition = playbackState.value.currentPlayBackPosition
         if (mediaPosition.value != currPosition)
             mediaPosition.value = currPosition
         if (updatePosition)

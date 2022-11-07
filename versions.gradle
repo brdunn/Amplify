@@ -1,5 +1,5 @@
 ext {
-    agpVersion = "7.2.1"
+    agpVersion = '7.3.1'
     kotlinVersion = "1.7.20"
 
     retrofitVersion = "2.9.0"
@@ -15,7 +15,7 @@ ext {
     paletteVersion = "1.0.0"
     datastoreVersion = "1.0.0"
     androidxCoreVersion = "1.9.0"
-    navVersion = "2.3.5"
+    navVersion = "2.5.3"
     lifecycleVersion = "2.5.1"
     preferenceVersion = "1.2.0"
     mediaVersion = "1.6.0"

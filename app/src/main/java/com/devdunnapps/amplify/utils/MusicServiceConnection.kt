@@ -10,13 +10,14 @@ import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.media.MediaBrowserServiceCompat
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class MusicServiceConnection(context: Context, serviceComponent: ComponentName) {
     val isConnected = MutableLiveData(false)
 
-    val playbackState = MutableLiveData(EMPTY_PLAYBACK_STATE)
+    val playbackState = MutableStateFlow(EMPTY_PLAYBACK_STATE)
 
-    val nowPlaying = MutableLiveData(NOTHING_PLAYING)
+    val nowPlaying = MutableStateFlow(NOTHING_PLAYING)
 
     val transportControls: MediaControllerCompat.TransportControls
         get() = mediaController.transportControls
@@ -62,7 +63,7 @@ class MusicServiceConnection(context: Context, serviceComponent: ComponentName) 
     private inner class MediaControllerCallback : MediaControllerCompat.Callback() {
 
         override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
-            playbackState.postValue(state ?: EMPTY_PLAYBACK_STATE)
+            playbackState.value = state ?: EMPTY_PLAYBACK_STATE
         }
 
         override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
@@ -70,13 +71,11 @@ class MusicServiceConnection(context: Context, serviceComponent: ComponentName) 
             // metadata object which has been instantiated with default values. The default value
             // for media ID is null so we assume that if this value is null we are not playing
             // anything.
-            nowPlaying.postValue(
-                if (metadata?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID) == null) {
+            nowPlaying.value =
+                if (metadata?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID) == null)
                     NOTHING_PLAYING
-                } else {
+                 else
                     metadata
-                }
-            )
         }
 
         override fun onQueueChanged(queue: MutableList<MediaSessionCompat.QueueItem>?) = Unit

@@ -21,16 +21,35 @@
             app:defaultNavHost="true"
             app:navGraph="@navigation/main_navigation" />
 
-        <include
-            android:id="@+id/now_playing_box"
-            layout="@layout/bottom_sheet_now_playing" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/bottom_sheet"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:behavior_peekHeight="64dp"
+            android:background="@color/md_theme_secondaryContainer"
+            android:visibility="gone"
+            tools:visibility="visible"
+            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/now_playing_box_collapsed"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/now_playing_expanded"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="invisible" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/nav_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?android:attr/windowBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/menu_bottom_nav"
         app:labelVisibilityMode="labeled" />

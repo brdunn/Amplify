@@ -14,6 +14,8 @@ import com.devdunnapps.amplify.utils.MusicServiceConnection
 import com.devdunnapps.amplify.utils.Resource
 import com.devdunnapps.amplify.utils.WhenToPlay
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.io.Serializable
 import javax.inject.Inject
@@ -26,30 +28,26 @@ class SongMenuBottomSheetViewModel @Inject constructor(
     private val mediaServiceConnection: MusicServiceConnection
 ): ViewModel() {
 
-    private val songId: String = savedStateHandle["songId"]!!
+    private val songId = SongMenuBottomSheetFragmentArgs.fromSavedStateHandle(savedStateHandle).songId
 
-    private val _song = MutableLiveData<Resource<Song>>()
-    val song: LiveData<Resource<Song>> = _song
-
-    private val _rateSong = MutableLiveData<Resource<Unit>>()
-    val rateSong: LiveData<Resource<Unit>> = _rateSong
+    private val _song = MutableStateFlow<Resource<Song>>(Resource.Loading())
+    val song = _song.asStateFlow()
 
     init {
-        gatherSong()
+        fetchSong()
     }
 
     fun rateSong(rating: Int) {
         viewModelScope.launch {
             rateSongUseCase(songId, rating).collect {
                 if (it is Resource.Success) {
-                    gatherSong()
+                    fetchSong()
                 }
-                _rateSong.value = it
             }
         }
     }
 
-    private fun gatherSong() {
+    private fun fetchSong() {
         viewModelScope.launch {
             getSongUseCase(songId).collect {
                 _song.value = it
@@ -65,7 +63,7 @@ class SongMenuBottomSheetViewModel @Inject constructor(
         }
 
         val songs = ArrayList<Serializable>()
-        songs.add(song.value!!.data!!)
+        songs.add(song.value.data!!)
         val bundle = Bundle()
         bundle.putSerializable("songs", songs)
         mediaServiceConnection.transportControls.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE)

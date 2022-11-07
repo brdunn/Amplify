@@ -9,10 +9,14 @@ import com.devdunnapps.amplify.domain.usecases.SearchLibraryUseCase
 import com.devdunnapps.amplify.utils.MusicServiceConnection
 import com.devdunnapps.amplify.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+private const val SEARCH_DEBOUNCE_TIME = 100L
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
@@ -32,10 +36,19 @@ class SearchViewModel @Inject constructor(
     )
     val searchResults = _searchResults.asStateFlow()
 
+    private var searchJob: Job? = null
+
     fun search(query: String) {
-        viewModelScope.launch {
-            searchLibraryUseCase(query).collect {
-                _searchResults.value = it
+        searchJob?.cancel()
+
+        val trimmedText = query.trim()
+        if (trimmedText.isNotEmpty()) {
+            searchJob = viewModelScope.launch {
+                delay(SEARCH_DEBOUNCE_TIME)
+
+                searchLibraryUseCase(trimmedText).collect {
+                    _searchResults.value = it
+                }
             }
         }
     }

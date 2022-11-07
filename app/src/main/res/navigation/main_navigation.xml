@@ -56,7 +56,7 @@
         android:id="@+id/navigation_album"
         android:name="com.devdunnapps.amplify.ui.album.AlbumFragment"
         android:label="AlbumFragment"
-        tools:layout="@layout/fragment_album" >
+        tools:layout="@layout/compose_layout_with_toolbar" >
         <argument
             android:name="albumId"
             app:argType="string" />
@@ -107,16 +107,29 @@
         <argument
             android:name="songId"
             app:argType="string" />
+
         <action
             android:id="@+id/action_navigation_song_bottom_sheet_to_songAdditionalInfoBottomSheetFragment"
-            app:destination="@id/songAdditionalInfoBottomSheetFragment" />
+            app:destination="@id/songAdditionalInfoBottomSheetFragment"
+            app:popUpTo="@id/navigation_song_bottom_sheet"
+            app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_navigation_song_bottom_sheet_to_song_lyrics"
+            app:destination="@id/lyricsBottomSheet"
+            app:popUpTo="@id/navigation_song_bottom_sheet"
+            app:popUpToInclusive="true" />
+
+        <action android:id="@+id/action_navigation_song_bottom_sheet_to_add_to_playlist_bottom_sheet"
+            app:destination="@id/navigation_add_to_playlist_bottom_sheet"
+            app:popUpTo="@id/navigation_song_bottom_sheet"
+            app:popUpToInclusive="true" />
     </dialog>
 
     <dialog
         android:id="@+id/navigation_add_to_playlist_bottom_sheet"
         android:name="com.devdunnapps.amplify.ui.addtoplaylist.AddToPlaylistBottomSheetFragment"
-        android:label="AddToPlaylistBottomSheetFragment"
-        tools:layout="@layout/fragment_add_to_playlist_bottom_sheet" >
+        android:label="AddToPlaylistBottomSheetFragment">
         <argument
             android:name="songId"
             app:argType="string" />
@@ -148,8 +161,7 @@
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.devdunnapps.amplify.ui.search.SearchFragment"
-        android:label="SearchFragment"
-        tools:layout="@layout/fragment_search" >
+        android:label="SearchFragment">
         <action
             android:id="@+id/action_searchFragment_to_navigation_playlist"
             app:destination="@id/navigation_playlist" />
@@ -159,7 +171,8 @@
         app:destination="@id/searchFragment" />
 
     <action android:id="@+id/action_global_navigation_artist"
-        app:destination="@id/navigation_artist" />
+        app:destination="@id/navigation_artist"
+        app:restoreState="false" />
 
     <action android:id="@+id/action_global_navigation_album"
         app:destination="@id/navigation_album" />
@@ -170,11 +183,7 @@
     <dialog
         android:id="@+id/nowPlayingFragment"
         android:name="com.devdunnapps.amplify.ui.nowplaying.NowPlayingFragment"
-        android:label="NowPlayingFragment"
-        tools:layout="@layout/bottom_sheet_now_playing"/>
-
-    <action android:id="@+id/action_global_navigation_add_to_playlist_bottom_sheet"
-        app:destination="@id/navigation_add_to_playlist_bottom_sheet"/>
+        android:label="NowPlayingFragment" />
 
     <dialog
         android:id="@+id/songAdditionalInfoBottomSheetFragment"
@@ -204,7 +213,4 @@
             android:name="songArtist"
             app:argType="string" />
     </dialog>
-
-    <action android:id="@+id/action_global_lyricsBottomSheet"
-        app:destination="@id/lyricsBottomSheet" />
 </navigation>

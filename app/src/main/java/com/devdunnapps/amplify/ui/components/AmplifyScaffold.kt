@@ -9,22 +9,12 @@ import com.google.android.material.composethemeadapter3.Mdc3Theme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AmplifyScaffold(
-    onNavigateToSearch: () -> Unit,
-    onNavigateToSettings: () -> Unit,
-    onNavigateToAbout: () -> Unit,
-    content: @Composable (PaddingValues) -> Unit,
-    title: String
+    topBar: @Composable () -> Unit,
+    content: @Composable (PaddingValues) -> Unit
 ) {
     Mdc3Theme {
         Scaffold(
-            topBar = {
-                AmplifyAppBar(
-                    title = title,
-                    onNavigateToSearch = onNavigateToSearch,
-                    onNavigateToSettings = onNavigateToSettings,
-                    onNavigateToAbout = onNavigateToAbout
-                )
-            },
+            topBar = topBar,
             content = content
         )
     }

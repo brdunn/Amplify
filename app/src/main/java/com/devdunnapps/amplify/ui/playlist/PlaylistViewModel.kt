@@ -27,7 +27,7 @@ class PlaylistViewModel @Inject constructor(
     private val musicServiceConnection: MusicServiceConnection
 ) : ViewModel() {
 
-    private val playlistId: String = savedStateHandle["playlistId"]!!
+    private val playlistId = PlaylistFragmentArgs.fromSavedStateHandle(savedStateHandle).playlistId
 
     private val _playlist: MutableStateFlow<Resource<Playlist>> = MutableStateFlow(Resource.Loading())
     val playlist = _playlist.asStateFlow()
@@ -77,7 +77,7 @@ class PlaylistViewModel @Inject constructor(
 
     private fun collectPlaylistBundle(): Bundle {
         return Bundle().apply {
-            putSerializable("songs", playlistSongs.value!!.data as Serializable)
+            putSerializable("songs", playlistSongs.value.data as Serializable)
         }
     }
 }
