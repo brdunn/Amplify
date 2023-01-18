@@ -17,16 +17,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.domain.models.Artist
+import com.devdunnapps.amplify.ui.theme.Theme
 import com.devdunnapps.amplify.utils.PlexUtils
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
 
 @Composable
 fun ArtistCard(onClick: () -> Unit, artist: Artist, modifier: Modifier = Modifier) {
@@ -61,7 +59,7 @@ fun ArtistCard(onClick: () -> Unit, artist: Artist, modifier: Modifier = Modifie
 @Preview
 @Composable
 fun ArtistCardPreview() {
-    Mdc3Theme {
+    Theme {
         ArtistCard(
             onClick = {},
             artist = Artist(

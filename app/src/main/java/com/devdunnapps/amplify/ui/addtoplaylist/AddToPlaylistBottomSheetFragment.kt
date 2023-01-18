@@ -31,8 +31,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.domain.models.Playlist
 import com.devdunnapps.amplify.ui.components.LoadingPager
+import com.devdunnapps.amplify.ui.theme.Theme
 import com.devdunnapps.amplify.utils.Resource
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -53,7 +53,7 @@ class AddToPlaylistBottomSheetFragment : BottomSheetDialogFragment() {
 
         return ComposeView(requireContext()).apply {
             setContent {
-                Mdc3Theme {
+                Theme {
                     AddToPlaylistBottomSheet(viewModel = viewModel)
                 }
             }

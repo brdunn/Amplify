@@ -18,34 +18,32 @@ import com.devdunnapps.amplify.domain.models.Lyric
 import com.devdunnapps.amplify.ui.components.BottomSheetHeader
 import com.devdunnapps.amplify.ui.components.ErrorScreen
 import com.devdunnapps.amplify.ui.components.LoadingPager
+import com.devdunnapps.amplify.ui.theme.Theme
 import com.devdunnapps.amplify.utils.Resource
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class LyricsBottomSheet : BottomSheetDialogFragment() {
 
-    private val args: LyricsBottomSheetArgs by navArgs()
+//    private val args: LyricsBottomSheetArgs by navArgs()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
         ComposeView(requireContext()).apply {
             setContent {
-                Mdc3Theme {
-                    LyricsBottomSheet(title = args.song.title, subtitle = args.song.artistName)
+                Theme {
+                    LyricsBottomSheetRoute()
                 }
             }
         }
 }
 
 @Composable
-private fun LyricsBottomSheet(
-    title: String,
-    subtitle: String,
+internal fun LyricsBottomSheetRoute(
     viewModel: LyricsBottomSheetViewModel = hiltViewModel()
 ) {
     Column {
-        BottomSheetHeader(title, subtitle)
+        BottomSheetHeader("fix me", "fix me")
 
         LazyColumn {
             item { LyricsContent(lyrics = viewModel.songLyrics.collectAsState().value) }

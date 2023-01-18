@@ -26,7 +26,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:behavior_peekHeight="64dp"
-            android:background="@color/md_theme_secondaryContainer"
             android:visibility="gone"
             tools:visibility="visible"
             app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">

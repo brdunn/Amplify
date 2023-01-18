@@ -18,7 +18,7 @@ class LyricsBottomSheetViewModel @Inject constructor(
     private val getSongLyricsUseCase: GetSongLyricsUseCase
 ) : ViewModel() {
 
-    private val songId = LyricsBottomSheetArgs.fromSavedStateHandle(savedStateHandle).song.id
+    private val songId:String = checkNotNull(savedStateHandle["songId"])
 
     private val _songLyrics = MutableStateFlow<Resource<Lyric>>(Resource.Loading)
     val songLyrics = _songLyrics.asStateFlow()

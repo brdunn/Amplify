@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import com.devdunnapps.amplify.ui.main.MainActivity
 import com.devdunnapps.amplify.ui.navigation.AmplifyNavHost
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
+import com.devdunnapps.amplify.ui.theme.Theme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -19,7 +19,7 @@ class OnBoardingActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window,true)
 
         setContent {
-            Mdc3Theme {
+            Theme {
                 AmplifyNavHost(
                     onFinishOnboarding = {
                         val mainActivityIntent = Intent(this, MainActivity::class.java)

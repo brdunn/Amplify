@@ -20,6 +20,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.domain.models.Preferences
 import com.devdunnapps.amplify.domain.models.ThemeConfig
@@ -28,7 +29,7 @@ import com.devdunnapps.amplify.ui.components.ListPreferenceItem
 import com.devdunnapps.amplify.ui.components.LoadingScreen
 import com.devdunnapps.amplify.ui.components.StaticTextCell
 import com.devdunnapps.amplify.ui.main.MainActivity
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
+import com.devdunnapps.amplify.ui.theme.Theme
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -41,7 +42,7 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            Mdc3Theme {
+            Theme {
                 SettingsScreen(
                     uiState = viewModel.uiState.collectAsState().value,
                     onNavigateUpClick = { onBackPressed() },
@@ -66,6 +67,20 @@ class SettingsActivity : AppCompatActivity() {
             }
             .show()
     }
+}
+
+@Composable
+internal fun SettingsRoute(
+    viewModel: SettingsActivityViewModel = hiltViewModel(),
+    onNavigateUp: () -> Unit,
+    onSignOutClick: () -> Unit
+) {
+    SettingsScreen(
+        uiState = viewModel.uiState.collectAsState().value,
+        onNavigateUpClick = onNavigateUp,
+        onChooseThemeClick = viewModel::changeTheme,
+        onSignOutClick = {}
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

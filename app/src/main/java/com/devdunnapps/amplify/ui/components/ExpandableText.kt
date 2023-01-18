@@ -7,7 +7,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -15,7 +19,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.devdunnapps.amplify.R
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
+import com.devdunnapps.amplify.ui.theme.Theme
 
 @Composable
 fun ExpandableText(
@@ -59,7 +63,7 @@ fun ExpandableText(
 @Preview
 @Composable
 fun ExpandableTextPreview() {
-    Mdc3Theme {
+    Theme {
         Surface {
             ExpandableText(text = stringResource(id = R.string.sample_summary))
         }

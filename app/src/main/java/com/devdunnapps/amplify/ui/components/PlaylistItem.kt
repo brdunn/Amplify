@@ -1,7 +1,13 @@
 package com.devdunnapps.amplify.ui.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
@@ -23,8 +29,8 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.domain.models.Playlist
+import com.devdunnapps.amplify.ui.theme.Theme
 import com.devdunnapps.amplify.utils.PlexUtils
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
 
 @Composable
 fun PlaylistItem(
@@ -98,7 +104,7 @@ fun PlaylistItemPreview() {
         summary = "",
         composite = ""
     )
-    Mdc3Theme {
+    Theme {
         Surface {
             PlaylistItem(
                 playlist = playlist,

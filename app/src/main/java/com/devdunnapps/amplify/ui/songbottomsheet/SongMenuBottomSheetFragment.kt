@@ -28,6 +28,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.devdunnapps.amplify.MobileNavigationDirections
@@ -39,10 +40,10 @@ import com.devdunnapps.amplify.ui.components.BottomSheetItem
 import com.devdunnapps.amplify.ui.components.ErrorScreen
 import com.devdunnapps.amplify.ui.components.LoadingPager
 import com.devdunnapps.amplify.ui.main.MainActivity
+import com.devdunnapps.amplify.ui.theme.Theme
 import com.devdunnapps.amplify.utils.PlexUtils
 import com.devdunnapps.amplify.utils.Resource
 import com.devdunnapps.amplify.utils.WhenToPlay
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -56,7 +57,7 @@ class SongMenuBottomSheetFragment : BottomSheetDialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         ComposeView(requireContext()).apply {
             setContent {
-                Mdc3Theme {
+                Theme {
                     SongBottomSheet(
                         viewModel = viewModel,
                         onPlayNextClick = {
@@ -85,9 +86,9 @@ class SongMenuBottomSheetFragment : BottomSheetDialogFragment() {
                             findNavController().navigate(action)
                         },
                         onRemoveFromPlaylist = navArgs.playlistId?.let { viewModel::removeSongFromPlaylist },
-                        onLyricsClick = { song ->
+                        onLyricsClick = { songId ->
                             val action = SongMenuBottomSheetFragmentDirections
-                                .actionNavigationSongBottomSheetToSongLyrics(song)
+                                .actionNavigationSongBottomSheetToSongLyrics(songId)
                             findNavController().navigate(action)
                         },
                         onInfoClick = { song ->
@@ -106,15 +107,15 @@ class SongMenuBottomSheetFragment : BottomSheetDialogFragment() {
 }
 
 @Composable
-private fun SongBottomSheet(
-    viewModel: SongMenuBottomSheetViewModel,
+internal fun SongBottomSheet(
+    viewModel: SongMenuBottomSheetViewModel = hiltViewModel(),
     onPlayNextClick: () -> Unit,
     onAddToQueueClick: () -> Unit,
     onGoToAlbumClick: (String) -> Unit,
     onGoToArtistClick: (String) -> Unit,
     onAddToPlaylist: (String) -> Unit,
     onRemoveFromPlaylist: (() -> Unit)? = null,
-    onLyricsClick: (Song) -> Unit,
+    onLyricsClick: (String) -> Unit,
     onInfoClick: (Song) -> Unit,
     refreshPreviousScreen: () -> Unit
 ) {
@@ -147,7 +148,7 @@ private fun SongBottomSheetContent(
     onGoToArtistClick: (String) -> Unit,
     onAddToPlaylist: (String) -> Unit,
     onRemoveFromPlaylist: (() -> Unit)? = null,
-    onLyricsClick: (Song) -> Unit,
+    onLyricsClick: (String) -> Unit,
     onInfoClick: (Song) -> Unit,
     onRatingClick: (Int) -> Unit,
     refreshPreviousScreen: () -> Unit
@@ -224,7 +225,7 @@ private fun SongBottomSheetContent(
                 BottomSheetItem(
                     icon = Icons.Outlined.Lyrics,
                     text = R.string.lyrics,
-                    onClick = { onLyricsClick(song) }
+                    onClick = { onLyricsClick(song.id) }
                 )
             }
 

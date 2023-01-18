@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -24,8 +25,8 @@ import com.devdunnapps.amplify.ui.components.BottomSheetHeader
 import com.devdunnapps.amplify.ui.components.BottomSheetItem
 import com.devdunnapps.amplify.ui.components.ErrorScreen
 import com.devdunnapps.amplify.ui.components.LoadingPager
+import com.devdunnapps.amplify.ui.theme.Theme
 import com.devdunnapps.amplify.utils.Resource
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -38,7 +39,7 @@ class PlaylistMenuBottomSheetFragment : BottomSheetDialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         ComposeView(requireContext()).apply {
             setContent {
-                Mdc3Theme {
+                Theme {
                     var isDeletePlaylistDialogVisible by remember { mutableStateOf(false) }
 
                     PlaylistBottomSheet(
@@ -92,7 +93,10 @@ private fun DeletePlaylistDialog(isVisible: Boolean, onSubmit: () -> Unit, onDis
 }
 
 @Composable
-private fun PlaylistBottomSheet(viewModel: PlaylistMenuBottomSheetViewModel, onDeletePlaylistClicked: () -> Unit) {
+internal fun PlaylistBottomSheet(
+    viewModel: PlaylistMenuBottomSheetViewModel = hiltViewModel(),
+    onDeletePlaylistClicked: () -> Unit
+) {
     when(val uiState = viewModel.playlist.collectAsState().value) {
         is Resource.Loading -> LoadingPager()
         is Resource.Error -> ErrorScreen()

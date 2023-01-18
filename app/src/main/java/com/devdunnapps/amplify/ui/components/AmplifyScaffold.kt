@@ -5,7 +5,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
+import com.devdunnapps.amplify.ui.theme.Theme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -15,7 +15,7 @@ fun AmplifyScaffold(
     floatingActionButton: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit
 ) {
-    Mdc3Theme {
+    Theme {
         Scaffold(
             topBar = topBar,
             content = content,

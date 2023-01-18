@@ -5,8 +5,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.devdunnapps.amplify.ui.about.aboutScreen
+import com.devdunnapps.amplify.ui.main.mainGraph
 import com.devdunnapps.amplify.ui.onboarding.OnboardingDestination
 import com.devdunnapps.amplify.ui.onboarding.onboardingGraph
+import com.devdunnapps.amplify.ui.settings.settingsScreen
 
 @Composable
 internal fun AmplifyNavHost(
@@ -23,6 +26,16 @@ internal fun AmplifyNavHost(
         onboardingGraph(
             navController = navController,
             onFinishOnboarding = onFinishOnboarding
+        )
+
+
+
+        settingsScreen(
+            onNavigateUp = { navController.popBackStack() }
+        )
+
+        aboutScreen(
+            onNavigateUp = {  }
         )
     }
 }

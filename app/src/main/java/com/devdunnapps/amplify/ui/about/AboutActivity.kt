@@ -15,7 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.devdunnapps.amplify.R
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
+import com.devdunnapps.amplify.ui.theme.Theme
 
 class AboutActivity : AppCompatActivity() {
 
@@ -23,7 +23,7 @@ class AboutActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            Mdc3Theme {
+            Theme {
                 AboutScreen(onNavigateUp = ::onNavigateUp)
             }
         }
@@ -32,7 +32,7 @@ class AboutActivity : AppCompatActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AboutScreen(onNavigateUp: () -> Unit) {
+internal fun AboutScreen(onNavigateUp: () -> Unit) {
     Scaffold(
         topBar = { AboutTopBar(onNavigateUp = onNavigateUp) },
         content = { contentPadding ->

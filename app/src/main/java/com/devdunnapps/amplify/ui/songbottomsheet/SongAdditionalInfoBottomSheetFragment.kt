@@ -15,7 +15,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.fragment.navArgs
 import com.devdunnapps.amplify.R
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
+import com.devdunnapps.amplify.ui.theme.Theme
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class SongAdditionalInfoBottomSheetFragment: BottomSheetDialogFragment() {
@@ -26,7 +26,7 @@ class SongAdditionalInfoBottomSheetFragment: BottomSheetDialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         ComposeView(requireContext()).apply {
             setContent {
-                Mdc3Theme {
+                Theme {
                     val playCount = args.song.playCount
 
                     Column(modifier = Modifier.fillMaxWidth()) {

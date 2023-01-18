@@ -45,6 +45,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.fragment.findNavController
@@ -99,18 +100,22 @@ class PlaylistFragment : Fragment() {
                 }
             }
         }
-        navBackStackEntry.getLifecycle().addObserver(observer)
+//        navBackStackEntry.getLifecycle().addObserver(observer)
 
         viewLifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_DESTROY) {
-                navBackStackEntry.getLifecycle().removeObserver(observer)
+//                navBackStackEntry.getLifecycle().removeObserver(observer)
             }
         })
     }
 }
 
 @Composable
-fun PlaylistRoute(viewModel: PlaylistViewModel, onSongMenuClick: (Song) -> Unit, modifier: Modifier = Modifier) {
+fun PlaylistRoute(
+    viewModel: PlaylistViewModel = hiltViewModel(),
+    onSongMenuClick: (Song) -> Unit,
+    modifier: Modifier = Modifier
+) {
     PlaylistScreen(
         uiState = viewModel.uiState.collectAsState().value,
         onSongClick = viewModel::playSong,

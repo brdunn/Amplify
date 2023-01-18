@@ -52,7 +52,7 @@ class ArtistsFragment : Fragment() {
 }
 
 @Composable
-private fun ArtistsRoute(
+internal fun ArtistsRoute(
     onArtistClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ArtistsViewModel = hiltViewModel()

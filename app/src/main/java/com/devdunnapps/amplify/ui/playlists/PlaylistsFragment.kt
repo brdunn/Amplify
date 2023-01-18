@@ -104,11 +104,11 @@ class PlaylistsFragment : Fragment() {
                 }
             }
         }
-        navBackStackEntry.getLifecycle().addObserver(observer)
+//        navBackStackEntry.getLifecycle().addObserver(observer)
 
         viewLifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_DESTROY) {
-                navBackStackEntry.getLifecycle().removeObserver(observer)
+//                navBackStackEntry.getLifecycle().removeObserver(observer)
             }
         })
     }
@@ -155,7 +155,7 @@ private fun CreatePlaylistDialog(onSubmit: (String) -> Unit, onDismiss: () -> Un
 }
 
 @Composable
-private fun PlaylistsRoute(
+internal fun PlaylistsRoute(
     onPlaylistClick: (String) -> Unit,
     onPlaylistMenuClick: (String) -> Unit,
     modifier: Modifier = Modifier,

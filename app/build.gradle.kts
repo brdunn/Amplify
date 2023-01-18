@@ -76,6 +76,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.accompanist.navigation.material)
 
     implementation(libs.androidx.lifecycle.viewModel.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -96,6 +97,7 @@ dependencies {
     implementation(libs.androidx.compose.animation)
     implementation(libs.androidx.compose.ui.tooling.preview)
     debugImplementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.androidx.compose.material)
     implementation(libs.androidx.compose.material.iconsExtended)
     compileOnly(libs.androidx.compose.compiler)
     implementation(libs.androidx.compose.paging)

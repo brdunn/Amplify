@@ -51,7 +51,7 @@ class SongsFragment : Fragment() {
 }
 
 @Composable
-private fun SongsRoute(
+internal fun SongsRoute(
     onSongMenuClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SongsViewModel = hiltViewModel()

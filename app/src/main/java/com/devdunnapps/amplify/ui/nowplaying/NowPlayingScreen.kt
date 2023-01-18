@@ -129,7 +129,7 @@ private fun NowPlayingHeader(
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .background(color = MaterialTheme.colorScheme.background)
                 .padding(top = 32.dp)
         ) {

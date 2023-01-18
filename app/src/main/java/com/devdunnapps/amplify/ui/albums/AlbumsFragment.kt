@@ -52,7 +52,7 @@ class AlbumsFragment : Fragment() {
 }
 
 @Composable
-private fun AlbumsRoute(
+internal fun AlbumsRoute(
     onAlbumClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AlbumsViewModel = hiltViewModel()

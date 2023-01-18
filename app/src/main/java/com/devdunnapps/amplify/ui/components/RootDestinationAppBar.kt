@@ -1,7 +1,5 @@
 package com.devdunnapps.amplify.ui.components
 
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
@@ -10,7 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.devdunnapps.amplify.R
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
+import com.devdunnapps.amplify.ui.theme.Theme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -26,7 +24,7 @@ fun RootDestinationAppBar(
     CenterAlignedTopAppBar(
         title = { Text(text = title) },
         scrollBehavior = scrollBehavior,
-        windowInsets = WindowInsets.statusBars,
+//        windowInsets = WindowInsets.statusBars,
         actions = {
             IconButton(onClick = onNavigateToSearch) {
                 Icon(
@@ -68,7 +66,7 @@ fun RootDestinationAppBar(
 @Preview
 @Composable
 fun AmplifyAppBarPreview() {
-    Mdc3Theme {
+    Theme {
         RootDestinationAppBar(
             title = "App Bar",
             onNavigateToSearch = {},

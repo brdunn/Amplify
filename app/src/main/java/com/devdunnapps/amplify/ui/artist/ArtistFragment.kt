@@ -35,6 +35,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import coil.compose.AsyncImage
@@ -96,8 +97,8 @@ class ArtistFragment : Fragment() {
 }
 
 @Composable
-private fun ArtistRoute(
-    viewModel: ArtistViewModel,
+internal fun ArtistRoute(
+    viewModel: ArtistViewModel = hiltViewModel(),
     onAlbumClick: (String) -> Unit,
     onViewAllAlbumsClick: () -> Unit,
     onViewAllSinglesEPsClick: () -> Unit,

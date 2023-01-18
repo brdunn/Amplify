@@ -176,7 +176,7 @@
         android:name="com.devdunnapps.amplify.ui.nowplaying.LyricsBottomSheet"
         android:label="LyricsBottomSheet">
         <argument
-            android:name="song"
-            app:argType="com.devdunnapps.amplify.domain.models.Song" />
+            android:name="songId"
+            app:argType="string" />
     </dialog>
 </navigation>

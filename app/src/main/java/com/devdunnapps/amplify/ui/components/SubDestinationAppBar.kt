@@ -11,7 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.devdunnapps.amplify.R
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
+import com.devdunnapps.amplify.ui.theme.Theme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,7 +75,7 @@ fun SubDestinationAppBar(
 @Preview
 @Composable
 fun SubDestinationAppBarPreview() {
-    Mdc3Theme {
+    Theme {
         SubDestinationAppBar(
             title = "App Bar",
             onNavigateUp = {},

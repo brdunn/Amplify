@@ -29,7 +29,7 @@ class AlbumViewModel @Inject constructor(
     private val musicServiceConnection: MusicServiceConnection
 ) : ViewModel() {
 
-    private val albumId = AlbumFragmentArgs.fromSavedStateHandle(savedStateHandle).albumId
+    private val albumId: String = checkNotNull(savedStateHandle["albumId"])
 
     private val _album = MutableStateFlow<Resource<AlbumScreenUIModel>>(Resource.Loading)
     val album = _album.asStateFlow()

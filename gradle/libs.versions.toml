@@ -1,44 +1,46 @@
 [versions]
-accompanist = "0.30.1"
+accompanist = "0.31.6-rc"
 androidGradlePlugin = "8.1.2"
 androidxAppCompat = "1.6.1"
 androidxConstraintLayout = "2.1.4"
 androidxPalette = "1.0.0"
 androidxDataStore = "1.0.0"
-androidxCore = "1.9.0"
+androidxCore = "1.12.0"
 androidxNavigation = "2.5.3"
-androidxLifecycle = "2.5.1"
-androidxPreference = "1.2.0"
+androidxLifecycle = "2.6.2"
+androidxPreference = "1.2.1"
 androidxMedia = "1.6.0"
 androidxTestExt = "1.1.5"
 androidxEspresso = "3.5.1"
-androidxCompose = "1.4.1"
-androidxComposeMaterial = "1.4.1"
-androidxComposeCompiler = "1.4.5"
-androidxComposePaging = "1.0.0-alpha18"
-androidxActivity = "1.7.0"
-androidxComposeMaterial3 = "1.0.1"
+androidxCompose = "1.5.3"
+androidxComposeMaterial = "1.5.3"
+androidxComposeCompiler = "1.5.3"
+androidxComposePaging = "1.0.0-alpha20"
+androidxActivity = "1.8.0"
+androidxComposeMaterial3 = "1.1.2"
 androidxHiltNavigationCompose = "1.0.0"
-coil = "2.2.2"
+coil = "2.4.0"
 coroutines = "1.6.3"
 exoPlayer = "2.18.3"
-hilt = "2.44.2"
+hilt = "2.46"
 junit4 = "4.13.2"
-kotlin = "1.8.20"
+kotlin = "1.9.10"
 kotlinxCoroutines = "1.6.4"
-material = "1.8.0"
+material = "1.10.0"
 mockWebserver = "4.9.2"
-protobuf = "3.22.3"
-protobufPlugin = "0.9.0"
+protobuf = "3.24.1"
+protobufPlugin = "0.9.4"
 retrofit = "2.9.0"
 
 [libraries]
 accompanist-themeAdapter-material3 = { group = "com.google.accompanist", name = "accompanist-themeadapter-material3", version.ref = "accompanist" }
+accompanist-navigation-material = { group = "com.google.accompanist", name = "accompanist-navigation-material", version.ref = "accompanist" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidxActivity" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidxAppCompat" }
 androidx-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "androidxCompose" }
-androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "androidxCompose" }
+#androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "androidxCompose" }
 androidx-compose-compiler = { group = "androidx.compose.compiler", name = "compiler", version.ref = "androidxComposeCompiler" }
+androidx-compose-material = { group = "androidx.compose.material", name = "material", version.ref = "androidxComposeMaterial" }
 androidx-compose-material-iconsExtended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "androidxComposeMaterial" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "androidxComposeMaterial3" }
 androidx-compose-material3-windowSizeClass = { group = "androidx.compose.material3", name = "material3-window-size-class", version.ref = "androidxComposeMaterial3" }
@@ -69,7 +71,7 @@ exoplayer-mediaSession = { group = "com.google.android.exoplayer", name = "exten
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 junit4 = { group = "junit", name = "junit", version.ref = "junit4" }
-kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version.ref = "kotlin" }
+#kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version.ref = "kotlin" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 okhttp-mockWebServer = { group = "com.squareup.okhttp3", name = "mockwebserver", version.ref = "mockWebserver" }

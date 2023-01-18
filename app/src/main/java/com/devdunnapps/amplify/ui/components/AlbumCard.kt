@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.domain.models.Album
+import com.devdunnapps.amplify.ui.theme.Theme
 import com.devdunnapps.amplify.utils.PlexUtils
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
 
 @Composable
 fun AlbumCard(onClick: () -> Unit, album: Album, modifier: Modifier = Modifier) {
@@ -54,7 +54,7 @@ fun AlbumCard(onClick: () -> Unit, album: Album, modifier: Modifier = Modifier) 
 @Preview
 @Composable
 fun AlbumCardPreview() {
-    Mdc3Theme {
+    Theme {
         AlbumCard(
             onClick = {},
             album = Album(
