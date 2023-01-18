@@ -9,6 +9,8 @@ import android.net.Uri
 import android.os.Build
 import android.support.v4.media.session.MediaControllerCompat
 import android.support.v4.media.session.MediaSessionCompat
+import androidx.core.app.TaskStackBuilder
+import androidx.core.net.toUri
 import coil.ImageLoader
 import coil.request.ImageRequest
 import com.devdunnapps.amplify.R
@@ -86,14 +88,22 @@ class NotificationManager(
         }
 
         override fun createCurrentContentIntent(player: Player): PendingIntent? {
-            val intent = Intent(context, MainActivity::class.java)
-            intent.putExtra("launchNowPlaying", true)
-            return PendingIntent.getActivity(
+            val deepLinkIntent = Intent(
+                Intent.ACTION_VIEW,
+                "amplify://now-playing".toUri(),
                 context,
-                0,
-                intent,
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_IMMUTABLE else 0
-                        or PendingIntent.FLAG_UPDATE_CURRENT)
+                MainActivity::class.java
+            )
+
+            return TaskStackBuilder.create(context).run {
+                addNextIntentWithParentStack(deepLinkIntent)
+                getPendingIntent(
+                    0,
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+                        PendingIntent.FLAG_IMMUTABLE
+                    else 0 or PendingIntent.FLAG_UPDATE_CURRENT
+                )
+            }
         }
 
         private suspend fun resolveUriToBitmap(uri: Uri): Bitmap? = withContext(Dispatchers.IO) {

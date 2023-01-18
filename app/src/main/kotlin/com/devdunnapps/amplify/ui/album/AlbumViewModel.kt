@@ -5,10 +5,12 @@ import android.support.v4.media.session.PlaybackStateCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.devdunnapps.amplify.data.networking.NetworkResponse
 import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.domain.usecases.GetAlbumSongsUseCase
 import com.devdunnapps.amplify.domain.usecases.GetAlbumUseCase
+import com.devdunnapps.amplify.ui.navigation.AlbumRoute
 import com.devdunnapps.amplify.utils.MusicServiceConnection
 import com.devdunnapps.amplify.utils.Resource
 import com.devdunnapps.amplify.utils.TimeUtils
@@ -29,7 +31,7 @@ class AlbumViewModel @Inject constructor(
     private val musicServiceConnection: MusicServiceConnection
 ) : ViewModel() {
 
-    private val albumId = AlbumFragmentArgs.fromSavedStateHandle(savedStateHandle).albumId
+    private val albumId = savedStateHandle.toRoute<AlbumRoute>().albumId
 
     private val _album = MutableStateFlow<Resource<AlbumScreenUIModel>>(Resource.Loading)
     val album = _album.asStateFlow()

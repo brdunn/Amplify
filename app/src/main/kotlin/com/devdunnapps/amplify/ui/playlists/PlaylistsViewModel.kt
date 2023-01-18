@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.devdunnapps.amplify.data.networking.NetworkResponse
 import com.devdunnapps.amplify.domain.models.Playlist
 import com.devdunnapps.amplify.domain.usecases.CreatePlaylistUseCase
+import com.devdunnapps.amplify.domain.usecases.DeletePlaylistUseCase
 import com.devdunnapps.amplify.domain.usecases.GetPlaylistsUseCase
 import com.devdunnapps.amplify.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class PlaylistsViewModel @Inject constructor(
     private val getPlaylistsUseCase: GetPlaylistsUseCase,
-    private val createPlaylistUseCase: CreatePlaylistUseCase
+    private val createPlaylistUseCase: CreatePlaylistUseCase,
+    private val deletePlaylistUseCase: DeletePlaylistUseCase
 ) : ViewModel() {
 
     private val _playlists = MutableStateFlow<Resource<List<Playlist>>>(Resource.Loading)
@@ -41,6 +43,17 @@ class PlaylistsViewModel @Inject constructor(
                 _playlists.emit(Resource.Success(result.data))
             else
                 _playlists.emit(Resource.Error())
+        }
+    }
+
+    fun deletePlaylist(playlistId: String) {
+        viewModelScope.launch {
+            val currentState = (playlists.value as? Resource.Success)?.data ?: return@launch
+            _playlists.emit(Resource.Success(currentState.filterNot { it.id == playlistId }))
+
+            if (deletePlaylistUseCase(playlistId) !is NetworkResponse.Success) {
+                _playlists.emit(Resource.Success(currentState))
+            }
         }
     }
 }

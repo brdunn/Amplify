@@ -21,9 +21,9 @@ fun Carousel(
     onViewAllClick: (() -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = modifier) {
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp), modifier = modifier) {
         Row(modifier = Modifier.padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Text(text = title, style = MaterialTheme.typography.headlineSmall, modifier = Modifier.weight(1f))
+            Text(text = title, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
 
             onViewAllClick?.let {
                 TextButton(onClick = it) {

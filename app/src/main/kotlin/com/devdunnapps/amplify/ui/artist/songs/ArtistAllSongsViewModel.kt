@@ -4,9 +4,11 @@ import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.devdunnapps.amplify.data.networking.NetworkResponse
 import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.domain.usecases.GetArtistSongsUseCase
+import com.devdunnapps.amplify.ui.navigation.ArtistAllSongsRoute
 import com.devdunnapps.amplify.utils.MusicServiceConnection
 import com.devdunnapps.amplify.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +24,7 @@ class ArtistAllSongsViewModel @Inject constructor(
     private val musicServiceConnection: MusicServiceConnection
 ) : ViewModel() {
 
-    private val artistId = ArtistAllSongsFragmentArgs.fromSavedStateHandle(savedStateHandle).artistId
+    private val artistId = savedStateHandle.toRoute<ArtistAllSongsRoute>().artistId
 
     private val _artistSongs = MutableStateFlow<Resource<List<Song>>>(Resource.Loading)
     val artistSongs = _artistSongs.asStateFlow()

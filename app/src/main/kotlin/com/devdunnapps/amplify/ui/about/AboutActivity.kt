@@ -1,8 +1,5 @@
 package com.devdunnapps.amplify.ui.about
 
-import android.os.Bundle
-import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,23 +12,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.devdunnapps.amplify.R
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
-
-class AboutActivity : AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setContent {
-            Mdc3Theme {
-                AboutScreen(onNavigateUp = ::onNavigateUp)
-            }
-        }
-    }
-}
 
 @Composable
-private fun AboutScreen(onNavigateUp: () -> Unit) {
+internal fun AboutScreen(onNavigateUp: () -> Unit) {
     Scaffold(
         topBar = { AboutTopBar(onNavigateUp = onNavigateUp) },
         content = { contentPadding ->

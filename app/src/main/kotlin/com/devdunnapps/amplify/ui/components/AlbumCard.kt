@@ -25,14 +25,16 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.domain.models.Album
+import com.devdunnapps.amplify.ui.theme.Theme
+import com.devdunnapps.amplify.ui.utils.whenNotNull
+import com.devdunnapps.amplify.ui.utils.whenTrue
 import com.devdunnapps.amplify.utils.PlexUtils
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
 
 @Composable
 fun AlbumCard(
     onClick: () -> Unit,
     album: Album,
-    artworkSize: Dp,
+    artworkSize: Dp?,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -45,7 +47,8 @@ fun AlbumCard(
         val imageUrl = remember { PlexUtils.getInstance(context).getSizedImage(album.thumb, 300, 300) }
         AsyncImage(
             modifier = Modifier
-                .size(artworkSize)
+                .whenNotNull(artworkSize) { size(it) }
+                .whenTrue(artworkSize == null) { fillMaxWidth() }
                 .aspectRatio(1f)
                 .clip(RoundedCornerShape(6.dp)),
             model = imageUrl,
@@ -58,7 +61,7 @@ fun AlbumCard(
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = album.title,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.titleSmall,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1
             )
@@ -76,7 +79,7 @@ fun AlbumCard(
 @Preview
 @Composable
 fun AlbumCardPreview() {
-    Mdc3Theme {
+    Theme {
         AlbumCard(
             onClick = {},
             album = Album(

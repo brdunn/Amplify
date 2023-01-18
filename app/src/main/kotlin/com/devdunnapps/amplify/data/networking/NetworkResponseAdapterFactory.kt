@@ -49,14 +49,11 @@ private class EmptyResponseBodyNetworkResponseCallAdapter :
     CallAdapter<Unit, Call<NetworkResponse<Unit>>> {
     override fun responseType(): Type = Unit.javaClass
 
-    override fun adapt(call: Call<Unit>): Call<NetworkResponse<Unit>> =
-        NetworkResponseCall(
-            originalCall = call,
-            emptyBodyHandler = { responseCode ->
-                if (responseCode in 200 until 300)
-                    NetworkResponse.Success(Unit)
-                else
-                    NetworkResponse.Failure(code = responseCode)
-            }
-        )
+    override fun adapt(call: Call<Unit>): Call<NetworkResponse<Unit>> = NetworkResponseCall(call) { response ->
+        if (response.code() in 200 until 300) {
+            NetworkResponse.Success(Unit)
+        } else {
+            NetworkResponse.Failure(code = response.code())
+        }
+    }
 }

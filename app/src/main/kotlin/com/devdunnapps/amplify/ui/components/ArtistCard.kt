@@ -28,13 +28,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.devdunnapps.amplify.domain.models.Artist
+import com.devdunnapps.amplify.ui.theme.Theme
+import com.devdunnapps.amplify.ui.utils.whenNotNull
+import com.devdunnapps.amplify.ui.utils.whenTrue
 import com.devdunnapps.amplify.utils.PlexUtils
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
 
 @Composable
 fun ArtistCard(
     artist: Artist,
-    artworkSize: Dp,
+    artworkSize: Dp?,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -49,7 +51,8 @@ fun ArtistCard(
         val imageUrl = remember { PlexUtils.getInstance(context).getSizedImage(artist.thumb, 500, 500) }
         AsyncImage(
             modifier = Modifier
-                .size(artworkSize)
+                .whenNotNull(artworkSize) { size(it) }
+                .whenTrue(artworkSize == null) { fillMaxWidth() }
                 .aspectRatio(1f)
                 .clip(CircleShape),
             model = imageUrl,
@@ -62,7 +65,7 @@ fun ArtistCard(
         Text(
             text = artist.name,
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.titleSmall,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.fillMaxWidth()
@@ -73,7 +76,7 @@ fun ArtistCard(
 @Preview
 @Composable
 fun ArtistCardPreview() {
-    Mdc3Theme {
+    Theme {
         ArtistCard(
             onClick = {},
             artist = Artist(
