@@ -32,7 +32,7 @@ class PlexUtils constructor(context: Context) {
         return "$serverAddress$url?X-Plex-Token=$userToken"
     }
 
-    fun getSizedImage(url: String, width: Int, height: Int): String {
+    fun getSizedImage(url: String, width: Int = 400, height: Int = 400): String {
         return "$serverAddress/photo/:/transcode?width=$width&height=$height&url=$url&X-Plex-Token=$userToken"
     }
 }

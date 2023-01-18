@@ -43,7 +43,7 @@ class LoginFlowViewModel @Inject constructor(
                 if (it is Resource.Success) {
                     PreferencesUtils.saveString(
                         app.applicationContext,
-                        PreferencesUtils.PREF_PLEX_USER_TOKEN, it.data!!.authToken
+                        PreferencesUtils.PREF_PLEX_USER_TOKEN, it.data.authToken
                     )
                     _user.value = it
                     getServers()
@@ -58,7 +58,8 @@ class LoginFlowViewModel @Inject constructor(
 
     private fun getServers() {
         viewModelScope.launch {
-            getUsersServersUseCase(_user.value.data!!.authToken).collect {
+            val authToken = (_user.value as? Resource.Success)?.data?.authToken ?: return@launch
+            getUsersServersUseCase(authToken).collect {
                 _servers.value = it
             }
         }

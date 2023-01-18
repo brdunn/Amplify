@@ -4,95 +4,82 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.devdunnapps.amplify.MobileNavigationDirections
-import com.devdunnapps.amplify.databinding.FragmentArtistsBinding
+import com.devdunnapps.amplify.R
+import com.devdunnapps.amplify.domain.models.Artist
 import com.devdunnapps.amplify.ui.components.ArtistCard
-import com.devdunnapps.amplify.ui.components.LoadingPager
 import com.devdunnapps.amplify.ui.components.LoadingScreen
-import com.google.android.material.composethemeadapter3.Mdc3Theme
+import com.devdunnapps.amplify.ui.utils.FragmentRootDestinationScaffold
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ArtistsFragment : Fragment() {
 
-    private var _binding: FragmentArtistsBinding? = null
-    private val binding get() = _binding!!
     private val viewModel: ArtistsViewModel by viewModels()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = FragmentArtistsBinding.inflate(inflater, container, false)
-
-        setSystemUI()
-
-        binding.artistsCompose.setContent {
-            Mdc3Theme {
-                ArtistsScreen(viewModel) { artist ->
-                    findNavController().navigate(MobileNavigationDirections.actionGlobalNavigationArtist(artist))
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        ComposeView(requireContext()).apply {
+            setContent {
+                FragmentRootDestinationScaffold(screenTitle = stringResource(R.string.artists)) { paddingValues ->
+                    ArtistsRoute(
+                        viewModel = viewModel,
+                        onArtistClick = { artist ->
+                            findNavController().navigate(MobileNavigationDirections.actionGlobalNavigationArtist(artist))
+                        },
+                        modifier = Modifier.padding(top = paddingValues.calculateTopPadding())
+                    )
                 }
             }
         }
-
-        return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
-    private fun setSystemUI() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.artistsToolbarLayout) { view, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.updatePadding(top = insets.top)
-            WindowInsetsCompat.CONSUMED
-        }
-
-        (activity as AppCompatActivity).setSupportActionBar(binding.artistsToolbar)
-    }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun ArtistsScreen(
-    viewModel: ArtistsViewModel,
-    onClick: (String) -> Unit
+private fun ArtistsRoute(
+    onArtistClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: ArtistsViewModel = hiltViewModel()
 ) {
     val artists = viewModel.artists.collectAsLazyPagingItems()
+    ArtistsScreen(artists = artists, onArtistClick = onArtistClick, modifier = modifier)
+}
 
+@Composable
+private fun ArtistsScreen(
+    artists: LazyPagingItems<Artist>,
+    onArtistClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
     if (artists.loadState.refresh is LoadState.Loading)
-        LoadingScreen()
+        LoadingScreen(modifier = modifier)
 
     LazyVerticalGrid(
         columns = GridCells.Adaptive(100.dp),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection())
+        modifier = modifier
     ) {
         items(artists.itemCount) { index ->
             artists[index]?.let {
                 ArtistCard(
-                    onClick = { onClick(it.id) },
+                    onClick = { onArtistClick(it.id) },
                     artist = it
                 )
             }

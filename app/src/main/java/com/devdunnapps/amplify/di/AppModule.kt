@@ -4,8 +4,12 @@ import android.content.ComponentName
 import android.content.Context
 import android.os.Build
 import android.provider.Settings
+import androidx.datastore.core.DataStore
+import androidx.datastore.core.DataStoreFactory
+import androidx.datastore.dataStoreFile
 import com.devdunnapps.amplify.BuildConfig
 import com.devdunnapps.amplify.R
+import com.devdunnapps.amplify.UserPreferences
 import com.devdunnapps.amplify.data.*
 import com.devdunnapps.amplify.domain.repository.PlexRepository
 import com.devdunnapps.amplify.domain.repository.PlexTVRepository
@@ -18,6 +22,9 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -30,12 +37,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideMusicServiceConnection(@ApplicationContext context: Context): MusicServiceConnection {
-        return MusicServiceConnection(
-            context,
-            ComponentName(context, MusicService::class.java)
-        )
-    }
+    fun provideMusicServiceConnection(@ApplicationContext context: Context): MusicServiceConnection =
+        MusicServiceConnection(context, ComponentName(context, MusicService::class.java))
 
     fun getOKHTTPClient(context: Context): OkHttpClient = OkHttpClient.Builder()
         .addInterceptor {
@@ -55,25 +58,23 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providePlexTVAPI(@ApplicationContext context: Context): PlexTVAPI {
-        return Retrofit.Builder()
+    fun providePlexTVAPI(@ApplicationContext context: Context): PlexTVAPI =
+        Retrofit.Builder()
             .baseUrl("https://plex.tv/")
             .addConverterFactory(GsonConverterFactory.create())
             .client(getOKHTTPClient(context))
             .build()
             .create(PlexTVAPI::class.java)
-    }
 
     @Provides
     @Singleton
-    fun provideLibraryRepository(api: PlexTVAPI, @ApplicationContext context: Context): PlexTVRepository {
-        return PlexTVRepositoryImpl(api, context)
-    }
+    fun provideLibraryRepository(api: PlexTVAPI, @ApplicationContext context: Context): PlexTVRepository =
+        PlexTVRepositoryImpl(api, context)
 
     @Provides
     @Singleton
     fun providePlexAPI(@ApplicationContext context: Context): PlexAPI {
-        val url = PreferencesUtils.readSharedSetting(context, PreferencesUtils.PREF_PLEX_SERVER_ADDRESS) ?: ""
+        val url = PreferencesUtils.readSharedSetting(context, PreferencesUtils.PREF_PLEX_SERVER_ADDRESS).orEmpty()
         return Retrofit.Builder()
             .baseUrl(url)
             .addConverterFactory(GsonConverterFactory.create())
@@ -85,24 +86,36 @@ object AppModule {
     @Provides
     @Singleton
     @Named("library")
-    fun provideLibrary(@ApplicationContext context: Context): String {
-        return PreferencesUtils.readSharedSetting(context, PreferencesUtils.PREF_PLEX_SERVER_LIBRARY) ?: ""
-    }
+    fun provideLibrary(@ApplicationContext context: Context): String =
+        PreferencesUtils.readSharedSetting(context, PreferencesUtils.PREF_PLEX_SERVER_LIBRARY).orEmpty()
 
     @Provides
     @Singleton
     @Named("plexToken")
-    fun provideUserToken(@ApplicationContext context: Context): String {
-        return PreferencesUtils.readSharedSetting(context, PreferencesUtils.PREF_PLEX_USER_TOKEN) ?: ""
-    }
+    fun provideUserToken(@ApplicationContext context: Context): String =
+        PreferencesUtils.readSharedSetting(context, PreferencesUtils.PREF_PLEX_USER_TOKEN).orEmpty()
 
     @Provides
     @Singleton
-    fun providePlexRepository(api: PlexAPI, @Named("plexToken") userToken: String, @Named("library") library: String): PlexRepository {
-        return PlexRepositoryImpl(api, userToken, library)
-    }
+    fun providePlexRepository(
+        api: PlexAPI,
+        @Named("plexToken") userToken: String,
+        @Named("library") library: String
+    ): PlexRepository =
+        PlexRepositoryImpl(api, userToken, library)
 
     @Provides
     @Singleton
-    fun providePreferencesRepository(@ApplicationContext app: Context): PreferencesRepository = PreferencesRepositoryImpl(app)
+    fun providePreferencesDataStore(@ApplicationContext context: Context): DataStore<UserPreferences> =
+        DataStoreFactory.create(
+            scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
+            serializer = UserPreferencesSerializer()
+        ) {
+            context.dataStoreFile("preferences.pb")
+        }
+
+    @Provides
+    @Singleton
+    fun providePreferencesRepository(preferencesDataStore: DataStore<UserPreferences>): PreferencesRepository =
+        PreferencesRepositoryImpl(preferences = preferencesDataStore)
 }

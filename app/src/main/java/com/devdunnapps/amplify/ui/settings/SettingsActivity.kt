@@ -1,63 +1,149 @@
 package com.devdunnapps.amplify.ui.settings
 
-import android.content.SharedPreferences
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import android.content.Intent
 import android.os.Bundle
-import android.view.MenuItem
+import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.preference.PreferenceManager
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
 import com.devdunnapps.amplify.R
-import com.devdunnapps.amplify.databinding.ActivitySettingsBinding
+import com.devdunnapps.amplify.domain.models.Preferences
+import com.devdunnapps.amplify.domain.models.ThemeConfig
+import com.devdunnapps.amplify.ui.components.ListPreferenceCell
+import com.devdunnapps.amplify.ui.components.ListPreferenceItem
+import com.devdunnapps.amplify.ui.components.LoadingScreen
+import com.devdunnapps.amplify.ui.components.StaticTextCell
+import com.devdunnapps.amplify.ui.main.MainActivity
+import com.google.accompanist.themeadapter.material3.Mdc3Theme
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dagger.hilt.android.AndroidEntryPoint
 
-class SettingsActivity : AppCompatActivity(), OnSharedPreferenceChangeListener {
+@AndroidEntryPoint
+class SettingsActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivitySettingsBinding
+    val viewModel: SettingsActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivitySettingsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
-        setSupportActionBar(binding.settingsToolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
-
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.settings_fragment_container, SettingsFragment())
-            .commit()
-
-        PreferenceManager.getDefaultSharedPreferences(this)
-            .registerOnSharedPreferenceChangeListener(this)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            android.R.id.home -> {
-                onBackPressed()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
-        when (key) {
-            "theme" -> {
-                val darkModeValues = resources.getStringArray(R.array.theme_values)
-                when (sharedPreferences.getString(key, darkModeValues[2])) {
-                    "MODE_NIGHT_YES" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                    "MODE_NIGHT_NO" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                    "MODE_NIGHT_FOLLOW_SYSTEM" ->
-                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-                }
+        setContent {
+            Mdc3Theme {
+                SettingsScreen(
+                    uiState = viewModel.uiState.collectAsState().value,
+                    onNavigateUpClick = { onBackPressed() },
+                    onChooseThemeClick = viewModel::changeTheme,
+                    onSignOutClick = {  handleSignOut() }
+                )
             }
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this)
+    private fun handleSignOut() {
+        MaterialAlertDialogBuilder(this)
+            .setMessage(resources.getString(R.string.logout))
+            .setMessage(resources.getString(R.string.sign_out_dialog_summary))
+            .setNegativeButton(resources.getString(R.string.cancel)) { _, _ -> }
+            .setPositiveButton(resources.getString(R.string.confirm)) { _, _ ->
+                viewModel.signOut()
+
+                val restartApp = Intent(this, MainActivity::class.java)
+                restartApp.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(restartApp)
+            }
+            .show()
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SettingsScreen(
+    uiState: SettingsScreenUIState,
+    onNavigateUpClick: () -> Unit,
+    onChooseThemeClick: (ThemeConfig) -> Unit,
+    onSignOutClick: () -> Unit
+) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                navigationIcon = {
+                    IconButton(onClick = onNavigateUpClick) {
+                        Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = null)
+                    }
+                },
+                title = { Text(text = stringResource(id = R.string.settings)) }
+            )
+        }
+    ) { paddingValues ->
+        when(uiState) {
+            is SettingsScreenUIState.Loading -> LoadingScreen()
+            is SettingsScreenUIState.Content -> SettingsScreenContent(
+                preferences = uiState.preferences,
+                onChooseThemeClick = onChooseThemeClick,
+                onSignOutClick = onSignOutClick,
+                modifier = Modifier.padding(paddingValues)
+            )
+        }
+
+    }
+}
+
+@Composable
+private fun SettingsScreenContent(
+    preferences: Preferences,
+    onChooseThemeClick: (ThemeConfig) -> Unit,
+    onSignOutClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(modifier = modifier) {
+        item {
+            val theme = preferences.themeConfig
+            val darkModeTitles = stringArrayResource(R.array.theme_titles)
+            val themeDescription = darkModeTitles[theme.ordinal]
+
+            ListPreferenceCell(
+                title = R.string.choose_theme_preference_title,
+                description = themeDescription,
+                items = listOf(
+                    ListPreferenceItem(
+                        title = "Use System Default",
+                        isSelected = theme == ThemeConfig.FOLLOW_SYSTEM,
+                        value = ThemeConfig.FOLLOW_SYSTEM
+                    ),
+                    ListPreferenceItem(
+                        title = "Light",
+                        isSelected = theme == ThemeConfig.LIGHT,
+                        value = ThemeConfig.LIGHT
+                    ),
+                    ListPreferenceItem(
+                        title = "Dark",
+                        isSelected = theme == ThemeConfig.DARK,
+                        value = ThemeConfig.DARK
+                    )
+                ),
+                onClick = { listPreferenceItem -> listPreferenceItem?.let { onChooseThemeClick(it.value as ThemeConfig) } }
+            )
+        }
+
+        item {
+            StaticTextCell(
+                title = R.string.sign_out_preference_title,
+                description = R.string.sign_out_preference_description,
+                onClick = onSignOutClick
+            )
+        }
     }
 }

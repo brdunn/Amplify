@@ -15,6 +15,8 @@ import com.devdunnapps.amplify.utils.WhenToPlay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.io.Serializable
 import javax.inject.Inject
@@ -29,31 +31,28 @@ class PlaylistViewModel @Inject constructor(
 
     private val playlistId = PlaylistFragmentArgs.fromSavedStateHandle(savedStateHandle).playlistId
 
-    private val _playlist: MutableStateFlow<Resource<Playlist>> = MutableStateFlow(Resource.Loading())
-    val playlist = _playlist.asStateFlow()
-
-    private val _playlistSongs: MutableStateFlow<Resource<List<Song>>> = MutableStateFlow(Resource.Loading())
-    val playlistSongs = _playlistSongs.asStateFlow()
+    private val _uiState: MutableStateFlow<Resource<PlaylistUIModel>> = MutableStateFlow(Resource.Loading())
+    val uiState = _uiState.asStateFlow()
 
     init {
         gatherPlaylist()
-        gatherSongs()
     }
 
     private fun gatherPlaylist() {
         viewModelScope.launch {
-            getPlaylistUseCase(playlistId).collect {
-                _playlist.value = it
-            }
+            combine(getPlaylistUseCase(playlistId), getPlaylistSongsUseCase(playlistId)) { playlist, songs ->
+                when {
+                    playlist is Resource.Error || songs is Resource.Error -> _uiState.emit(Resource.Error())
+                    playlist is Resource.Loading || songs is Resource.Loading -> _uiState.emit(Resource.Loading())
+                    playlist is Resource.Success && songs is Resource.Success ->
+                        _uiState.emit(Resource.Success(PlaylistUIModel(playlist.data, songs.data)))
+                }
+            }.collect()
         }
     }
 
-    fun gatherSongs() {
-        viewModelScope.launch {
-            getPlaylistSongsUseCase(playlistId).collect {
-                _playlistSongs.value = it
-            }
-        }
+    fun refresh() {
+        gatherPlaylist()
     }
 
     fun playSong(song: Song) {
@@ -77,7 +76,13 @@ class PlaylistViewModel @Inject constructor(
 
     private fun collectPlaylistBundle(): Bundle {
         return Bundle().apply {
-            putSerializable("songs", playlistSongs.value.data as Serializable)
+            val songs = (_uiState.value as? Resource.Success)?.data?.songs ?: return@apply
+            putSerializable("songs", songs as Serializable)
         }
     }
 }
+
+data class PlaylistUIModel(
+    val playlist: Playlist,
+    val songs: List<Song>
+)

@@ -1,7 +1,7 @@
 package com.devdunnapps.amplify.utils
 
-sealed class Resource<T>(val data: T? = null, val message: String? = null) {
-    class Loading<T>(data: T? = null): Resource<T>(data)
-    class Success<T>(data: T? = null): Resource<T>(data)
-    class Error<T>(message: String, data: T? = null): Resource<T>(data, message)
+sealed class Resource<out T> {
+    class Loading : Resource<Nothing>()
+    data class Success<T>(val data: T): Resource<T>()
+    data class Error<T>(val message: String? = null, val data: Any? = null): Resource<T>()
 }

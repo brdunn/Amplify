@@ -12,8 +12,8 @@ import androidx.compose.ui.res.stringResource
 import com.devdunnapps.amplify.R
 
 @Composable
-fun ZeroStateScreen(@StringRes title: Int) {
-    Box(modifier = Modifier.fillMaxSize()) {
+fun ZeroStateScreen(@StringRes title: Int, modifier: Modifier = Modifier) {
+    Box(modifier = modifier.fillMaxSize()) {
         Text(
             text = stringResource(title),
             style = MaterialTheme.typography.headlineSmall,

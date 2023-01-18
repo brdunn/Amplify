@@ -4,18 +4,19 @@ plugins {
     id 'kotlin-kapt'
     id 'androidx.navigation.safeargs.kotlin'
     id 'dagger.hilt.android.plugin'
+    id 'com.google.protobuf' version '0.8.19'
 }
 
 android {
     namespace 'com.devdunnapps.amplify'
 
-    compileSdkVersion 33
-    buildToolsVersion '33.0.0'
+    compileSdk 33
+    buildToolsVersion = "33.0.0"
 
     defaultConfig {
         applicationId "com.devdunnapps.amplify"
-        minSdkVersion 21
-        targetSdkVersion 33
+        minSdk 21
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -67,7 +68,7 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:$constraintLayoutVersion"
     implementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"
     implementation "androidx.palette:palette-ktx:$paletteVersion"
-    implementation "androidx.datastore:datastore-preferences:$datastoreVersion"
+    implementation "androidx.datastore:datastore:$datastoreVersion"
     implementation "androidx.core:core-ktx:$androidxCoreVersion"
     implementation "androidx.preference:preference-ktx:$preferenceVersion"
     implementation "androidx.media:media:$mediaVersion"
@@ -75,7 +76,7 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:$navVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$navVersion"
     implementation "androidx.navigation:navigation-compose:$navVersion"
-    implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
+    implementation "androidx.hilt:hilt-navigation-compose:$hiltNavigationComposeVersion"
 
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion"
@@ -93,19 +94,21 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
     implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
 
-    implementation "androidx.compose.material:material:$composeVersion"
+    implementation "androidx.compose.material:material:$composeMaterialVersion"
     implementation "androidx.compose.animation:animation:$composeVersion"
     implementation "androidx.compose.ui:ui-tooling:$composeVersion"
-    implementation "androidx.compose.material:material-icons-extended:$composeVersion"
+    implementation "androidx.compose.material:material-icons-extended:$composeMaterialVersion"
     implementation "androidx.compose.compiler:compiler:$composeCompilerVersion"
     implementation "androidx.paging:paging-compose:$composePagingVersion"
     implementation "androidx.activity:activity-compose:$composeActivityVersion"
     implementation "androidx.compose.material3:material3:$composeMaterial3Version"
     implementation "androidx.compose.material3:material3-window-size-class:$composeMaterial3Version"
-    implementation "com.google.android.material:compose-theme-adapter-3:$composeMaterial3ThemeAdapterVersion"
+    implementation "com.google.accompanist:accompanist-themeadapter-material3:$accompanistVersion"
 
     implementation "io.coil-kt:coil:$coilVersion"
     implementation "io.coil-kt:coil-compose:$coilVersion"
+
+    implementation  "com.google.protobuf:protobuf-kotlin-lite:$protobufVersion"
 
     testImplementation "junit:junit:$junitVersion"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
@@ -114,4 +117,24 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitExtVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$composeVersion"
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:$protobufVersion"
+    }
+
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                java {
+                    option 'lite'
+                }
+
+                kotlin {
+                    option 'lite'
+                }
+            }
+        }
+    }
 }

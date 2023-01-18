@@ -5,8 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,14 +19,13 @@ import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -40,119 +37,110 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import coil.compose.LocalImageLoader
-import coil.compose.rememberImagePainter
+import coil.compose.AsyncImage
 import com.devdunnapps.amplify.MobileNavigationDirections
 import com.devdunnapps.amplify.R
-import com.devdunnapps.amplify.databinding.FragmentAlbumBinding
 import com.devdunnapps.amplify.domain.models.Album
 import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.ui.components.ErrorScreen
 import com.devdunnapps.amplify.ui.components.ExpandableText
 import com.devdunnapps.amplify.ui.components.LoadingScreen
+import com.devdunnapps.amplify.ui.utils.FragmentSubDestinationScaffold
 import com.devdunnapps.amplify.ui.utils.getCurrentSizeClass
-import com.devdunnapps.amplify.utils.*
-import com.google.android.material.composethemeadapter3.Mdc3Theme
+import com.devdunnapps.amplify.utils.PlexUtils
+import com.devdunnapps.amplify.utils.Resource
+import com.devdunnapps.amplify.utils.TimeUtils
+import com.devdunnapps.amplify.utils.WhenToPlay
+import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AlbumFragment : Fragment() {
 
-    private var _binding: FragmentAlbumBinding? = null
-    private val binding get() = _binding!!
     private val viewModel: AlbumViewModel by viewModels()
 
-    @OptIn(ExperimentalComposeUiApi::class)
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentAlbumBinding.inflate(inflater, container, false)
-
-        setSystemUI()
-
-         binding.albumCompose.apply {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        ComposeView(requireContext()).apply {
             setContent {
-                Mdc3Theme {
-                    Surface(
-                        modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection())
-                    ) {
-                        AlbumScreen(
-                            viewModel = viewModel,
-                            onSongMenuClick = { songId ->
-                                val action = MobileNavigationDirections.actionGlobalNavigationSongBottomSheet(songId)
-                                findNavController().navigate(action)
-                            }
-                        )
-                    }
+                val screenTitle =
+                    (viewModel.album.collectAsState().value as? Resource.Success)?.data?.album?.title.orEmpty()
+
+                FragmentSubDestinationScaffold(screenTitle = screenTitle) { paddingValues ->
+                    AlbumRoute(
+                        viewModel = viewModel,
+                        onSongMenuClick = { songId ->
+                            val action = MobileNavigationDirections.actionGlobalNavigationSongBottomSheet(songId)
+                            findNavController().navigate(action)
+                        },
+                        modifier = Modifier.padding(top = paddingValues.calculateTopPadding())
+                    )
                 }
             }
         }
-
-        return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
-    private fun setSystemUI() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.albumToolbarLayout) { view, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.updatePadding(top = insets.top)
-            WindowInsetsCompat.CONSUMED
-        }
-
-        (activity as AppCompatActivity).setSupportActionBar(binding.albumToolbar)
-        (activity as AppCompatActivity).supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        (activity as AppCompatActivity).supportActionBar!!.setDisplayShowHomeEnabled(true)
-    }
 }
 
 @Composable
-private fun AlbumScreen(viewModel: AlbumViewModel, onSongMenuClick: (String) -> Unit) {
-    val album by viewModel.album.collectAsState()
+fun AlbumRoute(viewModel: AlbumViewModel, onSongMenuClick: (String) -> Unit, modifier: Modifier = Modifier) {
+    AlbumScreen(
+        album = viewModel.album.collectAsState().value,
+        onSongClick = { viewModel.playSong(it) },
+        onSongMenuClick = onSongMenuClick,
+        onPlayAlbumClick = { viewModel.playAlbum(WhenToPlay.NOW, false) },
+        onShuffleAlbumClick = { viewModel.playAlbum(WhenToPlay.NOW, true) },
+        onPlayNextClick = { viewModel.playAlbum(WhenToPlay.NEXT, false) },
+        onAddToQueueClick = { viewModel.playAlbum(WhenToPlay.QUEUE, false) },
+        modifier = modifier
+    )
+}
 
+@Composable
+private fun AlbumScreen(
+    album: Resource<AlbumScreenUIModel>,
+    onSongClick: (Song) -> Unit,
+    onSongMenuClick: (String) -> Unit,
+    onPlayAlbumClick: () -> Unit,
+    onShuffleAlbumClick: () -> Unit,
+    onPlayNextClick: () -> Unit,
+    onAddToQueueClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     when (album) {
-        is Resource.Loading -> LoadingScreen()
+        is Resource.Loading -> LoadingScreen(modifier = modifier)
         is Resource.Success -> AlbumScreenContent(
-            model = album.data!!,
-            onPlaySong = { viewModel.playSong(it) },
-            onPlayClicked = { viewModel.playAlbum(WhenToPlay.NOW, false) },
-            onShuffleClicked = { viewModel.playAlbum(WhenToPlay.NOW, true) },
-            onPlayNextClick = { viewModel.playAlbum(WhenToPlay.NEXT, false) },
-            onAddToQueueClick = { viewModel.playAlbum(WhenToPlay.QUEUE, false) },
-            onSongMenuClick = onSongMenuClick
+            model = album.data,
+            onSongClick = onSongClick,
+            onPlayAlbumClick = onPlayAlbumClick,
+            onShuffleAlbumClick = onShuffleAlbumClick,
+            onPlayNextClick = onPlayNextClick,
+            onAddToQueueClick = onAddToQueueClick,
+            onSongMenuClick = onSongMenuClick,
+            modifier = modifier
         )
-        is Resource.Error -> ErrorScreen()
+        is Resource.Error -> ErrorScreen(modifier = modifier)
     }
 }
 
 @Composable
 private fun AlbumScreenContent(
     model: AlbumScreenUIModel,
-    onPlaySong: (Song) -> Unit,
-    onPlayClicked: () -> Unit,
-    onShuffleClicked: () -> Unit,
+    onSongClick: (Song) -> Unit,
+    onPlayAlbumClick: () -> Unit,
+    onShuffleAlbumClick: () -> Unit,
     onPlayNextClick: () -> Unit,
     onSongMenuClick: (String) -> Unit,
-    onAddToQueueClick: () -> Unit
+    onAddToQueueClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     if (getCurrentSizeClass() == WindowWidthSizeClass.Compact) {
-        LazyColumn{
+        LazyColumn(modifier = modifier) {
             item {
                 AlbumHeader(
                     model = model,
-                    onPlayClicked = onPlayClicked,
-                    onShuffleClicked = onShuffleClicked,
+                    onPlayClicked = onPlayAlbumClick,
+                    onShuffleClicked = onShuffleAlbumClick,
                     onPlayNextClick = onPlayNextClick,
                     onAddToQueueClick = onAddToQueueClick
                 )
@@ -162,7 +150,7 @@ private fun AlbumScreenContent(
                 AlbumSong(
                     song = song,
                     albumPos = index + 1,
-                    onClick = { onPlaySong(song) },
+                    onClick = { onSongClick(song) },
                     onMenuClick = onSongMenuClick
                 )
             }
@@ -172,12 +160,15 @@ private fun AlbumScreenContent(
             }
         }
     } else {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = modifier
+        ) {
             Column(modifier = Modifier.weight(1f)) {
                 AlbumHeaderTablet(
                     model = model,
-                    onPlayClicked = onPlayClicked,
-                    onShuffleClicked = onShuffleClicked,
+                    onPlayClicked = onPlayAlbumClick,
+                    onShuffleClicked = onShuffleAlbumClick,
                     onPlayNextClick = onPlayNextClick,
                     onAddToQueueClick = onAddToQueueClick
                 )
@@ -188,7 +179,7 @@ private fun AlbumScreenContent(
                     AlbumSong(
                         song = song,
                         albumPos = index + 1,
-                        onClick = { onPlaySong(song) },
+                        onClick = { onSongClick(song) },
                         onMenuClick = onSongMenuClick
                     )
                 }
@@ -258,19 +249,14 @@ private fun ArtworkTitleTablet(album: Album, onPlayNextClick: () -> Unit, onAddT
     Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         val context = LocalContext.current
         val imageUrl = remember { PlexUtils.getInstance(context).addKeyAndAddress(album.thumb) }
-        Image(
+        AsyncImage(
             modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .aspectRatio(1F)
                 .clip(shape = RoundedCornerShape(4.dp)),
-            painter = rememberImagePainter(
-                data = imageUrl,
-                imageLoader = LocalImageLoader.current,
-                builder = {
-                    placeholder(R.drawable.ic_albums_black_24dp)
-                    error(R.drawable.ic_albums_black_24dp)
-                }
-            ),
+            model = imageUrl,
+            placeholder = painterResource(R.drawable.ic_album),
+            error = painterResource(R.drawable.ic_album),
             contentDescription = null,
             contentScale = ContentScale.FillWidth
         )
@@ -333,20 +319,16 @@ private fun ArtworkTitle(album: Album, onPlayNextClick: () -> Unit, onAddToQueue
     Row {
         val context = LocalContext.current
         val imageUrl = remember { PlexUtils.getInstance(context).addKeyAndAddress(album.thumb) }
-        Image(
+
+        AsyncImage(
             modifier = Modifier
                 .padding(16.dp)
                 .weight(1F)
                 .aspectRatio(1F)
                 .clip(shape = RoundedCornerShape(4.dp)),
-            painter = rememberImagePainter(
-                data = imageUrl,
-                imageLoader = LocalImageLoader.current,
-                builder = {
-                    placeholder(R.drawable.ic_albums_black_24dp)
-                    error(R.drawable.ic_albums_black_24dp)
-                }
-            ),
+            model = imageUrl,
+            placeholder = painterResource(R.drawable.ic_album),
+            error = painterResource(R.drawable.ic_album),
             contentDescription = null,
             contentScale = ContentScale.FillWidth
         )
@@ -567,7 +549,6 @@ private fun AlbumSong(
         }
     }
 }
-
 
 @Preview
 @Composable

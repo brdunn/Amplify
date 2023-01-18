@@ -119,7 +119,7 @@ interface PlexAPI {
     suspend fun getSongLyrics(
         @Path("lyricKey") lyricKey: String,
         @Header("X-Plex-Token") userToken: String
-    ): ResponseBody
+    ): PlexModelDTO
 
     @GET("library/sections")
     suspend fun getLibrarySections(

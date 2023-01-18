@@ -39,7 +39,7 @@ class PlexRepositoryImplTest {
                 assert(response is Resource.Loading)
             } else if (index == 1 ) {
                 assert(response is Resource.Success)
-                val song = response.data!!
+                val song = (response as Resource.Success).data
                 assert(song.id == TEST_SONG_ID)
                 assert(song.title == "The Night We Met")
             }
@@ -53,7 +53,7 @@ class PlexRepositoryImplTest {
                 assert(response is Resource.Loading)
             } else if (index == 1) {
                 assert(response is Resource.Success)
-                val songs = response.data!!
+                val songs = (response as Resource.Success).data
                 assert(songs.size == 14)
                 assert(songs[0].title == "These Are Days")
                 assert(songs[0].artistName == "10,000 Maniacs")
@@ -68,7 +68,7 @@ class PlexRepositoryImplTest {
                 assert(response is Resource.Loading)
             } else if (index == 1) {
                 assert(response is Resource.Success)
-                val playlist = response.data!!
+                val playlist = (response as Resource.Success).data
                 assert(playlist.title == "Bops")
                 assert(playlist.numSongs == 16)
             }
@@ -82,7 +82,7 @@ class PlexRepositoryImplTest {
                 assert(response is Resource.Loading)
             } else if (index == 1) {
                 assert(response is Resource.Success)
-                val songs = response.data!!
+                val songs = (response as Resource.Success).data
                 assert(songs.size == 16)
                 assert(songs[0].title == "What Life Would Be Like")
             }
@@ -96,7 +96,7 @@ class PlexRepositoryImplTest {
                 assert(response is Resource.Loading)
             } else if (index == 1) {
                 assert(response is Resource.Success)
-                val songs = response.data!!
+                val songs = (response as Resource.Success).data
                 assert(songs.size == 20)
                 assert(songs[0].title == "Like the Weather")
             }
@@ -110,7 +110,7 @@ class PlexRepositoryImplTest {
                 assert(response is Resource.Loading)
             } else if (index == 1) {
                 assert(response is Resource.Success)
-                val artist = response.data!!
+                val artist = (response as Resource.Success).data
                 assert(artist.id == TEST_ARTIST_ID)
                 assert(artist.name == "10,000 Maniacs")
             }
@@ -154,7 +154,7 @@ class PlexRepositoryImplTest {
                 assert(response is Resource.Loading)
             } else if (index == 1) {
                 assert(response is Resource.Success)
-                val playlist = response.data!!
+                val playlist = (response as Resource.Success).data
                 assert(playlist.title == TEST_PLAYLIST_TITLE)
                 assert(playlist.numSongs == 0)
             }
@@ -168,7 +168,7 @@ class PlexRepositoryImplTest {
                 assert(response is Resource.Loading)
             } else if (index == 1) {
                 assert(response is Resource.Success)
-                val searchResults = response.data!!
+                val searchResults = (response as Resource.Success).data
                 assert(searchResults.songs.size == 3)
                 assert(searchResults.artists.size == 3)
                 assert(searchResults.albums.size == 3)

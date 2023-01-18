@@ -1,14 +1,7 @@
 package com.devdunnapps.amplify.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -22,18 +15,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.LocalImageLoader
-import coil.compose.rememberImagePainter
+import coil.compose.AsyncImage
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.utils.PlexUtils
 import com.devdunnapps.amplify.utils.TimeUtils
-import com.google.android.material.composethemeadapter3.Mdc3Theme
+import com.google.accompanist.themeadapter.material3.Mdc3Theme
 
 @Composable
 fun SongItem(
@@ -51,15 +44,10 @@ fun SongItem(
         val context = LocalContext.current
         val artworkUrl = remember { PlexUtils.getInstance(context).getSizedImage(song.thumb, 200, 200) }
 
-        Image(
-            painter = rememberImagePainter(
-                data = artworkUrl,
-                imageLoader = LocalImageLoader.current,
-                builder = {
-                    placeholder(R.drawable.ic_albums_black_24dp)
-                    error(R.drawable.ic_albums_black_24dp)
-                }
-            ),
+        AsyncImage(
+            model = artworkUrl,
+            placeholder = painterResource(R.drawable.ic_album),
+            error = painterResource(R.drawable.ic_album),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier

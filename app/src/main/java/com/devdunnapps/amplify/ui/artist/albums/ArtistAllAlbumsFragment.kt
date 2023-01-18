@@ -4,97 +4,92 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.devdunnapps.amplify.MobileNavigationDirections
-import com.devdunnapps.amplify.databinding.FragmentArtistAllAlbumsBinding
+import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.domain.models.Album
 import com.devdunnapps.amplify.ui.components.AlbumCard
 import com.devdunnapps.amplify.ui.components.ErrorScreen
 import com.devdunnapps.amplify.ui.components.LoadingScreen
+import com.devdunnapps.amplify.ui.utils.FragmentSubDestinationScaffold
 import com.devdunnapps.amplify.utils.Resource
-import com.google.android.material.composethemeadapter3.Mdc3Theme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ArtistAllAlbumsFragment : Fragment() {
 
-    private var _binding: FragmentArtistAllAlbumsBinding? = null
-    private val binding get() = _binding!!
     private val viewModel: ArtistAllAlbumsViewModel by viewModels()
+    private val args: ArtistAllAlbumsFragmentArgs by navArgs()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = FragmentArtistAllAlbumsBinding.inflate(inflater, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        ComposeView(requireContext()).apply {
+            setContent {
+                val screenTitle = remember { if (args.isSinglesEPs) R.string.singles_and_eps else R.string.albums }
 
-        setSystemUI()
-
-        binding.artistAlbumsCompose.setContent {
-            Mdc3Theme {
-                ArtistAllAlbumsScreen(
-                    viewModel = viewModel,
-                    onAlbumClick = { albumId ->
-                        findNavController().navigate(MobileNavigationDirections.actionGlobalNavigationAlbum(albumId))
-                    }
-                )
+                FragmentSubDestinationScaffold(screenTitle = stringResource(screenTitle)) { paddingValues ->
+                    ArtistAllAlbumsRoute(
+                        viewModel = viewModel,
+                        onAlbumClick = { albumId ->
+                            val action = MobileNavigationDirections.actionGlobalNavigationAlbum(albumId)
+                            findNavController().navigate(action)
+                        },
+                        modifier = Modifier.padding(top = paddingValues.calculateTopPadding())
+                    )
+                }
             }
         }
+}
 
-        return binding.root
-    }
+@Composable
+fun ArtistAllAlbumsRoute(
+    viewModel: ArtistAllAlbumsViewModel,
+    onAlbumClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    ArtistAllAlbumsScreen(
+        albums = viewModel.artistAlbums.collectAsState().value,
+        onAlbumClick = onAlbumClick,
+        modifier = modifier
+    )
+}
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
-    private fun setSystemUI() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.albumsToolbarLayout) { view, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.updatePadding(top = insets.top)
-            WindowInsetsCompat.CONSUMED
-        }
-
-        (activity as AppCompatActivity).setSupportActionBar(binding.albumsToolbar)
-        (activity as AppCompatActivity).supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        (activity as AppCompatActivity).supportActionBar!!.setDisplayShowHomeEnabled(true)
+@Composable
+private fun ArtistAllAlbumsScreen(
+    albums: Resource<List<Album>>,
+    onAlbumClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    when (albums) {
+        is Resource.Loading -> LoadingScreen(modifier = modifier)
+        is Resource.Success -> ArtistAllAlbumsList(albums.data, onAlbumClick, modifier)
+        is Resource.Error -> ErrorScreen(modifier = modifier)
     }
 }
 
 @Composable
-private fun ArtistAllAlbumsScreen(viewModel: ArtistAllAlbumsViewModel, onAlbumClick: (String) -> Unit) {
-    when (val state = viewModel.artistAlbums.collectAsState().value) {
-        is Resource.Loading -> LoadingScreen()
-        is Resource.Success -> ArtistAllAlbumsList(state.data!!, onAlbumClick)
-        is Resource.Error -> ErrorScreen()
-    }
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-private fun ArtistAllAlbumsList(albums: List<Album>, onAlbumClick: (String) -> Unit) {
+private fun ArtistAllAlbumsList(albums: List<Album>, onAlbumClick: (String) -> Unit, modifier: Modifier = Modifier) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(150.dp),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection())
+        modifier = modifier
     ) {
         items(albums) {
             AlbumCard(

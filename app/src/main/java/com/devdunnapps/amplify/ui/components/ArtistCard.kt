@@ -26,7 +26,7 @@ import coil.compose.AsyncImage
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.domain.models.Artist
 import com.devdunnapps.amplify.utils.PlexUtils
-import com.google.android.material.composethemeadapter3.Mdc3Theme
+import com.google.accompanist.themeadapter.material3.Mdc3Theme
 
 @Composable
 fun ArtistCard(onClick: () -> Unit, artist: Artist, modifier: Modifier = Modifier) {
@@ -68,6 +68,7 @@ fun ArtistCardPreview() {
                 id = "99",
                 name = "Billy Joel",
                 thumb = "/library/metadata/45209/thumb/1641184622",
+                art = null,
                 bio = ""
             )
         )

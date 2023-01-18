@@ -4,36 +4,38 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.fragment.navArgs
 import com.devdunnapps.amplify.R
-import com.devdunnapps.amplify.databinding.FragmentSongAdditionalInfoBottomSheetBinding
+import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class SongAdditionalInfoBottomSheetFragment: BottomSheetDialogFragment() {
 
-    private var _binding: FragmentSongAdditionalInfoBottomSheetBinding? = null
-    private val binding get() = _binding!!
     private val args: SongAdditionalInfoBottomSheetFragmentArgs by navArgs()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentSongAdditionalInfoBottomSheetBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    @OptIn(ExperimentalComposeUiApi::class)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        ComposeView(requireContext()).apply {
+            setContent {
+                Mdc3Theme {
+                    val playCount = args.song.playCount
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        val playCount = args.song.playCount ?: 0
-        binding.songBottomSheetPlayCount.text =
-            resources.getQuantityString(R.plurals.song_play_count, playCount, playCount)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text = pluralStringResource(R.plurals.song_play_count, playCount, playCount),
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
+                }
+            }
+        }
 }

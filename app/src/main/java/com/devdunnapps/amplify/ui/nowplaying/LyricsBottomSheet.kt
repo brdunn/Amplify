@@ -2,48 +2,62 @@ package com.devdunnapps.amplify.ui.nowplaying
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import com.devdunnapps.amplify.databinding.FragmentLyricsBottomSheetBinding
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.fragment.navArgs
+import com.devdunnapps.amplify.domain.models.Lyric
+import com.devdunnapps.amplify.ui.components.BottomSheetHeader
+import com.devdunnapps.amplify.ui.components.ErrorScreen
+import com.devdunnapps.amplify.ui.components.LoadingPager
 import com.devdunnapps.amplify.utils.Resource
+import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class LyricsBottomSheet : BottomSheetDialogFragment() {
 
-    private var _binding: FragmentLyricsBottomSheetBinding? = null
-    private val binding get() = _binding!!
-    private val viewModel: LyricsBottomSheetViewModel by viewModels()
+    private val args: LyricsBottomSheetArgs by navArgs()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = FragmentLyricsBottomSheetBinding.inflate(inflater, container, false)
-
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.songLyrics.collect { result ->
-                    when (result) {
-                        is Resource.Success -> binding.lyricsText.text = result.data!!.lyrics
-                        is Resource.Error -> binding.lyricsText.text = "Could not find lyrics for this song"
-                        is Resource.Loading -> Unit
-                    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
+        ComposeView(requireContext()).apply {
+            setContent {
+                Mdc3Theme {
+                    LyricsBottomSheet(title = args.song.title, subtitle = args.song.artistName)
                 }
             }
         }
+}
 
-        binding.songBottomSheetTitle.text = requireArguments().getString("songTitle")!!
-        binding.songBottomSheetArtist.text = requireArguments().getString("songArtist")!!
+@Composable
+private fun LyricsBottomSheet(
+    title: String,
+    subtitle: String,
+    viewModel: LyricsBottomSheetViewModel = hiltViewModel()
+) {
+    Column {
+        BottomSheetHeader(title, subtitle)
 
-        return binding.root
+        LazyColumn {
+            item { LyricsContent(lyrics = viewModel.songLyrics.collectAsState().value) }
+        }
     }
+}
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+@Composable
+private fun LyricsContent(lyrics: Resource<Lyric>) {
+    when (lyrics) {
+        is Resource.Success -> Text(text = lyrics.data.lyrics, modifier = Modifier.padding(16.dp))
+        is Resource.Error -> ErrorScreen()
+        is Resource.Loading -> LoadingPager()
     }
 }

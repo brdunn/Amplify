@@ -99,7 +99,7 @@ class NotificationManager(
         private suspend fun resolveUriToBitmap(uri: Uri): Bitmap? = withContext(Dispatchers.IO) {
             val request = ImageRequest.Builder(context)
                 .data(uri)
-                .error(R.drawable.ic_albums_black_24dp)
+                .error(R.drawable.ic_album)
                 .size(NOTIFICATION_LARGE_ICON_SIZE)
                 .build()
             (ImageLoader(context).execute(request).drawable as BitmapDrawable).bitmap

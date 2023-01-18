@@ -33,7 +33,7 @@ class ArtistAllSongsViewModel @Inject constructor(
     private fun getArtistSongs() {
         viewModelScope.launch {
             getArtistSongsUseCase(artistId).collect {
-
+                _artistSongs.emit(it)
             }
         }
     }

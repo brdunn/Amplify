@@ -1,17 +1,13 @@
 package com.devdunnapps.amplify.ui.main
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.TypedValue
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,30 +37,25 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation.findNavController
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
-import androidx.preference.PreferenceManager
 import coil.compose.AsyncImage
 import com.devdunnapps.amplify.MobileNavigationDirections
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.databinding.ActivityMainBinding
-import com.devdunnapps.amplify.ui.about.AboutActivity
 import com.devdunnapps.amplify.ui.nowplaying.NowPlayingScreen
 import com.devdunnapps.amplify.ui.onboarding.OnBoardingActivity
-import com.devdunnapps.amplify.ui.settings.SettingsActivity
 import com.devdunnapps.amplify.utils.NOTHING_PLAYING
 import com.devdunnapps.amplify.utils.PreferencesUtils
+import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.composethemeadapter3.Mdc3Theme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    private var sharedPref: SharedPreferences? = null
     private lateinit var binding: ActivityMainBinding
     lateinit var bottomSheet: BottomSheetBehavior<ConstraintLayout>
     private val viewModel: MainActivityViewModel by viewModels()
@@ -72,10 +63,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        sharedPref = PreferenceManager.getDefaultSharedPreferences(this)
-        setUITheme()
-
-        sharedPref = getSharedPreferences(PreferencesUtils.PREFERENCES_FILE, MODE_PRIVATE)
         startOnBoardingIfFirstTime()
 
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -88,6 +75,9 @@ class MainActivity : AppCompatActivity() {
             val navController = navHostFragment.navController
             setupWithNavController(navController)
             setOnItemSelectedListener { item ->
+                if (selectedItemId == item.itemId)
+                    navController.popBackStack(item.itemId, false)
+
                 NavigationUI.onNavDestinationSelected(item, navController)
                 true
             }
@@ -120,7 +110,7 @@ class MainActivity : AppCompatActivity() {
                 },
                 onNowPlayingMenuClick = { songId ->
                     val action = MobileNavigationDirections.actionGlobalNavigationSongBottomSheet(songId)
-                    findNavController(binding.bottomSheet).navigate(action)
+                    findNavController(binding.navContentFrame).navigate(action)
                 }
             )
         }
@@ -179,34 +169,9 @@ class MainActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_main_activity, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_main_activity_search -> {
-                val action = MobileNavigationDirections.actionGlobalSearchFragment()
-                findNavController(item.itemId).navigate(action)
-                true
-            }
-            R.id.menu_main_activity_settings -> {
-                val settingsIntent = Intent(this, SettingsActivity::class.java)
-                startActivity(settingsIntent)
-                true
-            }
-            R.id.menu_main_activity_about -> {
-                val aboutIntent = Intent(this, AboutActivity::class.java)
-                startActivity(aboutIntent)
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
     private fun startOnBoardingIfFirstTime() {
-        val isUserFirstTime = sharedPref!!.getBoolean(PreferencesUtils.PREF_USER_FIRST_TIME, true)
+        val sharedPref = getSharedPreferences(PreferencesUtils.PREFERENCES_FILE, MODE_PRIVATE)
+        val isUserFirstTime = sharedPref.getBoolean(PreferencesUtils.PREF_USER_FIRST_TIME, true)
         if (isUserFirstTime) {
             val onBoardingIntent = Intent(this, OnBoardingActivity::class.java)
             startActivity(onBoardingIntent)
@@ -214,29 +179,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setUITheme() {
-        val darkModeValues = resources.getStringArray(R.array.theme_values)
-        when (sharedPref!!.getString("theme", darkModeValues[2])) {
-            "MODE_NIGHT_YES" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            "MODE_NIGHT_NO" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            "MODE_NIGHT_FOLLOW_SYSTEM" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-        }
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        return findNavController(this, R.id.nav_content_frame).navigateUp() or super.onSupportNavigateUp()
-    }
-
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+
         val shouldOpenNowPlaying = intent.getBooleanExtra("launchNowPlaying", false)
         if (shouldOpenNowPlaying) {
-            BottomSheetBehavior.from(binding.bottomSheet).state = BottomSheetBehavior.STATE_EXPANDED
+            bottomSheet.state = BottomSheetBehavior.STATE_EXPANDED
         }
     }
 
     override fun onBackPressed() {
-        val bottomSheet = BottomSheetBehavior.from(binding.bottomSheet)
         if (bottomSheet.state == BottomSheetBehavior.STATE_EXPANDED) {
             bottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
         } else {

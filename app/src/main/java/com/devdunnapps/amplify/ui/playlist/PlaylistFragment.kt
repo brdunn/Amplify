@@ -4,80 +4,71 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import coil.compose.AsyncImage
 import com.devdunnapps.amplify.R
-import com.devdunnapps.amplify.databinding.FragmentPlaylistBinding
+import com.devdunnapps.amplify.domain.models.Playlist
 import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.ui.components.ErrorScreen
+import com.devdunnapps.amplify.ui.components.ExpandableText
 import com.devdunnapps.amplify.ui.components.LoadingScreen
 import com.devdunnapps.amplify.ui.components.SongItem
 import com.devdunnapps.amplify.ui.components.ZeroStateScreen
+import com.devdunnapps.amplify.ui.utils.FragmentSubDestinationScaffold
+import com.devdunnapps.amplify.utils.PlexUtils
 import com.devdunnapps.amplify.utils.Resource
-import com.google.android.material.composethemeadapter3.Mdc3Theme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class PlaylistFragment : Fragment(), View.OnClickListener {
+class PlaylistFragment : Fragment() {
 
-    private var _binding: FragmentPlaylistBinding? = null
-    private val binding get() = _binding!!
     private val viewModel: PlaylistViewModel by viewModels()
+    private val args: PlaylistFragmentArgs by navArgs()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = FragmentPlaylistBinding.inflate(inflater, container, false)
-
-        setSystemUI()
-
-        val playlistId = requireArguments().getString("playlistId")!!
-
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                viewModel.playlist.collect { result ->
-                    if (result is Resource.Success) {
-                        binding.playlistToolbar.title = result.data!!.title
-                    }
-                }
-            }
-        }
-
-        binding.playlistSongs.setContent {
-            Mdc3Theme {
-                when (val playlistSongs = viewModel.playlistSongs.collectAsState().value) {
-                    is Resource.Loading -> LoadingScreen()
-                    is Resource.Error -> ErrorScreen()
-                    is Resource.Success -> PlaylistContent(
-                        songs = playlistSongs.data!!,
-                        onSongClick = { viewModel.playSong(it) },
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        ComposeView(requireContext()).apply {
+            setContent {
+                FragmentSubDestinationScaffold(screenTitle = stringResource(R.string.playlists)) { paddingValues ->
+                    PlaylistRoute(
+                        viewModel = viewModel,
                         onSongMenuClick = { song ->
                             val action = PlaylistFragmentDirections
-                                .actionNavigationPlaylistToPlaylistSongMenuBottomSheetFragment(song, playlistId)
+                                .actionGlobalNavigationSongBottomSheet(songId = song.id, playlistId = args.playlistId)
                             findNavController().navigate(action)
-                        }
+                        },
+                        modifier = Modifier.padding(top = paddingValues.calculateTopPadding())
                     )
                 }
             }
         }
-
-        binding.playlistPlayBtn.setOnClickListener(this)
-        binding.playlistShuffleBtn.setOnClickListener(this)
-
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -88,7 +79,7 @@ class PlaylistFragment : Fragment(), View.OnClickListener {
             if (event == Lifecycle.Event.ON_RESUME && navBackStackEntry.savedStateHandle.contains("refreshData")) {
                 val songsShouldBeRefreshed = navBackStackEntry.savedStateHandle.get<Boolean>("refreshData")!!
                 if (songsShouldBeRefreshed) {
-                    viewModel.gatherSongs()
+                    viewModel.refresh()
                 }
             }
         }
@@ -100,50 +91,66 @@ class PlaylistFragment : Fragment(), View.OnClickListener {
             }
         })
     }
+}
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
+@Composable
+fun PlaylistRoute(viewModel: PlaylistViewModel, onSongMenuClick: (Song) -> Unit, modifier: Modifier = Modifier) {
+    PlaylistScreen(
+        uiState = viewModel.uiState.collectAsState().value,
+        onSongClick = viewModel::playSong,
+        onSongMenuClick = onSongMenuClick,
+        onPlayClick = viewModel::playPlaylist,
+        onShuffleClick = { viewModel.playPlaylist(shuffle = true) },
+        modifier = modifier
+    )
+}
 
-    /**
-     * Sets the toolbar as the appbar, home as up, and system bars
-     */
-    private fun setSystemUI() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.playlistToolbarLayout) { view, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.updatePadding(top = insets.top)
-            WindowInsetsCompat.CONSUMED
-        }
-
-        (activity as AppCompatActivity).setSupportActionBar(binding.playlistToolbar)
-        (activity as AppCompatActivity).supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        (activity as AppCompatActivity).supportActionBar!!.setDisplayShowHomeEnabled(true)
-    }
-
-    override fun onClick(v: View) {
-        when (v.id) {
-            R.id.playlist_play_btn -> playBtnClicked()
-            R.id.playlist_shuffle_btn -> shuffleBtnClicked()
-        }
-    }
-
-    private fun playBtnClicked() {
-        viewModel.playPlaylist()
-    }
-
-    private fun shuffleBtnClicked() {
-        viewModel.playPlaylist(shuffle = true)
+@Composable
+private fun PlaylistScreen(
+    uiState: Resource<PlaylistUIModel>,
+    onSongClick: (Song) -> Unit,
+    onSongMenuClick: (Song) -> Unit,
+    onPlayClick: () -> Unit,
+    onShuffleClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    when (uiState) {
+        is Resource.Loading -> LoadingScreen(modifier = modifier)
+        is Resource.Error -> ErrorScreen(modifier = modifier)
+        is Resource.Success -> PlaylistContent(
+            uiModel = uiState.data,
+            onSongClick = onSongClick,
+            onSongMenuClick = onSongMenuClick,
+            onPlayClick = onPlayClick,
+            onShuffleClick = onShuffleClick,
+            modifier = modifier
+        )
     }
 }
 
 @Composable
-private fun PlaylistContent(songs: List<Song>, onSongClick: (Song) -> Unit, onSongMenuClick: (Song) -> Unit) {
-    if (songs.isEmpty()) {
-        PlaylistZeroState()
+private fun PlaylistContent(
+    uiModel: PlaylistUIModel,
+    onSongClick: (Song) -> Unit,
+    onSongMenuClick: (Song) -> Unit,
+    onPlayClick: () -> Unit,
+    onShuffleClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    if (uiModel.songs.isEmpty()) {
+        PlaylistZeroState(modifier = modifier)
     } else {
-        LazyColumn {
-            items(songs) { song ->
+        LazyColumn(modifier = modifier) {
+            item {
+                PlaylistHeader(
+                    playlist = uiModel.playlist,
+                    onPlayClick = onPlayClick,
+                    onShuffleClick = onShuffleClick
+                )
+            }
+
+
+            items(uiModel.songs) { song ->
                 SongItem(
                     song = song,
                     onClick = { onSongClick(song) },
@@ -155,5 +162,46 @@ private fun PlaylistContent(songs: List<Song>, onSongClick: (Song) -> Unit, onSo
 }
 
 @Composable
-private fun PlaylistZeroState() =
-    ZeroStateScreen(title = R.string.playlist_zero_state_title)
+private fun PlaylistHeader(
+    playlist: Playlist,
+    onPlayClick: () -> Unit,
+    onShuffleClick: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        AsyncImage(
+            model = PlexUtils.getInstance(LocalContext.current).getSizedImage(playlist.composite),
+            contentDescription = null,
+            modifier = Modifier.size(200.dp)
+        )
+
+        Text(
+            text = playlist.title,
+            style = MaterialTheme.typography.headlineMedium,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center
+        )
+
+        ExpandableText(text = playlist.summary)
+
+        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            Button(onClick = onPlayClick, modifier = Modifier.weight(1f)) {
+                Text(text = stringResource(R.string.play))
+            }
+
+            Button(onClick = onShuffleClick, modifier = Modifier.weight(1f)) {
+                Text(text = stringResource(R.string.shuffle))
+            }
+        }
+    }
+}
+
+@Composable
+private fun PlaylistZeroState(modifier: Modifier = Modifier) =
+    ZeroStateScreen(title = R.string.playlist_zero_state_title, modifier = modifier)

@@ -10,5 +10,5 @@ class DeletePlaylistUseCase @Inject constructor(
     private val repository: PlexRepository
 ){
 
-    operator fun invoke(playlistId: String): Flow<Resource<Playlist>> = repository.deletePlaylist(playlistId)
+    operator fun invoke(playlistId: String): Flow<Resource<Unit>> = repository.deletePlaylist(playlistId)
 }

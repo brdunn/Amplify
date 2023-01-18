@@ -1,9 +1,10 @@
 package com.devdunnapps.amplify.ui.artist
 
-import android.app.Application
 import android.os.Bundle
 import android.support.v4.media.session.PlaybackStateCompat
-import androidx.lifecycle.*
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.devdunnapps.amplify.domain.models.Album
 import com.devdunnapps.amplify.domain.models.Artist
 import com.devdunnapps.amplify.domain.models.Song
@@ -16,21 +17,19 @@ import com.devdunnapps.amplify.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.io.Serializable
 import javax.inject.Inject
 
 @HiltViewModel
 class ArtistViewModel @Inject constructor(
-    application: Application,
     getArtistSongsUseCase: GetArtistSongsUseCase,
     getArtistSinglesEPsUseCase: GetArtistSinglesEPsUseCase,
     getArtistAlbumsUseCase: GetArtistAlbumsUseCase,
     getArtistUseCase: GetArtistUseCase,
     savedStateHandle: SavedStateHandle,
     private val musicServiceConnection: MusicServiceConnection
-) : AndroidViewModel(application) {
+) : ViewModel() {
 
     private val artistId = ArtistFragmentArgs.fromSavedStateHandle(savedStateHandle).artistKey
 

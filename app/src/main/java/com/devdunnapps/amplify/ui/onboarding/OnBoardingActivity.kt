@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import com.devdunnapps.amplify.ui.main.MainActivity
 import com.devdunnapps.amplify.ui.navigation.AmplifyNavHost
-import com.google.android.material.composethemeadapter3.Mdc3Theme
+import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

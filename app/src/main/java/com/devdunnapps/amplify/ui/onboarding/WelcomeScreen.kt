@@ -17,45 +17,43 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.devdunnapps.amplify.R
-import com.google.android.material.composethemeadapter3.Mdc3Theme
+import com.google.accompanist.themeadapter.material3.Mdc3Theme
 
 @Composable
 fun WelcomeScreen(onNavigateToLogin: () -> Unit) {
-    Mdc3Theme {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceAround
+    ) {
+        Image(
+            painter = painterResource(R.drawable.ic_product_icon),
+            contentDescription = null
+        )
+
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceAround
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Image(
-                painter = painterResource(R.drawable.ic_product_icon),
-                contentDescription = null
+            Text(
+                text = stringResource(R.string.app_name),
+                style = MaterialTheme.typography.displayLarge,
+                textAlign = TextAlign.Center
             )
 
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.app_name),
-                    style = MaterialTheme.typography.displayLarge,
-                    textAlign = TextAlign.Center
-                )
+            Text(
+                text = stringResource(R.string.app_description),
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center
+            )
+        }
 
-                Text(
-                    text = stringResource(R.string.app_description),
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center
-                )
-            }
-
-            Button(
-                onClick = onNavigateToLogin,
-            ) {
-                Text(text = stringResource(R.string.get_started))
-            }
+        Button(
+            onClick = onNavigateToLogin,
+        ) {
+            Text(text = stringResource(R.string.get_started))
         }
     }
 }

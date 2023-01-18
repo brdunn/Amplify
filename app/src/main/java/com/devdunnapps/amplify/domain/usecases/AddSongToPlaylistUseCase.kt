@@ -10,6 +10,6 @@ class AddSongToPlaylistUseCase @Inject constructor(
     private val repository: PlexRepository
 ){
 
-    operator fun invoke(songId: String, playlistId: String): Flow<Resource<Playlist>> =
+    operator fun invoke(songId: String, playlistId: String): Flow<Resource<Unit>> =
         repository.addSongToPlaylist(songId, playlistId)
 }

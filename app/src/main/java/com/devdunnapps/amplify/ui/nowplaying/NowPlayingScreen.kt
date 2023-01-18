@@ -1,52 +1,14 @@
 package com.devdunnapps.amplify.ui.nowplaying
 
-import android.graphics.drawable.BitmapDrawable
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Repeat
-import androidx.compose.material.icons.filled.RepeatOn
-import androidx.compose.material.icons.filled.RepeatOne
-import androidx.compose.material.icons.filled.Shuffle
-import androidx.compose.material.icons.filled.ShuffleOn
-import androidx.compose.material.icons.filled.SkipNext
-import androidx.compose.material.icons.filled.SkipPrevious
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,14 +18,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.palette.graphics.Palette
-import coil.compose.AsyncImagePainter
-import coil.compose.rememberAsyncImagePainter
+import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import coil.size.Size
+import com.devdunnapps.amplify.ui.utils.DynamicThemePrimaryColorsFromImage
+import com.devdunnapps.amplify.ui.utils.rememberDominantColorState
 import com.devdunnapps.amplify.utils.NOTHING_PLAYING
 import com.devdunnapps.amplify.utils.TimeUtils
-import com.google.android.material.composethemeadapter3.Mdc3Theme
+import com.google.accompanist.themeadapter.material3.Mdc3Theme
 
 @Composable
 fun NowPlayingScreen(
@@ -71,40 +32,38 @@ fun NowPlayingScreen(
     onCollapseNowPlaying: () -> Unit,
     onNowPlayingMenuClick: (String) -> Unit
 ) {
-    Mdc3Theme {
-        val metadata = viewModel.metadata.collectAsState().value
+    val metadata = viewModel.metadata.collectAsState().value
 
-        // Only display content if something is playing
-        if (metadata == NOTHING_PLAYING)
-            return@Mdc3Theme
+    // Only display content if something is playing
+    if (metadata == NOTHING_PLAYING)
+        return
 
-        val songDurationMillis = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
-        val mediaPosition = viewModel.mediaPosition.collectAsState().value
-        val playMode = viewModel.playbackState.collectAsState().value
-        val shuffleModel = viewModel.shuffleMode.collectAsState().value
-        val repeatMode = viewModel.repeatMode.collectAsState().value
+    val songDurationMillis = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
+    val mediaPosition = viewModel.mediaPosition.collectAsState().value
+    val playMode = viewModel.playbackState.collectAsState().value
+    val shuffleModel = viewModel.shuffleMode.collectAsState().value
+    val repeatMode = viewModel.repeatMode.collectAsState().value
 
-        NowPlayingHeader(
-            artworkUrl = metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI),
-            title = metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE),
-            subtitle = metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST),
-            onSeekToPosition = { viewModel.seekTo((it * 1000).toLong()) },
-            mediaPosition = mediaPosition,
-            songDurationMillis = songDurationMillis,
-            playMode = playMode,
-            shuffleMode = shuffleModel,
-            repeatMode = repeatMode,
-            onToggleShuffleClick = viewModel::toggleShuffleState,
-            onToggleRepeatClick = viewModel::toggleRepeatState,
-            onTogglePlayPause = viewModel::togglePlayingState,
-            onSkipPrevious = viewModel::skipToPrevious,
-            onSkipNext = viewModel::skipToNext,
-            onCollapseNowPlaying = onCollapseNowPlaying,
-            onMenuClick = {
-                onNowPlayingMenuClick(viewModel.metadata.value.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))
-            }
-        )
-    }
+    NowPlayingHeader(
+        artworkUrl = metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI),
+        title = metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE),
+        subtitle = metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST),
+        onSeekToPosition = { viewModel.seekTo((it * 1000).toLong()) },
+        mediaPosition = mediaPosition,
+        songDurationMillis = songDurationMillis,
+        playMode = playMode,
+        shuffleMode = shuffleModel,
+        repeatMode = repeatMode,
+        onToggleShuffleClick = viewModel::toggleShuffleState,
+        onToggleRepeatClick = viewModel::toggleRepeatState,
+        onTogglePlayPause = viewModel::togglePlayingState,
+        onSkipPrevious = viewModel::skipToPrevious,
+        onSkipNext = viewModel::skipToNext,
+        onCollapseNowPlaying = onCollapseNowPlaying,
+        onMenuClick = {
+            onNowPlayingMenuClick(viewModel.metadata.value.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))
+        }
+    )
 }
 
 @Composable
@@ -126,21 +85,17 @@ private fun NowPlayingHeader(
     onCollapseNowPlaying: () -> Unit,
     onMenuClick: () -> Unit
 ) {
-    val themeOnBackground = MaterialTheme.colorScheme.onBackground
-    val themeBackground = MaterialTheme.colorScheme.background
-    val themeAccent = MaterialTheme.colorScheme.primary
-    var colorOnBackground by remember { mutableStateOf(themeOnBackground) }
-    var colorBackground by remember { mutableStateOf(themeBackground) }
-    var colorAccent by remember { mutableStateOf(themeAccent) }
+    val dominantColorState = rememberDominantColorState()
 
-    CompositionLocalProvider(
-        LocalContentColor provides colorOnBackground,
-        LocalTextStyle provides LocalTextStyle.current.copy(color = colorOnBackground)
-    ) {
+    DynamicThemePrimaryColorsFromImage(dominantColorState) {
+        LaunchedEffect(artworkUrl) {
+            dominantColorState.updateColorsFromImageUrl(artworkUrl)
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = animateColorAsState(targetValue = colorBackground).value)
+                .background(color = MaterialTheme.colorScheme.background)
                 .padding(top = 32.dp)
         ) {
             NowPlayingTopBar(onCollapseNowPlaying = onCollapseNowPlaying, onMenuClick = onMenuClick)
@@ -153,32 +108,11 @@ private fun NowPlayingHeader(
                     .fillMaxWidth()
                     .padding(horizontal = 26.dp)
             ) {
-                val artworkPainter = rememberAsyncImagePainter(
+                AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(artworkUrl)
-                        .allowHardware(false)
-                        .size(Size.ORIGINAL)
-                        .build()
-                )
-
-                val painterState = artworkPainter.state
-                if (painterState is AsyncImagePainter.State.Success) {
-                    LaunchedEffect(painterState) {
-                        val palette = Palette
-                            .from((painterState.result.drawable as BitmapDrawable).bitmap)
-                            .generate()
-
-                        colorAccent = Color(palette.getVibrantColor(android.graphics.Color.BLACK))
-
-                        palette.darkMutedSwatch?.let { darkMutedSwatch ->
-                            colorBackground = Color(darkMutedSwatch.rgb)
-                            colorOnBackground = Color(darkMutedSwatch.bodyTextColor)
-                        }
-                    }
-                }
-
-                Image(
-                    painter = artworkPainter,
+                        .crossfade(true)
+                        .build(),
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -223,8 +157,7 @@ private fun NowPlayingHeader(
                     onToggleRepeatClick = onToggleRepeatClick,
                     onTogglePlayPause = onTogglePlayPause,
                     onSkipPrevious = onSkipPrevious,
-                    onSkipNext = onSkipNext,
-                    colorAccent = colorAccent
+                    onSkipNext = onSkipNext
                 )
             }
         }
@@ -311,7 +244,6 @@ private fun MediaButtonsRow(
     onTogglePlayPause: () -> Unit,
     onSkipPrevious: () -> Unit,
     onSkipNext: () -> Unit,
-    colorAccent: Color,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -343,7 +275,6 @@ private fun MediaButtonsRow(
         FloatingActionButton(
             shape = CircleShape,
             onClick = onTogglePlayPause,
-            containerColor = colorAccent,
             modifier = Modifier.size(64.dp)
         ) {
             Icon(

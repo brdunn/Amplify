@@ -4,109 +4,79 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.devdunnapps.amplify.MobileNavigationDirections
-import com.devdunnapps.amplify.databinding.FragmentArtistAllSongsBinding
+import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.ui.components.ErrorScreen
 import com.devdunnapps.amplify.ui.components.LoadingScreen
 import com.devdunnapps.amplify.ui.components.SongItem
+import com.devdunnapps.amplify.ui.utils.FragmentSubDestinationScaffold
 import com.devdunnapps.amplify.utils.Resource
-import com.google.android.material.composethemeadapter3.Mdc3Theme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ArtistAllSongsFragment : Fragment() {
 
-    private var _binding: FragmentArtistAllSongsBinding? = null
-    private val binding get() = _binding!!
     private val viewModel: ArtistAllSongsViewModel by viewModels()
 
-    @OptIn(ExperimentalComposeUiApi::class)
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentArtistAllSongsBinding.inflate(inflater, container, false)
-
-        setSystemUI()
-
-        binding.artistAllSongsCompose.setContent {
-            Mdc3Theme {
-                Surface(
-                    modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection())
-                ) {
-                    ArtistAllSongsScreen(
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        ComposeView(requireContext()).apply {
+            setContent {
+                FragmentSubDestinationScaffold(screenTitle = stringResource(R.string.albums)) { paddingValues ->
+                    ArtistAllSongsRoute(
                         viewModel = viewModel,
-                        onClick = { song ->
-                            viewModel.playSong(song)
-                        },
-                        onItemMenuClick = { songId ->
+                        onSongMenuClick = { songId ->
                             val action = MobileNavigationDirections.actionGlobalNavigationSongBottomSheet(songId)
                             findNavController().navigate(action)
-                        }
+                        },
+                        modifier = Modifier.padding(top = paddingValues.calculateTopPadding())
                     )
                 }
             }
         }
+}
 
-        return binding.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
-    private fun setSystemUI() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.artistAllSongsToolbarLayout) { view, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.updatePadding(top = insets.top)
-            WindowInsetsCompat.CONSUMED
-        }
-
-        (activity as AppCompatActivity).setSupportActionBar(binding.artistAllSongsToolbar)
-        (activity as AppCompatActivity).supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        (activity as AppCompatActivity).supportActionBar!!.setDisplayShowHomeEnabled(true)
-    }
+@Composable
+fun ArtistAllSongsRoute(
+    viewModel: ArtistAllSongsViewModel,
+    onSongMenuClick: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    ArtistAllSongsScreen(
+        songs = viewModel.artistSongs.collectAsState().value,
+        onSongClick = viewModel::playSong,
+        onSongMenuClick = onSongMenuClick,
+        modifier = modifier
+    )
 }
 
 @Composable
 private fun ArtistAllSongsScreen(
-    viewModel: ArtistAllSongsViewModel,
-    onClick: (Song) -> Unit,
-    onItemMenuClick: (String) -> Unit
+    songs: Resource<List<Song>>,
+    onSongClick: (Song) -> Unit,
+    onSongMenuClick: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    when (val songs = viewModel.artistSongs.collectAsState().value) {
-        is Resource.Loading -> {
-            LoadingScreen()
-        }
-        is Resource.Success -> {
-            ArtistAllSongsList(
-                songs = songs.data!!,
-                onItemClick = onClick,
-                onItemMenuClick = onItemMenuClick
-            )
-        }
-        is Resource.Error -> {
-            ErrorScreen()
-        }
+    when (songs) {
+        is Resource.Loading -> LoadingScreen(modifier = modifier)
+        is Resource.Success -> ArtistAllSongsList(
+            songs = songs.data,
+            onItemClick = onSongClick,
+            onItemMenuClick = onSongMenuClick,
+            modifier = modifier
+        )
+        is Resource.Error -> ErrorScreen(modifier = modifier)
     }
 }
 
@@ -114,9 +84,10 @@ private fun ArtistAllSongsScreen(
 fun ArtistAllSongsList(
     songs: List<Song>,
     onItemClick: (Song) -> Unit,
-    onItemMenuClick: (String) -> Unit
+    onItemMenuClick: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    LazyColumn {
+    LazyColumn(modifier = modifier) {
         items(items = songs, key = { it.id }) { song ->
             SongItem(
                 onClick = { onItemClick(song) },

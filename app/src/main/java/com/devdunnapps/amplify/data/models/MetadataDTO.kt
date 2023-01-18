@@ -16,6 +16,7 @@ data class MetadataDTO(
     val ratingKey: String?,
     val summary: String?,
     val thumb: String?,
+    val art: String?,
     val leafCount: Int?,
     val type: String?,
     val year: String?,
@@ -25,7 +26,8 @@ data class MetadataDTO(
     val librarySectionID: String?,
     val userRating: Int?,
     val viewCount: Int?,
-    val originalTitle: String?
+    val originalTitle: String?,
+    val composite: String?
 ) : Serializable {
 
     fun toAlbum() = Album(
@@ -45,6 +47,7 @@ data class MetadataDTO(
         id = ratingKey!!,
         name = title!!,
         thumb = thumb.orEmpty(),
+        art = art,
         bio = summary
     )
 
@@ -61,13 +64,14 @@ data class MetadataDTO(
         albumName = parentTitle!!,
         songUrl = media!![0].part!![0].key!!,
         userRating = userRating ?: Rating.THUMB_GONE,
-        playCount = viewCount
+        playCount = viewCount ?: 0
     )
 
     fun toPlaylist() = Playlist(
         id = ratingKey!!,
         title = title!!,
         summary = summary!!,
-        numSongs = leafCount!!
+        numSongs = leafCount!!,
+        composite = composite.orEmpty()
     )
 }

@@ -1,8 +1,7 @@
 package com.devdunnapps.amplify.ui.artist.albums
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devdunnapps.amplify.domain.models.Album
 import com.devdunnapps.amplify.domain.usecases.GetArtistAlbumsUseCase
@@ -16,11 +15,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ArtistAllAlbumsViewModel @Inject constructor(
-    application: Application,
     getArtistAlbumsUseCase: GetArtistAlbumsUseCase,
     getArtistSinglesEPsUseCase: GetArtistSinglesEPsUseCase,
     savedStateHandle: SavedStateHandle
-) : AndroidViewModel(application) {
+) : ViewModel() {
 
     private val navArgs = ArtistAllAlbumsFragmentArgs.fromSavedStateHandle(savedStateHandle)
     private val artistId = navArgs.artistId

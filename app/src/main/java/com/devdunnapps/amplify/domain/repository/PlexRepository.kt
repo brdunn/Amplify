@@ -33,13 +33,13 @@ interface PlexRepository {
 
     fun getArtist(key: String): Flow<Resource<Artist>>
 
-    fun addSongToPlaylist(songId: String, playlistId: String): Flow<Resource<Playlist>>
+    fun addSongToPlaylist(songId: String, playlistId: String): Flow<Resource<Unit>>
 
-    fun removeSongFromPlaylist(songId: String, playlistId: String): Flow<Resource<Playlist>>
+    fun removeSongFromPlaylist(songId: String, playlistId: String): Flow<Resource<Unit>>
 
     fun getSongLyrics(songId: String): Flow<Resource<Lyric>>
 
-    fun deletePlaylist(playlistId: String): Flow<Resource<Playlist>>
+    fun deletePlaylist(playlistId: String): Flow<Resource<Unit>>
 
     fun createPlaylist(playlistTitle: String): Flow<Resource<Playlist>>
 

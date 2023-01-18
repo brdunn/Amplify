@@ -12,7 +12,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -38,15 +37,14 @@ internal fun LibrarySelectionScreen(viewModel: LoginFlowViewModel, onFinishOnboa
             style = MaterialTheme.typography.displayMedium
         )
 
-        val librarySections by viewModel.libraries.collectAsState()
-        when (librarySections) {
+        when (val librarySections = viewModel.libraries.collectAsState().value) {
             is Resource.Loading -> LoadingPager()
             is Resource.Error -> ErrorScreen()
             is Resource.Success -> {
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(0.8f)
                 ) {
-                    items(librarySections.data!!) { library ->
+                    items(librarySections.data) { library ->
                         LibraryItem(
                             librarySection = library,
                             onClick = {

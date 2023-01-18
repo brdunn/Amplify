@@ -1,12 +1,12 @@
 package com.devdunnapps.amplify.domain.repository
 
+import com.devdunnapps.amplify.domain.models.Preferences
+import com.devdunnapps.amplify.domain.models.ThemeConfig
+import kotlinx.coroutines.flow.Flow
+
 interface PreferencesRepository {
 
-    suspend fun write(key: String, value: String)
+    val userData: Flow<Preferences>
 
-    suspend fun writeBoolean(key: String, value: Boolean)
-
-    suspend fun read(key: String): String?
-
-    suspend fun readBoolean(key: String): Boolean
+    suspend fun setTheme(themeConfig: ThemeConfig)
 }

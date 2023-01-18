@@ -26,8 +26,13 @@ import com.devdunnapps.amplify.utils.Resource
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(viewModel: LoginFlowViewModel, onNavigateToServerSelection: () -> Unit) {
-    val user by viewModel.user.collectAsState()
     val twoFactorAuthRequired by viewModel.twoFactorAuthRequired.collectAsState()
+    val user by viewModel.user.collectAsState()
+
+    LaunchedEffect(key1 = user) {
+        if (user is Resource.Success)
+            onNavigateToServerSelection()
+    }
 
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
@@ -60,7 +65,9 @@ fun LoginScreen(viewModel: LoginFlowViewModel, onNavigateToServerSelection: () -
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                 isError = user is Resource.Error,
-                modifier = Modifier.fillMaxWidth().focusRequester(focusRequester)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester)
             )
 
             var isPasswordVisible by remember { mutableStateOf(false) }
@@ -95,14 +102,16 @@ fun LoginScreen(viewModel: LoginFlowViewModel, onNavigateToServerSelection: () -
                     }
                 },
                 isError = user is Resource.Error,
-                modifier = Modifier.fillMaxWidth().focusRequester(focusRequester)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester)
             )
 
             if (twoFactorAuthRequired) {
                 OutlinedTextField(
                     value = twoFactorToken,
                     onValueChange = { twoFactorToken = it },
-                    label = { Text(stringResource(R.string.two_factor_token)) },
+                    label = { Text(text = stringResource(R.string.two_factor_token)) },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number
@@ -111,21 +120,19 @@ fun LoginScreen(viewModel: LoginFlowViewModel, onNavigateToServerSelection: () -
                         if (submitEnabled) {
                             focusManager.clearFocus()
                             viewModel.login(username, password, twoFactorToken)
-                            onNavigateToServerSelection()
                         }
                     },
                     isError = user is Resource.Error,
-                    modifier = Modifier.fillMaxWidth().focusRequester(focusRequester)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester)
                 )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = {
-                    viewModel.login(username, password, twoFactorToken)
-                    onNavigateToServerSelection()
-                },
+                onClick = { viewModel.login(username, password, twoFactorToken) },
                 enabled = submitEnabled
             ) {
                 Text(text = stringResource(R.string.login))

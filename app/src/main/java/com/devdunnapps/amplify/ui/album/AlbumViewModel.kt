@@ -43,12 +43,12 @@ class AlbumViewModel @Inject constructor(
                     songs is Resource.Error -> _album.emit(Resource.Error(songs.message.orEmpty()))
                     album is Resource.Success && songs is Resource.Success -> {
                         var duration = 0L
-                        songs.data!!.forEach { duration += it.duration }
+                        songs.data.forEach { duration += it.duration }
 
                         _album.emit(
                             Resource.Success(
                                 AlbumScreenUIModel(
-                                    album = album.data!!,
+                                    album = album.data,
                                     songs = songs.data,
                                     duration = TimeUtils.millisecondsToMinutes(duration)
                                 )
@@ -82,7 +82,7 @@ class AlbumViewModel @Inject constructor(
     private fun collectAlbumBundle(): Bundle {
         return Bundle().apply {
             val albumContent = _album.value as? Resource.Success<AlbumScreenUIModel> ?: return@apply
-            putSerializable("songs", albumContent.data?.songs as Serializable)
+            putSerializable("songs", albumContent.data.songs as Serializable)
         }
     }
 }

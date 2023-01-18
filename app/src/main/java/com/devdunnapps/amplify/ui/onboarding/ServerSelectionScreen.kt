@@ -13,7 +13,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -36,8 +35,7 @@ internal fun ServerSelectionScreen(viewModel: LoginFlowViewModel, onNavigateToLi
             style = MaterialTheme.typography.displayMedium
         )
 
-        val servers by viewModel.servers.collectAsState()
-        when (servers) {
+        when (val servers = viewModel.servers.collectAsState().value) {
             is Resource.Loading -> LoadingPager()
             is Resource.Error -> ErrorScreen()
             is Resource.Success -> {
@@ -46,7 +44,7 @@ internal fun ServerSelectionScreen(viewModel: LoginFlowViewModel, onNavigateToLi
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    items(servers.data!!) { server ->
+                    items(servers.data) { server ->
                         ServerItem(
                             server = server,
                             onClick = {

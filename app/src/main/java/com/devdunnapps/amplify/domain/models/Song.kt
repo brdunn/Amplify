@@ -15,5 +15,5 @@ data class Song(
     val albumName: String,
     var songUrl: String,
     val userRating: Int,
-    val playCount: Int?
+    val playCount: Int
 ) : Serializable

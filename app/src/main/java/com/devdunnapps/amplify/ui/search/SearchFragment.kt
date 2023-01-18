@@ -109,7 +109,7 @@ private fun SearchScreen(
             when (searchResults) {
                 is Resource.Loading -> LoadingScreen()
                 is Resource.Error -> ErrorScreen()
-                is Resource.Success -> SearchResultsContent(results = searchResults.data!!, onPlaySong = onPlaySong)
+                is Resource.Success -> SearchResultsContent(results = searchResults.data, onPlaySong = onPlaySong)
             }
         }
     }

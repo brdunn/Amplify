@@ -6,12 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +21,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
@@ -36,8 +32,8 @@ import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.domain.models.Playlist
 import com.devdunnapps.amplify.ui.components.LoadingPager
 import com.devdunnapps.amplify.utils.Resource
+import com.google.accompanist.themeadapter.material3.Mdc3Theme
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.composethemeadapter3.Mdc3Theme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -84,7 +80,7 @@ private fun AddToPlaylistBottomSheet(
             is Resource.Error ->
                 Toast.makeText(LocalContext.current, "Error getting playlists", Toast.LENGTH_SHORT).show()
             is Resource.Success -> BottomSheetList(
-                playlists = playlists.data!!,
+                playlists = playlists.data,
                 onItemClick = { playlist ->
                     viewModel.addSongToPlaylist(playlist.id)
                 }

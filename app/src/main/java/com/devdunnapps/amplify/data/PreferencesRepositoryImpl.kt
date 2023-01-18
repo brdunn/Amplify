@@ -1,39 +1,39 @@
 package com.devdunnapps.amplify.data
 
-import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
+import com.devdunnapps.amplify.ThemeConfigProto
+import com.devdunnapps.amplify.UserPreferences
+import com.devdunnapps.amplify.copy
+import com.devdunnapps.amplify.domain.models.Preferences
+import com.devdunnapps.amplify.domain.models.ThemeConfig
 import com.devdunnapps.amplify.domain.repository.PreferencesRepository
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class PreferencesRepositoryImpl @Inject constructor (
-    private val context: Context
+    private val preferences: DataStore<UserPreferences>
 ): PreferencesRepository {
 
-    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "amplify_settings")
-
-    override suspend fun write(key: String, value: String) {
-        context.dataStore.edit { preferences ->
-            preferences[stringPreferencesKey(key)] = value
+    override val userData = preferences.data
+        .map {
+            Preferences(
+                themeConfig = when (it.themeConfig) {
+                    ThemeConfigProto.DARK_THEME_CONFIG_DARK -> ThemeConfig.DARK
+                    ThemeConfigProto.DARK_THEME_CONFIG_LIGHT -> ThemeConfig.LIGHT
+                    else -> ThemeConfig.FOLLOW_SYSTEM
+                }
+            )
         }
-    }
 
-    override suspend fun writeBoolean(key: String, value: Boolean) {
-        context.dataStore.edit { preferences ->
-            preferences[booleanPreferencesKey(key)] = value
+    override suspend fun setTheme(themeConfig: ThemeConfig) {
+        preferences.updateData {
+            it.copy {
+                this.themeConfig = when (themeConfig) {
+                    ThemeConfig.FOLLOW_SYSTEM -> ThemeConfigProto.DARK_THEME_CONFIG_FOLLOW_SYSTEM
+                    ThemeConfig.LIGHT -> ThemeConfigProto.DARK_THEME_CONFIG_LIGHT
+                    ThemeConfig.DARK -> ThemeConfigProto.DARK_THEME_CONFIG_DARK
+                }
+            }
         }
-    }
-
-    override suspend fun read(key: String): String? {
-        return context.dataStore.data.first()[stringPreferencesKey(key)]
-    }
-
-    override suspend fun readBoolean(key: String): Boolean {
-        return context.dataStore.data.first()[booleanPreferencesKey(key)] ?: true
     }
 }

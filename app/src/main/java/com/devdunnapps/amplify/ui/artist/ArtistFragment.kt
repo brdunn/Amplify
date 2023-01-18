@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -25,6 +24,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.painterResource
@@ -33,9 +33,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -43,193 +40,194 @@ import androidx.navigation.fragment.navArgs
 import coil.compose.AsyncImage
 import com.devdunnapps.amplify.MobileNavigationDirections
 import com.devdunnapps.amplify.R
-import com.devdunnapps.amplify.databinding.FragmentArtistBinding
 import com.devdunnapps.amplify.domain.models.Album
 import com.devdunnapps.amplify.domain.models.Artist
 import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.ui.components.*
+import com.devdunnapps.amplify.ui.utils.FragmentSubDestinationScaffold
 import com.devdunnapps.amplify.utils.PlexUtils
 import com.devdunnapps.amplify.utils.Resource
-import com.google.android.material.composethemeadapter3.Mdc3Theme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ArtistFragment : Fragment() {
 
-    private var _binding: FragmentArtistBinding? = null
-    private val binding get() = _binding!!
-
     private val viewModel: ArtistViewModel by viewModels()
     private val args: ArtistFragmentArgs by navArgs()
 
-    @OptIn(ExperimentalComposeUiApi::class)
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = FragmentArtistBinding.inflate(inflater, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        ComposeView(requireContext()).apply {
+            setContent {
+                val screenTitle = (viewModel.artist.collectAsState().value as? Resource.Success)?.data?.name.orEmpty()
 
-        setSystemUI()
-
-        binding.artistComposeView.setContent {
-            Mdc3Theme {
-                when(val artistState = viewModel.artist.collectAsState().value) {
-                    is Resource.Loading -> LoadingScreen()
-                    is Resource.Error -> ErrorScreen()
-                    is Resource.Success -> Column(
-                        modifier = Modifier
-                            .nestedScroll(rememberNestedScrollInteropConnection())
-                            .verticalScroll(rememberScrollState())
-                    ) {
-                        ArtistHeader(artist = artistState.data!!, onShuffleClick = viewModel::shuffleArtist)
-
-                        val albumsState = viewModel.artistAlbums.collectAsState().value
-                        if (albumsState is Resource.Success) {
-                            if (albumsState.data?.isNotEmpty() == true) {
-                                ArtistAlbumsCarousel(
-                                    albums = albumsState.data,
-                                    onAlbumClick = { albumId ->
-                                        val action = MobileNavigationDirections.actionGlobalNavigationAlbum(albumId)
-                                        findNavController().navigate(action)
-                                    },
-                                    onViewAllClick = {
-                                        val action = ArtistFragmentDirections
-                                            .actionNavigationArtistToNavigationArtistAllAlbums(args.artistKey)
-                                        findNavController().navigate(action)
-                                    }
-                                )
-                            }
-                        }
-
-                        val singlesEPsState = viewModel.artistSinglesEPs.collectAsState().value
-                        if (singlesEPsState is Resource.Success) {
-                            if (singlesEPsState.data?.isNotEmpty() == true) {
-                                ArtistEPsSinglesCarousel(
-                                    albums = singlesEPsState.data,
-                                    onAlbumClick = { albumId ->
-                                        val action = MobileNavigationDirections.actionGlobalNavigationAlbum(albumId)
-                                        findNavController().navigate(action)
-                                    },
-                                    onViewAllClick = {
-                                        val action =
-                                            ArtistFragmentDirections.actionNavigationArtistToNavigationArtistAllAlbums(
-                                                artistId = args.artistKey,
-                                                isSinglesEPs = true
-                                            )
-                                        findNavController().navigate(action)
-                                    }
-                                )
-                            }
-                        }
-
-                        val songsState = viewModel.artistSongs.collectAsState().value
-                        if (songsState is Resource.Success) {
-                            if (songsState.data?.isNotEmpty() == true) {
-                                ArtistSongsCarousel(
-                                    songs = songsState.data.subList(0, minOf(5, songsState.data.size)),
-                                    onSongClick = { song ->
-                                        viewModel.playSong(song)
-                                    },
-                                    onSongMenuClick = { songId ->
-                                        val action = MobileNavigationDirections
-                                            .actionGlobalNavigationSongBottomSheet(songId)
-                                        findNavController().navigate(action)
-                                    },
-                                    onViewAllClick = {
-                                        val action = ArtistFragmentDirections
-                                            .actionNavigationArtistToNavigationArtistAllSongs(args.artistKey)
-                                        findNavController().navigate(action)
-                                    }
-                                )
-                            }
-                        }
-                    }
+                FragmentSubDestinationScaffold(screenTitle = screenTitle) { paddingValues ->
+                    ArtistRoute(
+                        viewModel = viewModel,
+                        onAlbumClick = { albumId ->
+                            val action = MobileNavigationDirections.actionGlobalNavigationAlbum(albumId)
+                            findNavController().navigate(action)
+                        },
+                        onViewAllAlbumsClick = {
+                            val action = ArtistFragmentDirections
+                                .actionNavigationArtistToNavigationArtistAllAlbums(args.artistKey)
+                            findNavController().navigate(action)
+                        },
+                        onViewAllSinglesEPsClick = {
+                            val action = ArtistFragmentDirections.actionNavigationArtistToNavigationArtistAllAlbums(
+                                artistId = args.artistKey,
+                                isSinglesEPs = true
+                            )
+                            findNavController().navigate(action)
+                        },
+                        onSongMenuClick = { songId ->
+                            val action = MobileNavigationDirections.actionGlobalNavigationSongBottomSheet(songId)
+                            findNavController().navigate(action)
+                        },
+                        onViewAllSongsClick = {
+                            val action = ArtistFragmentDirections
+                                .actionNavigationArtistToNavigationArtistAllSongs(args.artistKey)
+                            findNavController().navigate(action)
+                        },
+                        modifier = Modifier.padding(top = paddingValues.calculateTopPadding())
+                    )
                 }
             }
         }
+}
 
-        return binding.root
-    }
+@Composable
+private fun ArtistRoute(
+    viewModel: ArtistViewModel,
+    onAlbumClick: (String) -> Unit,
+    onViewAllAlbumsClick: () -> Unit,
+    onViewAllSinglesEPsClick: () -> Unit,
+    onSongMenuClick: (String) -> Unit,
+    onViewAllSongsClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    ArtistScreen(
+        artist = viewModel.artist.collectAsState().value,
+        onShuffleArtistClick = viewModel::shuffleArtist,
+        artistAlbums = viewModel.artistAlbums.collectAsState().value,
+        artistSinglesEPs = viewModel.artistSinglesEPs.collectAsState().value,
+        onAlbumClick = onAlbumClick,
+        onViewAllAlbumsClick = onViewAllAlbumsClick,
+        onViewAllSinglesEPsClick = onViewAllSinglesEPsClick,
+        artistTopSongs = viewModel.artistSongs.collectAsState().value,
+        onSongClick = viewModel::playSong,
+        onSongMenuClick = onSongMenuClick,
+        onViewAllSongsClick = onViewAllSongsClick,
+        modifier = modifier
+    )
+}
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+private fun ArtistScreen(
+    artist: Resource<Artist>,
+    onShuffleArtistClick: () -> Unit,
+    artistAlbums: Resource<List<Album>>,
+    artistSinglesEPs: Resource<List<Album>>,
+    onAlbumClick: (String) -> Unit,
+    onViewAllAlbumsClick: () -> Unit,
+    onViewAllSinglesEPsClick: () -> Unit,
+    artistTopSongs: Resource<List<Song>>,
+    onSongClick: (Song) -> Unit,
+    onSongMenuClick: (String) -> Unit,
+    onViewAllSongsClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    when(artist) {
+        is Resource.Loading -> LoadingScreen()
+        is Resource.Error -> ErrorScreen()
+        is Resource.Success -> Column(
+            modifier = modifier
+                .nestedScroll(rememberNestedScrollInteropConnection())
+                .verticalScroll(rememberScrollState())
+        ) {
+            ArtistHeader(artist = artist.data, onShuffleClick = onShuffleArtistClick)
 
-    /**
-     * Sets the toolbar as the appbar, home as up, and system bars
-     */
-    private fun setSystemUI() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.artistToolbarLayout) { view, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.updatePadding(top = insets.top)
-            WindowInsetsCompat.CONSUMED
+            if (artistAlbums is Resource.Success) {
+                if (artistAlbums.data.isNotEmpty()) {
+                    ArtistAlbumsCarousel(
+                        albums = artistAlbums.data,
+                        onAlbumClick = onAlbumClick,
+                        onViewAllClick = onViewAllAlbumsClick
+                    )
+                }
+            }
+
+            if (artistSinglesEPs is Resource.Success) {
+                if (artistSinglesEPs.data.isNotEmpty()) {
+                    ArtistEPsSinglesCarousel(
+                        albums = artistSinglesEPs.data,
+                        onAlbumClick = onAlbumClick,
+                        onViewAllClick = onViewAllSinglesEPsClick
+                    )
+                }
+            }
+
+            if (artistTopSongs is Resource.Success) {
+                if (artistTopSongs.data.isNotEmpty()) {
+                    ArtistSongsCarousel(
+                        songs = artistTopSongs.data.subList(0, minOf(5, artistTopSongs.data.size)),
+                        onSongClick = onSongClick,
+                        onSongMenuClick = onSongMenuClick,
+                        onViewAllClick = onViewAllSongsClick
+                    )
+                }
+            }
         }
-
-        (activity as AppCompatActivity).setSupportActionBar(binding.artistToolbar)
-        (activity as AppCompatActivity).supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        (activity as AppCompatActivity).supportActionBar!!.setDisplayShowHomeEnabled(true)
     }
 }
 
 @Composable
 private fun ArtistHeader(artist: Artist, onShuffleClick: () -> Unit) {
-    Column {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
         Box {
-            ArtistGradientImage(artistImage = artist.thumb)
+            val context = LocalContext.current
+            val imageUrl = PlexUtils.getInstance(context).addKeyAndAddress(artist.art ?: artist.thumb)
+            AsyncImage(
+                model = imageUrl,
+                contentDescription = null,
+                contentScale = ContentScale.FillWidth,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(16 / 9f)
+            )
 
-            Column(
-                verticalArrangement = Arrangement.spacedBy(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.align(Alignment.BottomCenter)
-            ) {
-                Text(
-                    text = artist.name,
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.displayMedium,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-
-                Button(
-                    onClick = onShuffleClick,
-                    modifier = Modifier
-                        .requiredWidth(150.dp)
-                        .offset(y = 24.dp)
-                ) {
-                    Text(text = stringResource(R.string.shuffle))
-                }
-            }
+            Text(
+                text = artist.name,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.displayMedium,
+                fontWeight = FontWeight.Bold,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(Color.Transparent, MaterialTheme.colorScheme.background)
+                        )
+                    )
+                    .padding(horizontal = 16.dp)
+            )
         }
 
-        ExpandableText(text = artist.bio, modifier = Modifier.padding(top = 56.dp))
-    }
-}
+        Button(
+            onClick = onShuffleClick
+        ) {
+            Text(
+                text = stringResource(R.string.shuffle),
+                modifier = Modifier.padding(horizontal = 24.dp)
+            )
+        }
 
-@Composable
-private fun ArtistGradientImage(artistImage: String) {
-    val context = LocalContext.current
-    val imageUrl = PlexUtils.getInstance(context).addKeyAndAddress(artistImage)
-    Box {
-        AsyncImage(
-            model = imageUrl,
-            contentDescription = null,
-            contentScale = ContentScale.FillWidth,
-            modifier = Modifier
-                .fillMaxWidth()
-                .requiredHeight(320.dp)
-
-        )
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .requiredHeight(320.dp)
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(Color.Transparent, MaterialTheme.colorScheme.surface)
-                    )
-                )
-        )
+        ExpandableText(text = artist.bio)
     }
 }
 
@@ -316,8 +314,8 @@ private fun ArtistAlbumCard(onClick: () -> Unit, album: Album) {
         val imageUrl = remember { PlexUtils.getInstance(context).getSizedImage(album.thumb, 300, 300) }
         AsyncImage(
             model = imageUrl,
-            placeholder = painterResource(R.drawable.ic_albums_black_24dp),
-            error = painterResource(R.drawable.ic_albums_black_24dp),
+            placeholder = painterResource(R.drawable.ic_album),
+            error = painterResource(R.drawable.ic_album),
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier.aspectRatio(1f),

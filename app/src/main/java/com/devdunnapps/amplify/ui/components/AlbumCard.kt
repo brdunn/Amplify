@@ -21,7 +21,7 @@ import coil.compose.AsyncImage
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.domain.models.Album
 import com.devdunnapps.amplify.utils.PlexUtils
-import com.google.android.material.composethemeadapter3.Mdc3Theme
+import com.google.accompanist.themeadapter.material3.Mdc3Theme
 
 @Composable
 fun AlbumCard(onClick: () -> Unit, album: Album, modifier: Modifier = Modifier) {
@@ -36,8 +36,8 @@ fun AlbumCard(onClick: () -> Unit, album: Album, modifier: Modifier = Modifier) 
                 .aspectRatio(1f)
                 .clip(RoundedCornerShape(6.dp)),
             model = imageUrl,
-            placeholder = painterResource(R.drawable.ic_albums_black_24dp),
-            error = painterResource(R.drawable.ic_albums_black_24dp),
+            placeholder = painterResource(R.drawable.ic_album),
+            error = painterResource(R.drawable.ic_album),
             contentDescription = null,
             contentScale = ContentScale.Crop
         )

@@ -7,6 +7,7 @@ data class MediaContainerDTO(
     @SerializedName("Metadata") val metadata: List<MetadataDTO>?,
     @SerializedName("Directory") val directory: List<DirectoryDTO>?,
     @SerializedName("Hub") val hub: List<HubDTO>?,
+    @SerializedName("Lyrics") val lyrics: List<LyricsDTO>?,
     val totalSize: Int?,
     val art: String?,
     val thumb: String?,

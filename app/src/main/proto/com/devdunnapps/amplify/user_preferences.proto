@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+import "com/devdunnapps/amplify/theme_config.proto";
+
+option java_package = "com.devdunnapps.amplify";
+option java_multiple_files = true;
+
+message UserPreferences {
+    ThemeConfigProto theme_config = 1;
+}

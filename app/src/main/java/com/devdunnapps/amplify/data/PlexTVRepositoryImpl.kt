@@ -54,7 +54,11 @@ class PlexTVRepositoryImpl @Inject constructor(
             val userCredentials = SigninDTO(username, password, authToken)
             val response = api.signInUser(userCredentials)
             if (response.code() == 201) {
-                emit(Resource.Success(response.body()?.toUser()))
+                val user = response.body()?.toUser() ?: run {
+                    emit(Resource.Error())
+                    return@flow
+                }
+                emit(Resource.Success(user))
             } else if (response.code() == 401) {
                 val errors = Gson().fromJson(response.errorBody()?.charStream(), ErrorsDTO::class.java)
                 if (errors.errors[0].code == 1029) {

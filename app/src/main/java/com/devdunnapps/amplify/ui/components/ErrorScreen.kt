@@ -12,9 +12,9 @@ import androidx.compose.ui.tooling.preview.Preview
 
 @Preview
 @Composable
-fun ErrorScreen() {
+fun ErrorScreen(modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         Text(
             modifier = Modifier.align(Alignment.Center),
