@@ -39,7 +39,9 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideMusicServiceConnection(@ApplicationContext context: Context): MusicServiceConnection =
+    fun provideMusicServiceConnection(
+        @ApplicationContext context: Context
+    ): MusicServiceConnection =
         MusicServiceConnection(context, ComponentName(context, MusicService::class.java))
 
     @Provides
@@ -59,7 +61,8 @@ object AppModule {
             .create(PlexTVAPI::class.java)
 
     @Provides
-    fun providePlexTVRepository(plexTVAPI: PlexTVAPI): PlexTVRepository = PlexTVRepositoryImpl(plexTVAPI)
+    fun providePlexTVRepository(plexTVAPI: PlexTVAPI): PlexTVRepository =
+        PlexTVRepositoryImpl(plexTVAPI)
 
     @Provides
     fun providePlexAPI(@ApplicationContext context: Context): PlexAPI {
@@ -82,7 +85,8 @@ object AppModule {
     @Provides
     @Named("library")
     fun provideLibrary(@ApplicationContext context: Context): String =
-        PreferencesUtils.readSharedSetting(context, PreferencesUtils.PREF_PLEX_SERVER_LIBRARY).orEmpty()
+        PreferencesUtils.readSharedSetting(context, PreferencesUtils.PREF_PLEX_SERVER_LIBRARY)
+            .orEmpty()
 
     @Provides
     fun providePlexRepository(api: PlexAPI, @Named("library") library: String): PlexRepository =
@@ -90,7 +94,9 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providePreferencesDataStore(@ApplicationContext context: Context): DataStore<UserPreferences> =
+    fun providePreferencesDataStore(
+        @ApplicationContext context: Context
+    ): DataStore<UserPreferences> =
         DataStoreFactory.create(
             scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
             serializer = UserPreferencesSerializer()
@@ -100,6 +106,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providePreferencesRepository(preferencesDataStore: DataStore<UserPreferences>): PreferencesRepository =
-        PreferencesRepositoryImpl(preferences = preferencesDataStore)
+    fun providePreferencesRepository(
+        preferencesDataStore: DataStore<UserPreferences>
+    ): PreferencesRepository = PreferencesRepositoryImpl(preferences = preferencesDataStore)
 }

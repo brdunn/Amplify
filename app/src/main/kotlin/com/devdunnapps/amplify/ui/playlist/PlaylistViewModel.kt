@@ -5,12 +5,15 @@ import android.support.v4.media.session.PlaybackStateCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.devdunnapps.amplify.data.networking.NetworkResponse
 import com.devdunnapps.amplify.domain.models.Playlist
 import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.domain.repository.PlexRepository
 import com.devdunnapps.amplify.domain.usecases.GetPlaylistSongsUseCase
 import com.devdunnapps.amplify.domain.usecases.GetPlaylistUseCase
+import com.devdunnapps.amplify.ui.navigation.PlaylistRoute
+import com.devdunnapps.amplify.ui.navigation.PlaylistsRoute
 import com.devdunnapps.amplify.utils.MusicServiceConnection
 import com.devdunnapps.amplify.utils.Resource
 import com.devdunnapps.amplify.utils.WhenToPlay
@@ -31,7 +34,7 @@ class PlaylistViewModel @Inject constructor(
     private val musicServiceConnection: MusicServiceConnection
 ) : ViewModel() {
 
-    private val playlistId = PlaylistFragmentArgs.fromSavedStateHandle(savedStateHandle).playlistId
+    private val playlistId = savedStateHandle.toRoute<PlaylistRoute>().playlistId
 
     private val _uiState: MutableStateFlow<Resource<PlaylistUIModel>> = MutableStateFlow(Resource.Loading)
     val uiState = _uiState.asStateFlow()

@@ -9,13 +9,14 @@ plugins {
     alias(libs.plugins.safeargs)
     alias(libs.plugins.hilt)
     alias(libs.plugins.protobuf)
+    alias(libs.plugins.serialization)
 }
 
 android {
     namespace = "com.devdunnapps.amplify"
 
-    compileSdk = 34
-    buildToolsVersion = "34.0.0"
+    compileSdk = 35
+    buildToolsVersion = "35.0.0"
 
     defaultConfig {
         applicationId = "com.devdunnapps.amplify"
@@ -45,7 +46,7 @@ android {
     }
 
     buildFeatures {
-        viewBinding = true
+        buildConfig = true
         compose = true
     }
 
@@ -62,8 +63,8 @@ kotlin {
 }
 
 dependencies {
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.constraintLayout)
     implementation(libs.androidx.palette.ktx)
     implementation(libs.androidx.dataStore)
     implementation(libs.androidx.core.ktx)
@@ -74,6 +75,8 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.compose.material.navigation)
+    implementation(libs.material3.navigation)
 
     implementation(libs.androidx.lifecycle.viewModel.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -94,13 +97,12 @@ dependencies {
     implementation(libs.androidx.compose.animation)
     implementation(libs.androidx.compose.ui.tooling.preview)
     debugImplementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.androidx.compose.material)
     implementation(libs.androidx.compose.material.iconsExtended)
-    compileOnly(libs.androidx.compose.compiler)
     implementation(libs.androidx.compose.paging)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material3.windowSizeClass)
-    implementation(libs.accompanist.themeAdapter.material3)
 
     implementation(libs.coil.kt)
     implementation(libs.coil.kt.compose)

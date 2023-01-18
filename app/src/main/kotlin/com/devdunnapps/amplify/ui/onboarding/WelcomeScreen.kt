@@ -17,7 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.devdunnapps.amplify.R
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
+import com.devdunnapps.amplify.ui.theme.Theme
 
 @Composable
 fun WelcomeScreen(onNavigateToLogin: () -> Unit) {
@@ -61,7 +61,7 @@ fun WelcomeScreen(onNavigateToLogin: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 private fun WelcomeScreenPreview() {
-    Mdc3Theme {
+    Theme {
         WelcomeScreen {}
     }
 }

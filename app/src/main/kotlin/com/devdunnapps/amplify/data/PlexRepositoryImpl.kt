@@ -128,8 +128,7 @@ class PlexRepositoryImpl @Inject constructor(
                 ?: emptyList()
         }
 
-    override suspend fun deletePlaylist(playlistId: String) =
-        api.deletePlaylist(playlistId)
+    override suspend fun deletePlaylist(playlistId: String) = api.deletePlaylist(playlistId)
 
     override suspend fun createPlaylist(playlistTitle: String): NetworkResponse<Unit> =
         api.createPlaylist(playlistTitle)

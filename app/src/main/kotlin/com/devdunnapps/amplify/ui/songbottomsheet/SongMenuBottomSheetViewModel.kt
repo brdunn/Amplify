@@ -30,9 +30,8 @@ class SongMenuBottomSheetViewModel @Inject constructor(
     private val mediaServiceConnection: MusicServiceConnection
 ): ViewModel() {
 
-    private val args = SongMenuBottomSheetFragmentArgs.fromSavedStateHandle(savedStateHandle)
-    private val songId = args.songId
-    private val playlistId = args.playlistId
+    private val songId = savedStateHandle.get<String>("songId")!!
+    private val playlistId = savedStateHandle.get<String>("playlistId")
 
     private val _screenState = MutableStateFlow<Resource<SongBottomSheetState>>(Resource.Loading)
     val screenState = _screenState.asStateFlow()

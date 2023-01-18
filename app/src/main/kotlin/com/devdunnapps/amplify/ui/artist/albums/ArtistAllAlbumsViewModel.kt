@@ -3,10 +3,13 @@ package com.devdunnapps.amplify.ui.artist.albums
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.devdunnapps.amplify.data.networking.NetworkResponse
 import com.devdunnapps.amplify.domain.models.Album
 import com.devdunnapps.amplify.domain.usecases.GetArtistAlbumsUseCase
 import com.devdunnapps.amplify.domain.usecases.GetArtistSinglesEPsUseCase
+import com.devdunnapps.amplify.ui.navigation.ArtistAllAlbumsRoute
+import com.devdunnapps.amplify.ui.navigation.ArtistRoute
 import com.devdunnapps.amplify.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +24,7 @@ class ArtistAllAlbumsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val navArgs = ArtistAllAlbumsFragmentArgs.fromSavedStateHandle(savedStateHandle)
+    private val navArgs = savedStateHandle.toRoute<ArtistAllAlbumsRoute>()
     private val artistId = navArgs.artistId
 
     private val _artistAlbums = MutableStateFlow<Resource<List<Album>>>(Resource.Loading)

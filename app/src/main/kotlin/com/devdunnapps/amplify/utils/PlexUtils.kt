@@ -3,7 +3,7 @@ package com.devdunnapps.amplify.utils
 import android.content.Context
 import android.content.SharedPreferences
 
-class PlexUtils constructor(context: Context) {
+class PlexUtils(context: Context) {
 
     companion object {
         @Volatile

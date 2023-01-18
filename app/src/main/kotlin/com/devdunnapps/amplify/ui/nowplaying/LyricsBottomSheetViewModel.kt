@@ -1,25 +1,23 @@
 package com.devdunnapps.amplify.ui.nowplaying
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devdunnapps.amplify.domain.models.Lyric
 import com.devdunnapps.amplify.domain.usecases.GetSongLyricsUseCase
 import com.devdunnapps.amplify.utils.Resource
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class LyricsBottomSheetViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+@HiltViewModel(assistedFactory = LyricsBottomSheetViewModel.LyricsBottomSheetViewModelFactory::class)
+class LyricsBottomSheetViewModel @AssistedInject constructor(
+    @Assisted private val songId: String,
     private val getSongLyricsUseCase: GetSongLyricsUseCase
 ) : ViewModel() {
-
-    private val songId = LyricsBottomSheetArgs.fromSavedStateHandle(savedStateHandle).song.id
-
     private val _songLyrics = MutableStateFlow<Resource<Lyric>>(Resource.Loading)
     val songLyrics = _songLyrics.asStateFlow()
 
@@ -33,5 +31,10 @@ class LyricsBottomSheetViewModel @Inject constructor(
                 _songLyrics.emit(it)
             }
         }
+    }
+
+    @AssistedFactory
+    interface LyricsBottomSheetViewModelFactory {
+        fun create(songId: String): LyricsBottomSheetViewModel
     }
 }

@@ -6,65 +6,58 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.devdunnapps.amplify.ui.navigation.AmplifyNavigationDestination
+import kotlinx.serialization.Serializable
 
-object OnboardingDestination : AmplifyNavigationDestination {
-    override val route = "onboarding_route"
-    override val destination = "onboarding_destination"
-}
+@Serializable
+data object OnboardingRoute
 
-object WelcomeDestination : AmplifyNavigationDestination {
-    override val route = "welcome_route"
-    override val destination = "welcome_destination"
-}
+@Serializable
+data object WelcomeRoute
 
-object LoginDestination : AmplifyNavigationDestination {
-    override val route = "login_route"
-    override val destination = "login_destination"
-}
+@Serializable
+data object LoginRoute
 
-object ServerSelectionDestination : AmplifyNavigationDestination {
-    override val route = "server_selection_route"
-    override val destination = "server_selection_destination"
-}
+@Serializable
+data object ServerSelectionRoute
 
-object LibrarySelectionDestination : AmplifyNavigationDestination {
-    override val route = "library_selection_route"
-    override val destination = "library_selection_destination"
-}
+@Serializable
+data object LibrarySelectionRoute
 
 fun NavGraphBuilder.onboardingGraph(
     navController: NavHostController,
     onFinishOnboarding: () -> Unit
 ) {
-    navigation(
-        route = OnboardingDestination.route,
-        startDestination = WelcomeDestination.route
+    navigation<OnboardingRoute>(
+        startDestination = WelcomeRoute
     ) {
-        composable(route = WelcomeDestination.route) {
-            WelcomeScreen(onNavigateToLogin = { navController.navigate(LoginDestination.route) })
+        composable<WelcomeRoute> {
+            WelcomeScreen(onNavigateToLogin = { navController.navigate(LoginRoute) })
         }
 
-        composable(route = LoginDestination.route) {
-            val parentEntry = remember(it) { navController.getBackStackEntry(OnboardingDestination.route) }
+        composable<LoginRoute> {
+            val parentEntry = remember(it) { navController.getBackStackEntry(OnboardingRoute) }
             val viewModel: LoginFlowViewModel = hiltViewModel(parentEntry)
             LoginScreen(
                 viewModel = viewModel,
-                onNavigateToServerSelection = { navController.navigate(ServerSelectionDestination.route) }
+                onNavigateToServerSelection = { navController.navigate(ServerSelectionRoute) }
             )
         }
 
-        composable(route = ServerSelectionDestination.route) {
-            val navigationGraphEntry = remember(it) { navController.getBackStackEntry(OnboardingDestination.route) }
+        composable<ServerSelectionRoute> {
+            val navigationGraphEntry = remember(it) {
+                navController.getBackStackEntry(OnboardingRoute)
+            }
             val viewModel: LoginFlowViewModel = hiltViewModel(navigationGraphEntry)
             ServerSelectionScreen(
                 viewModel = viewModel,
-                onNavigateToLibrarySelection = { navController.navigate(LibrarySelectionDestination.route) }
+                onNavigateToLibrarySelection = { navController.navigate(LibrarySelectionRoute) }
             )
         }
 
-        composable(route = LibrarySelectionDestination.route) {
-            val navigationGraphEntry = remember(it) { navController.getBackStackEntry(OnboardingDestination.route) }
+        composable<LibrarySelectionRoute> {
+            val navigationGraphEntry = remember(it) {
+                navController.getBackStackEntry(OnboardingRoute)
+            }
             val viewModel: LoginFlowViewModel = hiltViewModel(navigationGraphEntry)
             LibrarySelectionScreen(
                 viewModel = viewModel,

@@ -1,7 +1,14 @@
 package com.devdunnapps.amplify.ui.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
@@ -13,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -24,9 +32,9 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.domain.models.Song
+import com.devdunnapps.amplify.ui.theme.Theme
 import com.devdunnapps.amplify.utils.PlexUtils
 import com.devdunnapps.amplify.utils.TimeUtils
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
 
 @Composable
 fun SongItem(
@@ -54,6 +62,7 @@ fun SongItem(
                 .padding(vertical = 4.dp, horizontal = 16.dp)
                 .fillMaxHeight()
                 .aspectRatio(1f, true)
+                .clip(shape = RoundedCornerShape(4.dp))
         )
 
         Column (
@@ -63,6 +72,7 @@ fun SongItem(
                 text = song.title,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.Bold,
             )
 
@@ -71,7 +81,8 @@ fun SongItem(
                 text = "${song.artistName} • $songDuration",
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                textAlign = TextAlign.Start
+                textAlign = TextAlign.Start,
+                style = MaterialTheme.typography.bodyMedium,
             )
         }
 
@@ -105,7 +116,7 @@ fun SongItemPreview() {
         userRating = 0,
         playCount = 10
     )
-    Mdc3Theme {
+    Theme {
         Surface {
             SongItem(
                 song = song,

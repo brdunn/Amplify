@@ -8,7 +8,7 @@ import retrofit2.Response
 
 internal class NetworkResponseCall<T>(
     private val originalCall: Call<T>,
-    private val emptyBodyHandler: (Int) -> NetworkResponse<T> = { NetworkResponse.Failure(it) }
+    private val emptyBodyHandler: (Response<out Any?>) -> NetworkResponse<T> = { NetworkResponse.Failure(it.code()) }
 ) : Call<NetworkResponse<T>> {
 
     override fun enqueue(callback: Callback<NetworkResponse<T>>) {
@@ -16,7 +16,7 @@ internal class NetworkResponseCall<T>(
             override fun onResponse(call: Call<T>, response: Response<T>) {
                 val result = when {
                     response.isSuccessful ->
-                        response.body()?.let { NetworkResponse.Success(it) } ?: NetworkResponse.Failure()
+                        response.body()?.let { NetworkResponse.Success(it) } ?: emptyBodyHandler(response)
                     else -> NetworkResponse.Failure(code = response.code())
                 }
 

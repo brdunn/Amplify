@@ -14,10 +14,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.Lyrics
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
@@ -40,8 +42,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -79,8 +83,9 @@ fun NowPlayingScreen(
     val shuffleModel = viewModel.shuffleMode.collectAsState().value
     val repeatMode = viewModel.repeatMode.collectAsState().value
 
-    NowPlayingHeader(
+    NowPlaying(
         artworkUrl = metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI),
+        songId = metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID),
         title = metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE),
         subtitle = metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST),
         onSeekToPosition = { viewModel.seekTo((it * 1000).toLong()) },
@@ -96,14 +101,15 @@ fun NowPlayingScreen(
         onSkipNext = viewModel::skipToNext,
         onCollapseNowPlaying = onCollapseNowPlaying,
         onMenuClick = {
-            onNowPlayingMenuClick(viewModel.metadata.value.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))
+            onNowPlayingMenuClick(metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))
         }
     )
 }
 
 @Composable
-private fun NowPlayingHeader(
+private fun NowPlaying(
     artworkUrl: String,
+    songId: String,
     title: String,
     subtitle: String,
     onSeekToPosition: (Float) -> Unit,
@@ -131,9 +137,15 @@ private fun NowPlayingHeader(
             modifier = Modifier
                 .fillMaxSize()
                 .background(color = MaterialTheme.colorScheme.background)
-                .padding(top = 32.dp)
+                .systemBarsPadding()
         ) {
-            NowPlayingTopBar(onCollapseNowPlaying = onCollapseNowPlaying, onMenuClick = onMenuClick)
+            NowPlayingTopBar(
+                songId = songId,
+                title = title,
+                subtitle = subtitle,
+                onCollapseNowPlaying = onCollapseNowPlaying,
+                onMenuClick = onMenuClick
+            )
 
             Spacer(modifier = Modifier.height(48.dp))
 
@@ -150,7 +162,11 @@ private fun NowPlayingHeader(
                         .build(),
                     contentDescription = null,
                     modifier = Modifier
-                        .whenTrue(getCurrentSizeClass() != WindowWidthSizeClass.Compact) { widthIn(max = 350.dp) }
+                        .whenTrue(getCurrentSizeClass() != WindowWidthSizeClass.Compact) {
+                            widthIn(
+                                max = 350.dp
+                            )
+                        }
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp)
                         .aspectRatio(1f)
@@ -203,7 +219,24 @@ private fun NowPlayingHeader(
 }
 
 @Composable
-private fun NowPlayingTopBar(onCollapseNowPlaying: () -> Unit, onMenuClick: () -> Unit) {
+private fun NowPlayingTopBar(
+    songId: String,
+    title: String,
+    subtitle: String,
+    onCollapseNowPlaying: () -> Unit,
+    onMenuClick: () -> Unit
+) {
+    var isLyricsBottomSheetVisible by rememberSaveable { mutableStateOf(false) }
+
+    if (isLyricsBottomSheetVisible) {
+        LyricsBottomSheet(
+            songId = songId,
+            title = title,
+            subtitle = subtitle,
+            onDismiss = { isLyricsBottomSheetVisible = false }
+        )
+    }
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -217,12 +250,25 @@ private fun NowPlayingTopBar(onCollapseNowPlaying: () -> Unit, onMenuClick: () -
             )
         }
 
-        IconButton(onClick = onMenuClick) {
-            Icon(
-                imageVector = Icons.Filled.MoreVert,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onBackground
-            )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            IconButton(onClick = { isLyricsBottomSheetVisible = true }) {
+                Icon(
+                    imageVector = Icons.Filled.Lyrics,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
+            }
+
+            IconButton(onClick = onMenuClick) {
+                Icon(
+                    imageVector = Icons.Filled.MoreVert,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
+            }
         }
     }
 }
@@ -236,7 +282,7 @@ private fun NowPlayingProgressBar(
 ) {
     Column(modifier = modifier) {
 
-        var sliderPosition by remember(mediaPosition) { mutableStateOf((mediaPosition / 1000).toFloat()) }
+        var sliderPosition by remember(mediaPosition) { mutableFloatStateOf((mediaPosition / 1000).toFloat()) }
         Slider(
             value = sliderPosition,
             valueRange = 0f..(songDurationMillis / 1000).toFloat(),

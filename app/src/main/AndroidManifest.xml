@@ -28,17 +28,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".ui.settings.SettingsActivity"
-            android:parentActivityName="com.devdunnapps.amplify.ui.main.MainActivity" />
-
-        <activity
-            android:name=".ui.about.AboutActivity"
-            android:parentActivityName="com.devdunnapps.amplify.ui.main.MainActivity" />
-
-        <activity
-            android:name=".ui.onboarding.OnBoardingActivity" />
-
         <service
             android:name=".utils.MusicService"
             android:foregroundServiceType="mediaPlayback"

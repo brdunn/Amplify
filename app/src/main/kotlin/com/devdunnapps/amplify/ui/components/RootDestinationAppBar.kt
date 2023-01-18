@@ -1,72 +1,22 @@
 package com.devdunnapps.amplify.ui.components
 
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.devdunnapps.amplify.R
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
+import com.devdunnapps.amplify.ui.theme.Theme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RootDestinationAppBar(
     title: String,
-    onNavigateToSearch: () -> Unit,
-    onNavigateToSettings: () -> Unit,
-    onNavigateToAbout: () -> Unit,
+    actions: @Composable RowScope.() -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 ) {
-    var isMenuExpanded by remember { mutableStateOf(false) }
-
     CenterAlignedTopAppBar(
         title = { Text(text = title) },
         scrollBehavior = scrollBehavior,
-        windowInsets = WindowInsets.statusBars,
-        actions = {
-            IconButton(onClick = onNavigateToSearch) {
-                Icon(
-                    imageVector = Icons.Filled.Search,
-                    contentDescription = null
-                )
-            }
-
-            IconButton(onClick = { isMenuExpanded = !isMenuExpanded }) {
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = null
-                )
-            }
-
-            DropdownMenu(
-                expanded = isMenuExpanded,
-                onDismissRequest = { isMenuExpanded = false }
-            ) {
-                DropdownMenuItem(
-                    text = {
-                        Text(text = stringResource(R.string.settings))
-                    },
-                    onClick = {
-                        onNavigateToSettings()
-                        isMenuExpanded = false
-                    }
-                )
-
-                DropdownMenuItem(
-                    text = {
-                        Text(text = stringResource(R.string.about))
-                    },
-                    onClick = {
-                        onNavigateToAbout()
-                        isMenuExpanded = false
-                    }
-                )
-            }
-        }
+        actions = actions
     )
 }
 
@@ -74,12 +24,7 @@ fun RootDestinationAppBar(
 @Preview
 @Composable
 fun AmplifyAppBarPreview() {
-    Mdc3Theme {
-        RootDestinationAppBar(
-            title = "App Bar",
-            onNavigateToSearch = {},
-            onNavigateToSettings = {},
-            onNavigateToAbout = {}
-        )
+    Theme {
+        RootDestinationAppBar(title = "App Bar")
     }
 }
