@@ -14,8 +14,6 @@ Amplify is currently a WIP POC that I work on in my free time and as such is far
 
 <img src="/images/screenshot_3.png" width="25%"/> <img src="/images/screenshot_4.png" width="25%"/>
 
-<img src="/images/screenshot_5.png" width="25%"/>
-
 ## Installation
 You must have Android Studio installed and working. Simply build the project and start MainActivity.java
 
