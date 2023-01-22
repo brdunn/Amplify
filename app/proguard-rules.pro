@@ -14,6 +14,10 @@
     @com.google.gson.annotations.SerializedName <fields>;
 }
 
+-keepclassmembers class * extends com.google.protobuf.MessageLite {
+    <fields>;
+}
+
 # androidx.fragment.app.FragmentContainerView Error
 -keepnames class com.devdunnapps.amplify.domain.models.*
 -keepnames class androidx.navigation.fragment.NavHostFragment
