@@ -20,7 +20,7 @@ class LyricsBottomSheetViewModel @Inject constructor(
 
     private val songId = LyricsBottomSheetArgs.fromSavedStateHandle(savedStateHandle).song.id
 
-    private val _songLyrics = MutableStateFlow<Resource<Lyric>>(Resource.Loading())
+    private val _songLyrics = MutableStateFlow<Resource<Lyric>>(Resource.Loading)
     val songLyrics = _songLyrics.asStateFlow()
 
     init {

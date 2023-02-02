@@ -23,7 +23,7 @@ class ArtistAllSongsViewModel @Inject constructor(
 
     private val artistId = ArtistAllSongsFragmentArgs.fromSavedStateHandle(savedStateHandle).artistId
 
-    private val _artistSongs = MutableStateFlow<Resource<List<Song>>>(Resource.Loading())
+    private val _artistSongs = MutableStateFlow<Resource<List<Song>>>(Resource.Loading)
     val artistSongs = _artistSongs.asStateFlow()
 
     init {

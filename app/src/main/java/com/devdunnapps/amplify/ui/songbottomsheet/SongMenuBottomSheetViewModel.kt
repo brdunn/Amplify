@@ -33,7 +33,7 @@ class SongMenuBottomSheetViewModel @Inject constructor(
     private val songId = args.songId
     private val playlistId = args.playlistId
 
-    private val _screenState = MutableStateFlow<Resource<SongBottomSheetState>>(Resource.Loading())
+    private val _screenState = MutableStateFlow<Resource<SongBottomSheetState>>(Resource.Loading)
     val screenState = _screenState.asStateFlow()
 
     init {

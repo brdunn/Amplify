@@ -32,7 +32,7 @@ class AlbumViewModel @Inject constructor(
 
     private val albumId = AlbumFragmentArgs.fromSavedStateHandle(savedStateHandle).albumId
 
-    private val _album = MutableStateFlow<Resource<AlbumScreenUIModel>>(Resource.Loading())
+    private val _album = MutableStateFlow<Resource<AlbumScreenUIModel>>(Resource.Loading)
     val album = _album.asStateFlow()
 
     init {

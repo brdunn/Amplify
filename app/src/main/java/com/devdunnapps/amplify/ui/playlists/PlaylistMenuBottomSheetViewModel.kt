@@ -24,7 +24,7 @@ class PlaylistMenuBottomSheetViewModel @Inject constructor(
 
     private val playlistId: String = savedStateHandle["playlistId"]!!
 
-    private val _playlist = MutableStateFlow<Resource<Playlist>>(Resource.Loading())
+    private val _playlist = MutableStateFlow<Resource<Playlist>>(Resource.Loading)
     val playlist = _playlist.asStateFlow()
 
     private val _closeObservable = MutableSharedFlow<Unit>()

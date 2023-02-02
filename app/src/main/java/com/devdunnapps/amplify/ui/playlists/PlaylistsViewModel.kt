@@ -18,7 +18,7 @@ class PlaylistsViewModel @Inject constructor(
     private val createPlaylistUseCase: CreatePlaylistUseCase
 ) : ViewModel() {
 
-    private val _playlists = MutableStateFlow<Resource<List<Playlist>>>(Resource.Loading())
+    private val _playlists = MutableStateFlow<Resource<List<Playlist>>>(Resource.Loading)
     val playlists = _playlists.asStateFlow()
 
     init {

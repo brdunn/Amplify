@@ -27,7 +27,7 @@ class PlexRepositoryImpl @Inject constructor(
     override fun getSongs() = SongsPagingSource(userToken, section, api)
 
     override fun getSong(songId: String): Flow<Resource<Song>> = flow {
-        emit(Resource.Loading())
+        emit(Resource.Loading)
         try {
             val song = api.getSong(songId, userToken).mediaContainer.metadata?.get(0)?.toSong() ?: run {
                 emit(Resource.Error())
@@ -42,7 +42,7 @@ class PlexRepositoryImpl @Inject constructor(
     }
 
     override fun getAlbum(key: String): Flow<Resource<Album>> = flow {
-        emit(Resource.Loading())
+        emit(Resource.Loading)
         try {
             val album = api.getAlbum(key, userToken).mediaContainer.metadata?.get(0)?.toAlbum() ?: run {
                 emit(Resource.Error())
@@ -57,7 +57,7 @@ class PlexRepositoryImpl @Inject constructor(
     }
 
     override fun getAlbumSongs(key: String): Flow<Resource<List<Song>>> = flow {
-        emit(Resource.Loading())
+        emit(Resource.Loading)
         try {
             val songs = api.getAlbumSongs(key, userToken).mediaContainer.metadata?.map { it.toSong() } ?: emptyList()
             emit(Resource.Success(songs))
@@ -69,7 +69,7 @@ class PlexRepositoryImpl @Inject constructor(
     }
 
     override fun getPlaylists(): Flow<Resource<List<Playlist>>> = flow {
-        emit(Resource.Loading())
+        emit(Resource.Loading)
         try {
             val playlists =
                 api.getPlaylists(section, userToken).mediaContainer.metadata?.map { it.toPlaylist() } ?: emptyList()
@@ -82,7 +82,7 @@ class PlexRepositoryImpl @Inject constructor(
     }
 
     override fun getPlaylist(playlistId: String): Flow<Resource<Playlist>> = flow {
-        emit(Resource.Loading())
+        emit(Resource.Loading)
         try {
             val playlist = api.getPlaylist(playlistId, userToken).mediaContainer.metadata?.get(0)?.toPlaylist() ?: run {
                 emit(Resource.Error())
@@ -97,7 +97,7 @@ class PlexRepositoryImpl @Inject constructor(
     }
 
     override fun getPlaylistSongs(key: String): Flow<Resource<List<Song>>> = flow {
-        emit(Resource.Loading())
+        emit(Resource.Loading)
         try {
             val songs = api.getPlaylistSongs(key, userToken).mediaContainer.metadata?.map { it.toSong() } ?: emptyList()
             emit(Resource.Success(songs))
@@ -109,7 +109,7 @@ class PlexRepositoryImpl @Inject constructor(
     }
 
     override fun getArtistSongs(artistKey: String, number: Int): Flow<Resource<List<Song>>> = flow {
-        emit(Resource.Loading())
+        emit(Resource.Loading)
         try {
             val metadata = api.getArtistSongs(section, artistKey, number, userToken).mediaContainer.metadata
             if (metadata == null) {
@@ -125,7 +125,7 @@ class PlexRepositoryImpl @Inject constructor(
     }
 
     override fun getArtistSinglesEPs(artistKey: String): Flow<Resource<List<Album>>> = flow {
-        emit(Resource.Loading())
+        emit(Resource.Loading)
         try {
             val singlesEPs = api.getArtistSinglesEPs(section, artistKey, userToken).mediaContainer.metadata
                 ?.map { it.toAlbum() } ?: emptyList()
@@ -138,7 +138,7 @@ class PlexRepositoryImpl @Inject constructor(
     }
 
     override fun getArtistAlbums(key: String): Flow<Resource<List<Album>>> = flow {
-        emit(Resource.Loading())
+        emit(Resource.Loading)
         try {
             val albums = api.getArtistAlbums(section, key, userToken).mediaContainer.metadata
                 ?.map { it.toAlbum() } ?: emptyList()
@@ -151,7 +151,7 @@ class PlexRepositoryImpl @Inject constructor(
     }
 
     override fun getArtist(key: String): Flow<Resource<Artist>> = flow {
-        emit(Resource.Loading())
+        emit(Resource.Loading)
         try {
             val metadata = api.getArtist(key, userToken).mediaContainer.metadata
             if (metadata == null) {
@@ -167,7 +167,7 @@ class PlexRepositoryImpl @Inject constructor(
     }
 
     override fun addSongToPlaylist(songId: String, playlistId: String): Flow<Resource<Unit>> = flow {
-        emit(Resource.Loading())
+        emit(Resource.Loading)
         try {
             val serverId = api.getServerIdentity(userToken).mediaContainer.machineIdentifier!!
             val songUri = "server://$serverId/com.plexapp.plugins.library/library/metadata/$songId"
@@ -181,7 +181,7 @@ class PlexRepositoryImpl @Inject constructor(
     }
 
     override fun removeSongFromPlaylist(songId: String, playlistId: String): Flow<Resource<Unit>> = flow {
-        emit(Resource.Loading())
+        emit(Resource.Loading)
         try {
             // Plex uses a unique "playlistItemID" so we must search the playlist for the playlistItemID of the song
             // with the given songId
@@ -203,7 +203,7 @@ class PlexRepositoryImpl @Inject constructor(
     }
 
     override fun getSongLyrics(songId: String): Flow<Resource<Lyric>> = flow {
-        emit(Resource.Loading())
+        emit(Resource.Loading)
         try {
             val streams =
                 api.getSong(songId, userToken).mediaContainer.metadata?.get(0)?.media?.get(0)?.part?.get(0)?.stream
@@ -236,7 +236,7 @@ class PlexRepositoryImpl @Inject constructor(
     }
 
     override fun deletePlaylist(playlistId: String): Flow<Resource<Unit>> = flow {
-        emit(Resource.Loading())
+        emit(Resource.Loading)
         try {
             val apiResponse = api.deletePlaylist(playlistId, userToken)
             if (apiResponse.code() == HttpURLConnection.HTTP_NO_CONTENT) {
@@ -252,7 +252,7 @@ class PlexRepositoryImpl @Inject constructor(
     }
 
     override fun createPlaylist(playlistTitle: String): Flow<Resource<Playlist>> = flow {
-        emit(Resource.Loading())
+        emit(Resource.Loading)
         try {
             val apiResponse =
                 api.createPlaylist(playlistTitle, userToken).mediaContainer.metadata?.get(0)?.toPlaylist() ?: run {
@@ -268,7 +268,7 @@ class PlexRepositoryImpl @Inject constructor(
     }
 
     override fun searchLibrary(query: String): Flow<Resource<SearchResults>> = flow {
-        emit(Resource.Loading())
+        emit(Resource.Loading)
         try {
             var songs: List<Song> = emptyList()
             var albums: List<Album> = emptyList()
@@ -320,7 +320,7 @@ class PlexRepositoryImpl @Inject constructor(
     }
 
     override fun rateSong(songId: String, rating: Int): Flow<Resource<Unit>> = flow {
-        emit(Resource.Loading())
+        emit(Resource.Loading)
         try {
             val apiResponse = api.rateSong(songId, rating.toString(), userToken)
             if (apiResponse.code() == HttpURLConnection.HTTP_OK) {
@@ -336,7 +336,7 @@ class PlexRepositoryImpl @Inject constructor(
     }
 
     override fun markSongAsListened(songId: String): Flow<Resource<Unit>> = flow {
-        emit(Resource.Loading())
+        emit(Resource.Loading)
         try {
             val apiResponse = api.markSongAsListened(songId, userToken)
             if (apiResponse.code() == HttpURLConnection.HTTP_OK) {

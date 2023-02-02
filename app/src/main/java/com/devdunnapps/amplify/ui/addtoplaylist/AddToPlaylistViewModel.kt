@@ -24,7 +24,7 @@ class AddToPlaylistViewModel @Inject constructor(
 
     private val songId = AddToPlaylistBottomSheetFragmentArgs.fromSavedStateHandle(savedStateHandle).songId
 
-    private val _playlists = MutableStateFlow<Resource<List<Playlist>>>(Resource.Loading())
+    private val _playlists = MutableStateFlow<Resource<List<Playlist>>>(Resource.Loading)
     val playlists = _playlists.asStateFlow()
 
     private val _closeObservable = MutableSharedFlow<Unit>()

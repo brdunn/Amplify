@@ -1,5 +1,5 @@
 ext {
-    agpVersion = '7.4.0'
+    agpVersion = '7.4.1'
     kotlinVersion = "1.8.0"
 
     retrofitVersion = "2.9.0"
@@ -33,7 +33,7 @@ ext {
     accompanistVersion = "0.28.0"
 
     // google
-    materialVersion = "1.7.0"
+    materialVersion = "1.8.0"
     hiltVersion = "2.44.2"
     hiltNavigationComposeVersion = "1.0.0"
     exoPlayerVersion = "2.18.2"

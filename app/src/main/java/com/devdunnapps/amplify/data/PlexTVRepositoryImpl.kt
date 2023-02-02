@@ -25,7 +25,7 @@ class PlexTVRepositoryImpl @Inject constructor(
 ): PlexTVRepository  {
 
     override fun getLibrarySections(): Flow<Resource<List<LibrarySection>>> = flow {
-        emit(Resource.Loading())
+        emit(Resource.Loading)
 
         val url = PreferencesUtils.readSharedSetting(context, PreferencesUtils.PREF_PLEX_SERVER_ADDRESS) ?: ""
         val userToken = PreferencesUtils.readSharedSetting(context, PreferencesUtils.PREF_PLEX_USER_TOKEN) ?: ""
@@ -48,7 +48,7 @@ class PlexTVRepositoryImpl @Inject constructor(
     }
 
     override fun signInUser(username: String, password: String, authToken: String?): Flow<Resource<User>> = flow {
-        emit(Resource.Loading())
+        emit(Resource.Loading)
 
         try {
             val userCredentials = SigninDTO(username, password, authToken)
@@ -75,7 +75,7 @@ class PlexTVRepositoryImpl @Inject constructor(
     }
 
     override fun getUserServers(userToken: String): Flow<Resource<List<Server>>> = flow {
-        emit(Resource.Loading())
+        emit(Resource.Loading)
 
         val resources = api.getServers(userToken).filter { it.provides == "server" }
         val servers: MutableList<Server> = mutableListOf()

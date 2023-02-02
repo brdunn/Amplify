@@ -25,16 +25,16 @@ class LoginFlowViewModel @Inject constructor(
     private val app: Application
 ): AndroidViewModel(app) {
 
-    private val _user = MutableStateFlow<Resource<User>>(Resource.Loading())
+    private val _user = MutableStateFlow<Resource<User>>(Resource.Loading)
     val user = _user.asStateFlow()
 
     private val _twoFactorAuthRequired = MutableStateFlow(false)
     val twoFactorAuthRequired = _twoFactorAuthRequired.asStateFlow()
 
-    private val _servers = MutableStateFlow<Resource<List<Server>>>(Resource.Loading())
+    private val _servers = MutableStateFlow<Resource<List<Server>>>(Resource.Loading)
     val servers = _servers.asStateFlow()
 
-    private val _libraries = MutableStateFlow<Resource<List<LibrarySection>>>(Resource.Loading())
+    private val _libraries = MutableStateFlow<Resource<List<LibrarySection>>>(Resource.Loading)
     val libraries = _libraries.asStateFlow()
 
     fun login(username: String, password: String, token: String) {

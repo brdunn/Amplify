@@ -31,7 +31,7 @@ class PlaylistViewModel @Inject constructor(
 
     private val playlistId = PlaylistFragmentArgs.fromSavedStateHandle(savedStateHandle).playlistId
 
-    private val _uiState: MutableStateFlow<Resource<PlaylistUIModel>> = MutableStateFlow(Resource.Loading())
+    private val _uiState: MutableStateFlow<Resource<PlaylistUIModel>> = MutableStateFlow(Resource.Loading)
     val uiState = _uiState.asStateFlow()
 
     init {
@@ -43,7 +43,7 @@ class PlaylistViewModel @Inject constructor(
             combine(getPlaylistUseCase(playlistId), getPlaylistSongsUseCase(playlistId)) { playlist, songs ->
                 when {
                     playlist is Resource.Error || songs is Resource.Error -> _uiState.emit(Resource.Error())
-                    playlist is Resource.Loading || songs is Resource.Loading -> _uiState.emit(Resource.Loading())
+                    playlist is Resource.Loading || songs is Resource.Loading -> _uiState.emit(Resource.Loading)
                     playlist is Resource.Success && songs is Resource.Success ->
                         _uiState.emit(Resource.Success(PlaylistUIModel(playlist.data, songs.data)))
                 }
