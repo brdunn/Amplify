@@ -22,9 +22,7 @@ class SettingsActivityViewModel @Inject constructor(
 ): AndroidViewModel(app) {
 
     val uiState = preferencesRepository.userData
-        .map {
-            SettingsScreenUIState.Content(it)
-        }
+        .map { SettingsScreenUIState.Content(it) }
         .stateIn(viewModelScope, SharingStarted.Lazily, SettingsScreenUIState.Loading)
 
     fun changeTheme(newValue: ThemeConfig) {

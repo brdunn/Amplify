@@ -75,10 +75,13 @@
     <!-- Settings -->
     <string name="settings">Settings</string>
     <string-array name="theme_titles">
-        <item>System default</item>
-        <item>Light</item>
-        <item>Dark</item>
+        <item>@string/theme_system_default</item>
+        <item>@string/theme_light</item>
+        <item>@string/theme_dark</item>
     </string-array>
+    <string name="theme_system_default">System default</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
     <string name="choose_theme_preference_title">Choose theme</string>
     <string name="sign_out_preference_title">Sign out</string>
     <string name="sign_out_preference_description">Logs you out of your server</string>

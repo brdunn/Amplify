@@ -97,7 +97,6 @@ private fun SettingsScreen(
                 modifier = Modifier.padding(paddingValues)
             )
         }
-
     }
 }
 
@@ -119,17 +118,17 @@ private fun SettingsScreenContent(
                 description = themeDescription,
                 items = listOf(
                     ListPreferenceItem(
-                        title = "Use System Default",
+                        title = stringResource(id = R.string.theme_system_default),
                         isSelected = theme == ThemeConfig.FOLLOW_SYSTEM,
                         value = ThemeConfig.FOLLOW_SYSTEM
                     ),
                     ListPreferenceItem(
-                        title = "Light",
+                        title = stringResource(id = R.string.theme_light),
                         isSelected = theme == ThemeConfig.LIGHT,
                         value = ThemeConfig.LIGHT
                     ),
                     ListPreferenceItem(
-                        title = "Dark",
+                        title = stringResource(id = R.string.theme_dark),
                         isSelected = theme == ThemeConfig.DARK,
                         value = ThemeConfig.DARK
                     )
