@@ -3,12 +3,46 @@ package com.devdunnapps.amplify.ui.nowplaying
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Repeat
+import androidx.compose.material.icons.filled.RepeatOn
+import androidx.compose.material.icons.filled.RepeatOne
+import androidx.compose.material.icons.filled.Shuffle
+import androidx.compose.material.icons.filled.ShuffleOn
+import androidx.compose.material.icons.filled.SkipNext
+import androidx.compose.material.icons.filled.SkipPrevious
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,10 +55,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.devdunnapps.amplify.ui.utils.DynamicThemePrimaryColorsFromImage
+import com.devdunnapps.amplify.ui.utils.getCurrentSizeClass
 import com.devdunnapps.amplify.ui.utils.rememberDominantColorState
+import com.devdunnapps.amplify.ui.utils.whenTrue
 import com.devdunnapps.amplify.utils.NOTHING_PLAYING
 import com.devdunnapps.amplify.utils.TimeUtils
-import com.google.accompanist.themeadapter.material3.Mdc3Theme
 
 @Composable
 fun NowPlayingScreen(
@@ -106,7 +141,7 @@ private fun NowPlayingHeader(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 26.dp)
+                    .padding(horizontal = 16.dp)
             ) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
@@ -115,6 +150,7 @@ private fun NowPlayingHeader(
                         .build(),
                     contentDescription = null,
                     modifier = Modifier
+                        .whenTrue(getCurrentSizeClass() != WindowWidthSizeClass.Compact) { widthIn(max = 350.dp) }
                         .fillMaxWidth()
                         .padding(horizontal = 8.dp)
                         .aspectRatio(1f)
@@ -129,6 +165,7 @@ private fun NowPlayingHeader(
                     overflow = TextOverflow.Ellipsis,
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
 
@@ -138,6 +175,7 @@ private fun NowPlayingHeader(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
 
@@ -174,14 +212,16 @@ private fun NowPlayingTopBar(onCollapseNowPlaying: () -> Unit, onMenuClick: () -
         IconButton(onClick = onCollapseNowPlaying) {
             Icon(
                 imageVector = Icons.Filled.ExpandMore,
-                contentDescription = null
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
 
         IconButton(onClick = onMenuClick) {
             Icon(
                 imageVector = Icons.Filled.MoreVert,
-                contentDescription = null
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
     }
@@ -221,13 +261,15 @@ private fun NowPlayingProgressBar(
         ) {
             Text(
                 text = TimeUtils.millisecondsToTime(mediaPosition),
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.offset(y = (-6).dp)
             )
 
             Text(
                 text = TimeUtils.millisecondsToTime(songDurationMillis),
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.offset(y = (-6).dp)
             )
         }
@@ -246,8 +288,9 @@ private fun MediaButtonsRow(
     onSkipNext: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val rowSpacing = if (getCurrentSizeClass() == WindowWidthSizeClass.Compact) 8.dp else 16.dp
     Row(
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(rowSpacing),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
     ) {
@@ -258,7 +301,8 @@ private fun MediaButtonsRow(
         IconButton(onClick = onToggleShuffleClick) {
             Icon(
                 imageVector = shuffleModeIcon,
-                contentDescription = null
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
 
@@ -266,6 +310,7 @@ private fun MediaButtonsRow(
             Icon(
                 imageVector = Icons.Filled.SkipPrevious,
                 contentDescription = null,
+                tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.size(36.dp)
             )
         }
@@ -287,6 +332,7 @@ private fun MediaButtonsRow(
             Icon(
                 imageVector = Icons.Filled.SkipNext,
                 contentDescription = null,
+                tint = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.size(36.dp)
             )
         }
@@ -299,7 +345,8 @@ private fun MediaButtonsRow(
         IconButton(onClick = onToggleRepeatClick) {
             Icon(
                 imageVector = repeatModeIcon,
-                contentDescription = null
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
     }
