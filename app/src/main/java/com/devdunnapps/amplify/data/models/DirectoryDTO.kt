@@ -9,7 +9,7 @@ data class DirectoryDTO(
     val title: String?
 ) : Serializable {
 
-    fun toServer() = LibrarySection(
+    fun toLibrarySection() = LibrarySection(
         type = type!!,
         title = title!!,
         key = key!!,

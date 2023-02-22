@@ -58,8 +58,7 @@ class LoginFlowViewModel @Inject constructor(
 
     private fun getServers() {
         viewModelScope.launch {
-            val authToken = (_user.value as? Resource.Success)?.data?.authToken ?: return@launch
-            getUsersServersUseCase(authToken).collect {
+            getUsersServersUseCase().collect {
                 _servers.value = it
             }
         }

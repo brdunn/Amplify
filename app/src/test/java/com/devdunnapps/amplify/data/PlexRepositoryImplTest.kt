@@ -25,11 +25,7 @@ class PlexRepositoryImplTest {
             .build()
             .create(PlexAPI::class.java)
 
-        repository = PlexRepositoryImpl(
-            api = api,
-            section = TEST_LIBRARY_ID,
-            userToken = ""
-        )
+        repository = PlexRepositoryImpl(api = api, section = TEST_LIBRARY_ID)
     }
 
     @Test

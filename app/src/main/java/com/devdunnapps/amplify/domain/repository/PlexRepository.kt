@@ -1,7 +1,13 @@
 package com.devdunnapps.amplify.domain.repository
 
 import androidx.paging.PagingSource
-import com.devdunnapps.amplify.domain.models.*
+import com.devdunnapps.amplify.domain.models.Album
+import com.devdunnapps.amplify.domain.models.Artist
+import com.devdunnapps.amplify.domain.models.LibrarySection
+import com.devdunnapps.amplify.domain.models.Lyric
+import com.devdunnapps.amplify.domain.models.Playlist
+import com.devdunnapps.amplify.domain.models.SearchResults
+import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.utils.Resource
 import kotlinx.coroutines.flow.Flow
 
@@ -38,6 +44,8 @@ interface PlexRepository {
     fun removeSongFromPlaylist(songId: String, playlistId: String): Flow<Resource<Unit>>
 
     fun getSongLyrics(songId: String): Flow<Resource<Lyric>>
+
+    fun getLibrarySections(): Flow<Resource<List<LibrarySection>>>
 
     fun deletePlaylist(playlistId: String): Flow<Resource<Unit>>
 

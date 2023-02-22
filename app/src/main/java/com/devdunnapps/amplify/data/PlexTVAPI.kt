@@ -9,12 +9,8 @@ import retrofit2.http.*
 interface PlexTVAPI {
 
     @POST("api/v2/users/signin")
-    suspend fun signInUser(
-        @Body user: SigninDTO
-    ): Response<UserDTO>
+    suspend fun signInUser(@Body user: SigninDTO): Response<UserDTO>
 
     @GET("api/v2/resources?includeHttps=1&includeRelay=1")
-    suspend fun getServers(
-        @Header("X-Plex-Token") userToken: String
-    ): List<ResourceDTO>
+    suspend fun getServers(): List<ResourceDTO>
 }

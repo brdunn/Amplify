@@ -8,9 +8,8 @@ import com.devdunnapps.amplify.domain.models.Album
 private const val STARTING_KEY = 0
 
 class AlbumsPagingSource (
-    private val userToken: String,
     private val section: String,
-    private val api: PlexAPI,
+    private val api: PlexAPI
 ) : PagingSource<Int, Album>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Album> {
@@ -18,11 +17,10 @@ class AlbumsPagingSource (
 
         try {
             val response = api.getAlbums(
-                    section = section,
-                    containerSize = params.loadSize,
-                    containerStart = startKey,
-                    userToken = userToken
-                )
+                section = section,
+                containerSize = params.loadSize,
+                containerStart = startKey
+            )
             val albums = response.mediaContainer.metadata?.map { it.toAlbum() } ?: emptyList()
 
             return LoadResult.Page(

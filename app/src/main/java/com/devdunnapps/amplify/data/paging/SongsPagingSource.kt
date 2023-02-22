@@ -4,14 +4,12 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.devdunnapps.amplify.data.PlexAPI
 import com.devdunnapps.amplify.domain.models.Song
-import kotlin.math.max
 
 private const val STARTING_KEY = 0
 
 class SongsPagingSource (
-    private val userToken: String,
     private val section: String,
-    private val api: PlexAPI,
+    private val api: PlexAPI
 ) : PagingSource<Int, Song>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Song> {
@@ -19,11 +17,10 @@ class SongsPagingSource (
 
         try {
             val response = api.getSongs(
-                    section = section,
-                    containerSize = params.loadSize,
-                    containerStart = startKey,
-                    userToken = userToken
-                )
+                section = section,
+                containerSize = params.loadSize,
+                containerStart = startKey
+            )
             val songs = response.mediaContainer.metadata?.map { it.toSong() } ?: emptyList()
 
             return LoadResult.Page(

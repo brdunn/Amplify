@@ -7,5 +7,5 @@ class GetUsersServersUseCase @Inject constructor(
     private val repository: PlexTVRepository
 ) {
 
-    operator fun invoke(userToken: String) = repository.getUserServers(userToken)
+    operator fun invoke() = repository.getUserServers()
 }

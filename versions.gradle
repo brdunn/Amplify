@@ -9,7 +9,7 @@ ext {
     coroutinesVersion = "1.6.3"
 
     // androidx
-    appCompatVersion = "1.6.0"
+    appCompatVersion = "1.6.1"
     constraintLayoutVersion = "2.1.4"
     recyclerViewVersion = "1.2.1"
     paletteVersion = "1.0.0"
