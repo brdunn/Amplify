@@ -7,6 +7,7 @@ object PreferencesUtils {
     const val PREFERENCES_FILE = "amplify_settings"
     const val PREF_USER_FIRST_TIME = "user_first_time"
     const val PREF_PLEX_SERVER_ADDRESS = "user_plex_server_ip_address"
+    const val PREF_PLEX_TV_USER_TOKEN = "user_plex_tv_token"
     const val PREF_PLEX_USER_TOKEN = "user_plex_token"
     const val PREF_PLEX_SERVER_LIBRARY = "user_plex_server_library"
 

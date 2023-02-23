@@ -43,7 +43,7 @@ class LoginFlowViewModel @Inject constructor(
                 if (it is Resource.Success) {
                     PreferencesUtils.saveString(
                         app.applicationContext,
-                        PreferencesUtils.PREF_PLEX_USER_TOKEN, it.data.authToken
+                        PreferencesUtils.PREF_PLEX_TV_USER_TOKEN, it.data.authToken
                     )
                     _user.value = it
                     getServers()
@@ -66,7 +66,7 @@ class LoginFlowViewModel @Inject constructor(
 
     fun selectServer(server: Server) {
         PreferencesUtils.saveString(app.applicationContext, PreferencesUtils.PREF_PLEX_SERVER_ADDRESS, server.address)
-
+        PreferencesUtils.saveString(app.applicationContext, PreferencesUtils.PREF_PLEX_USER_TOKEN, server.accessToken)
         getLibraries()
     }
 

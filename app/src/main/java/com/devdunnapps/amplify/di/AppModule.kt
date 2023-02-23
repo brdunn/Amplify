@@ -7,9 +7,10 @@ import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
 import com.devdunnapps.amplify.UserPreferences
 import com.devdunnapps.amplify.data.*
-import com.devdunnapps.amplify.data.networking.AuthorizationInterceptor
+import com.devdunnapps.amplify.data.networking.PlexTVAuthorizationInterceptor
 import com.devdunnapps.amplify.data.networking.DeviceInfoInterceptor
-import com.devdunnapps.amplify.data.networking.ServerURLInterceptor
+import com.devdunnapps.amplify.data.networking.PMSAuthorizationInterceptor
+import com.devdunnapps.amplify.data.networking.PMSServerURLInterceptor
 import com.devdunnapps.amplify.data.networking.UnauthorizedInterceptor
 import com.devdunnapps.amplify.domain.repository.PlexRepository
 import com.devdunnapps.amplify.domain.repository.PlexTVRepository
@@ -47,7 +48,7 @@ object AppModule {
             .addConverterFactory(GsonConverterFactory.create())
             .client(
                 OkHttpClient.Builder()
-                    .addInterceptor(AuthorizationInterceptor(context))
+                    .addInterceptor(PlexTVAuthorizationInterceptor(context))
                     .addInterceptor(DeviceInfoInterceptor(context))
                     .addInterceptor(UnauthorizedInterceptor(context))
                     .build()
@@ -65,8 +66,8 @@ object AppModule {
             .addConverterFactory(GsonConverterFactory.create())
             .client(
                 OkHttpClient.Builder()
-                    .addInterceptor(ServerURLInterceptor(context))
-                    .addInterceptor(AuthorizationInterceptor(context))
+                    .addInterceptor(PMSServerURLInterceptor(context))
+                    .addInterceptor(PMSAuthorizationInterceptor(context))
                     .addInterceptor(DeviceInfoInterceptor(context))
                     .addInterceptor(UnauthorizedInterceptor(context))
                     .build()

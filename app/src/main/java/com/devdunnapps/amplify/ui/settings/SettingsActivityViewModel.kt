@@ -42,6 +42,7 @@ class SettingsActivityViewModel @Inject constructor(
     fun signOut() {
         PreferencesUtils.saveString(app, PreferencesUtils.PREF_PLEX_SERVER_LIBRARY, null)
         PreferencesUtils.saveString(app, PreferencesUtils.PREF_PLEX_SERVER_ADDRESS, null)
+        PreferencesUtils.saveString(app, PreferencesUtils.PREF_PLEX_TV_USER_TOKEN, null)
         PreferencesUtils.saveString(app, PreferencesUtils.PREF_PLEX_USER_TOKEN, null)
         PreferencesUtils.saveBoolean(app, PreferencesUtils.PREF_USER_FIRST_TIME, true)
     }

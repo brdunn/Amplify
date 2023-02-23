@@ -24,6 +24,7 @@ class UnauthorizedInterceptor(private val context: Context) : Interceptor {
             // The use must have revoked their token, navigate back to the login flow
             PreferencesUtils.saveString(context, PreferencesUtils.PREF_PLEX_SERVER_LIBRARY, null)
             PreferencesUtils.saveString(context, PreferencesUtils.PREF_PLEX_SERVER_ADDRESS, null)
+            PreferencesUtils.saveString(context, PreferencesUtils.PREF_PLEX_TV_USER_TOKEN, null)
             PreferencesUtils.saveString(context, PreferencesUtils.PREF_PLEX_USER_TOKEN, null)
             PreferencesUtils.saveBoolean(context, PreferencesUtils.PREF_USER_FIRST_TIME, true)
 

@@ -8,7 +8,7 @@ import okhttp3.Response
 /**
  * Adds the user's authentication token as a header to the request.
  */
-class AuthorizationInterceptor(private val context: Context) : Interceptor {
+class PMSAuthorizationInterceptor(private val context: Context) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val token = PreferencesUtils.readSharedSetting(context, PreferencesUtils.PREF_PLEX_USER_TOKEN).orEmpty()

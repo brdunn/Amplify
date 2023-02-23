@@ -8,7 +8,7 @@ import okhttp3.Response
 /**
  * Sets the base url of the request to the server that the user selected during sign in.
  */
-class ServerURLInterceptor(private val context: Context) : Interceptor {
+class PMSServerURLInterceptor(private val context: Context) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val serverURL = PreferencesUtils.readSharedSetting(context, PreferencesUtils.PREF_PLEX_SERVER_ADDRESS).orEmpty()

@@ -51,7 +51,9 @@ class PlexTVRepositoryImpl @Inject constructor(
         val servers: MutableList<Server> = mutableListOf()
         for (resource in resources) {
             for (connection in resource.connections) {
-                servers.add(connection.toServer(resource.name))
+                servers.add(
+                    connection.toServer(serverName = resource.name, accessToken = resource.accessToken.orEmpty())
+                )
             }
         }
         emit(Resource.Success(servers.toList()))
