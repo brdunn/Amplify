@@ -9,6 +9,7 @@ import retrofit2.http.*
 interface PlexTVAPI {
 
     @POST("api/v2/users/signin")
+    @Headers("X-Amplify-Ignore-Auth-Errors: 1")
     suspend fun signInUser(@Body user: SigninDTO): Response<UserDTO>
 
     @GET("api/v2/resources?includeHttps=1&includeRelay=1")

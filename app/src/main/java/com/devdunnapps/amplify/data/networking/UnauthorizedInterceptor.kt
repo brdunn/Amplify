@@ -16,6 +16,12 @@ class UnauthorizedInterceptor(private val context: Context) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val response = chain.proceed(chain.request())
         if (response.code == HttpURLConnection.HTTP_UNAUTHORIZED) {
+            // Ignore API calls that allow for unauthenticated requests. This header is internal to the app.
+            if (response.request.header("X-Amplify-Ignore-Auth-Errors") == "1") {
+                return response
+            }
+
+            // The use must have revoked their token, navigate back to the login flow
             PreferencesUtils.saveString(context, PreferencesUtils.PREF_PLEX_SERVER_LIBRARY, null)
             PreferencesUtils.saveString(context, PreferencesUtils.PREF_PLEX_SERVER_ADDRESS, null)
             PreferencesUtils.saveString(context, PreferencesUtils.PREF_PLEX_USER_TOKEN, null)

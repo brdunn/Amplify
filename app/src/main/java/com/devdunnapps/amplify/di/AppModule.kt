@@ -56,8 +56,7 @@ object AppModule {
             .create(PlexTVAPI::class.java)
 
     @Provides
-    fun providePlexTVRepository(plexTVAPI: PlexTVAPI, @ApplicationContext context: Context): PlexTVRepository =
-        PlexTVRepositoryImpl(plexTVAPI, context)
+    fun providePlexTVRepository(plexTVAPI: PlexTVAPI): PlexTVRepository = PlexTVRepositoryImpl(plexTVAPI)
 
     @Provides
     fun providePlexAPI(@ApplicationContext context: Context): PlexAPI {

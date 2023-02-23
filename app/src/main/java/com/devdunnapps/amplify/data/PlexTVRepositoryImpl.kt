@@ -1,9 +1,7 @@
 package com.devdunnapps.amplify.data
 
-import android.content.Context
 import com.devdunnapps.amplify.data.models.ErrorsDTO
 import com.devdunnapps.amplify.data.models.SigninDTO
-import com.devdunnapps.amplify.data.networking.DeviceInfoInterceptor
 import com.devdunnapps.amplify.domain.models.Server
 import com.devdunnapps.amplify.domain.models.User
 import com.devdunnapps.amplify.domain.repository.PlexTVRepository
@@ -11,34 +9,20 @@ import com.devdunnapps.amplify.utils.Resource
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import okhttp3.OkHttpClient
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 import java.net.HttpURLConnection
 import javax.inject.Inject
 
 class PlexTVRepositoryImpl @Inject constructor(
-    private val plexTVClient: PlexTVAPI,
-    private val context: Context
+    private val plexTVClient: PlexTVAPI
 ): PlexTVRepository  {
 
     override fun signInUser(username: String, password: String, authToken: String?): Flow<Resource<User>> = flow {
         emit(Resource.Loading)
 
-        // We need to create a separate plex TV instance for the login so we don't add empty authorization headers
-        val loginAPI = Retrofit.Builder()
-            .baseUrl("https://plex.tv")
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(
-                OkHttpClient.Builder().addInterceptor(DeviceInfoInterceptor(context)).build()
-            )
-            .build()
-            .create(PlexTVAPI::class.java)
-
         try {
             val userCredentials = SigninDTO(username, password, authToken)
-            val response = loginAPI.signInUser(userCredentials)
+            val response = plexTVClient.signInUser(userCredentials)
             if (response.code() == HttpURLConnection.HTTP_CREATED) {
                 val user = response.body()?.toUser() ?: run {
                     emit(Resource.Error())
