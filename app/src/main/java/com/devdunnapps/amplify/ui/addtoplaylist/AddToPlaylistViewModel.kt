@@ -3,6 +3,7 @@ package com.devdunnapps.amplify.ui.addtoplaylist
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.devdunnapps.amplify.data.networking.NetworkResponse
 import com.devdunnapps.amplify.domain.models.Playlist
 import com.devdunnapps.amplify.domain.usecases.AddSongToPlaylistUseCase
 import com.devdunnapps.amplify.domain.usecases.GetPlaylistsUseCase
@@ -36,19 +37,18 @@ class AddToPlaylistViewModel @Inject constructor(
 
     private fun gatherPlaylists() {
         viewModelScope.launch {
-            getPlaylistsUseCase().collect {
-                _playlists.value = it
-            }
+            val result = getPlaylistsUseCase()
+            if (result is NetworkResponse.Success)
+                _playlists.emit(Resource.Success(result.data))
+            else
+                _playlists.emit(Resource.Error())
         }
     }
 
     fun addSongToPlaylist(playlistId: String) {
         viewModelScope.launch {
-            addSongToPlaylistUseCase(songId, playlistId).collect {
-                when (it) {
-                    is Resource.Success -> _closeObservable.emit(Unit)
-                    else -> Unit
-                }
+            if (addSongToPlaylistUseCase(songId, playlistId)) {
+                _closeObservable.emit(Unit)
             }
         }
     }

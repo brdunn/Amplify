@@ -5,6 +5,7 @@ import android.support.v4.media.session.PlaybackStateCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.devdunnapps.amplify.data.networking.NetworkResponse
 import com.devdunnapps.amplify.domain.models.Rating
 import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.domain.usecases.GetSongUseCase
@@ -45,24 +46,23 @@ class SongMenuBottomSheetViewModel @Inject constructor(
 
         viewModelScope.launch {
             val newRating = if (currentState.song.userRating == rating) Rating.THUMB_GONE else rating
+            _screenState.emit(
+                Resource.Success(currentState.copy(song = currentState.song.copy(userRating = newRating)))
+            )
 
-            _screenState.emit(Resource.Success(currentState.copy(song = currentState.song.copy(userRating = newRating))))
-
-            rateSongUseCase(songId, newRating).collect {
-                if (it is Resource.Error) {
-                    _screenState.emit(Resource.Success(currentState))
-                }
+            if (rateSongUseCase(songId, newRating) is NetworkResponse.Failure) {
+                _screenState.emit(Resource.Success(currentState))
             }
         }
     }
 
     private fun fetchSong() {
         viewModelScope.launch {
-            getSongUseCase(songId).collect {
-                if (it is Resource.Success)
-                    _screenState.emit(
-                        Resource.Success(SongBottomSheetState(song = it.data, refreshPreviousScreen = false))
-                    )
+            val song = getSongUseCase(songId)
+            if (song is NetworkResponse.Success) {
+                _screenState.emit(
+                    Resource.Success(SongBottomSheetState(song = song.data, refreshPreviousScreen = false))
+                )
             }
         }
     }
@@ -86,11 +86,9 @@ class SongMenuBottomSheetViewModel @Inject constructor(
     fun removeSongFromPlaylist() {
         playlistId?.let { playlistId ->
             viewModelScope.launch {
-                removeSongFromPlaylistUseCase(songId, playlistId).collect {
-                    if (it is Resource.Success) {
-                        val curData = (screenState.value as? Resource.Success ?: return@collect).data
-                        _screenState.emit(Resource.Success(curData.copy(refreshPreviousScreen = true)))
-                    }
+                if (removeSongFromPlaylistUseCase(songId, playlistId)) {
+                    val curData = (screenState.value as? Resource.Success ?: return@launch).data
+                    _screenState.emit(Resource.Success(curData.copy(refreshPreviousScreen = true)))
                 }
             }
         }

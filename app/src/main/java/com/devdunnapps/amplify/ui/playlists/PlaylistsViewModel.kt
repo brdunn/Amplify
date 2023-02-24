@@ -2,6 +2,7 @@ package com.devdunnapps.amplify.ui.playlists
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.devdunnapps.amplify.data.networking.NetworkResponse
 import com.devdunnapps.amplify.domain.models.Playlist
 import com.devdunnapps.amplify.domain.usecases.CreatePlaylistUseCase
 import com.devdunnapps.amplify.domain.usecases.GetPlaylistsUseCase
@@ -27,19 +28,19 @@ class PlaylistsViewModel @Inject constructor(
 
     fun createPlaylist(playlistTitle: String) {
         viewModelScope.launch {
-           createPlaylistUseCase(playlistTitle).collect {
-               if (it is Resource.Success) {
-                   gatherPlaylists()
-               }
-            }
+           if (createPlaylistUseCase(playlistTitle) is NetworkResponse.Success) {
+               gatherPlaylists()
+           }
         }
     }
 
     fun gatherPlaylists() {
         viewModelScope.launch {
-            getPlaylistsUseCase().collect {
-                _playlists.value = it
-            }
+            val result = getPlaylistsUseCase()
+            if (result is NetworkResponse.Success)
+                _playlists.emit(Resource.Success(result.data))
+            else
+                _playlists.emit(Resource.Error())
         }
     }
 }

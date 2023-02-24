@@ -7,10 +7,11 @@ import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
 import com.devdunnapps.amplify.UserPreferences
 import com.devdunnapps.amplify.data.*
-import com.devdunnapps.amplify.data.networking.PlexTVAuthorizationInterceptor
 import com.devdunnapps.amplify.data.networking.DeviceInfoInterceptor
+import com.devdunnapps.amplify.data.networking.NetworkResponseAdapterFactory
 import com.devdunnapps.amplify.data.networking.PMSAuthorizationInterceptor
 import com.devdunnapps.amplify.data.networking.PMSServerURLInterceptor
+import com.devdunnapps.amplify.data.networking.PlexTVAuthorizationInterceptor
 import com.devdunnapps.amplify.data.networking.UnauthorizedInterceptor
 import com.devdunnapps.amplify.domain.repository.PlexRepository
 import com.devdunnapps.amplify.domain.repository.PlexTVRepository
@@ -45,6 +46,7 @@ object AppModule {
     fun providePlexTVAPI(@ApplicationContext context: Context): PlexTVAPI =
         Retrofit.Builder()
             .baseUrl("https://plex.tv/")
+            .addCallAdapterFactory(NetworkResponseAdapterFactory())
             .addConverterFactory(GsonConverterFactory.create())
             .client(
                 OkHttpClient.Builder()
@@ -63,6 +65,7 @@ object AppModule {
     fun providePlexAPI(@ApplicationContext context: Context): PlexAPI {
         return Retrofit.Builder()
             .baseUrl("https://localhost")  // Dummy value that will be replaced with an interceptor
+            .addCallAdapterFactory(NetworkResponseAdapterFactory())
             .addConverterFactory(GsonConverterFactory.create())
             .client(
                 OkHttpClient.Builder()

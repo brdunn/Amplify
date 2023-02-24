@@ -5,6 +5,7 @@ import android.support.v4.media.session.PlaybackStateCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.devdunnapps.amplify.data.networking.NetworkResponse
 import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.domain.usecases.GetAlbumSongsUseCase
 import com.devdunnapps.amplify.domain.usecases.GetAlbumUseCase
@@ -13,11 +14,9 @@ import com.devdunnapps.amplify.utils.Resource
 import com.devdunnapps.amplify.utils.TimeUtils
 import com.devdunnapps.amplify.utils.WhenToPlay
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.io.Serializable
 import javax.inject.Inject
@@ -37,26 +36,30 @@ class AlbumViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            combine(getAlbumUseCase(albumId), getAlbumSongsUseCase(albumId)) { album, songs ->
-                when {
-                    album is Resource.Error -> _album.emit(Resource.Error(album.message.orEmpty()))
-                    songs is Resource.Error -> _album.emit(Resource.Error(songs.message.orEmpty()))
-                    album is Resource.Success && songs is Resource.Success -> {
-                        var duration = 0L
-                        songs.data.forEach { duration += it.duration }
+            val albumDeferred = async { getAlbumUseCase(albumId) }
+            val albumSongsDeferred = async { getAlbumSongsUseCase(albumId) }
 
-                        _album.emit(
-                            Resource.Success(
-                                AlbumScreenUIModel(
-                                    album = album.data,
-                                    songs = songs.data,
-                                    duration = TimeUtils.millisecondsToMinutes(duration)
-                                )
+            val albumResult = albumDeferred.await()
+            val albumSongsResult = albumSongsDeferred.await()
+
+            when {
+                albumResult is NetworkResponse.Failure -> _album.emit(Resource.Error())
+                albumSongsResult is NetworkResponse.Failure -> _album.emit(Resource.Error())
+                albumResult is NetworkResponse.Success && albumSongsResult is NetworkResponse.Success -> {
+                    var duration = 0L
+                    albumSongsResult.data.forEach { duration += it.duration }
+
+                    _album.emit(
+                        Resource.Success(
+                            AlbumScreenUIModel(
+                                album = albumResult.data,
+                                songs = albumSongsResult.data,
+                                duration = TimeUtils.millisecondsToMinutes(duration)
                             )
                         )
-                    }
+                    )
                 }
-            }.collect()
+            }
         }
     }
 

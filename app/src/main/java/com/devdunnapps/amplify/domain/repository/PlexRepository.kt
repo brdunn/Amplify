@@ -1,6 +1,7 @@
 package com.devdunnapps.amplify.domain.repository
 
 import androidx.paging.PagingSource
+import com.devdunnapps.amplify.data.networking.NetworkResponse
 import com.devdunnapps.amplify.domain.models.Album
 import com.devdunnapps.amplify.domain.models.Artist
 import com.devdunnapps.amplify.domain.models.LibrarySection
@@ -19,43 +20,43 @@ interface PlexRepository {
 
     fun getSongs(): PagingSource<Int, Song>
 
-    fun getSong(songId: String): Flow<Resource<Song>>
+    suspend fun getSong(songId: String): NetworkResponse<Song>
 
-    fun getAlbum(key: String): Flow<Resource<Album>>
+    suspend fun getAlbum(key: String): NetworkResponse<Album>
 
-    fun getAlbumSongs(key: String): Flow<Resource<List<Song>>>
+    suspend fun getAlbumSongs(key: String): NetworkResponse<List<Song>>
 
-    fun getPlaylists(): Flow<Resource<List<Playlist>>>
+    suspend fun getPlaylists(): NetworkResponse<List<Playlist>>
 
-    fun getPlaylist(playlistId: String): Flow<Resource<Playlist>>
+    suspend fun getPlaylist(playlistId: String): NetworkResponse<Playlist>
 
-    fun getPlaylistSongs(key: String): Flow<Resource<List<Song>>>
+    suspend fun getPlaylistSongs(key: String): NetworkResponse<List<Song>>
 
-    fun getArtistSongs(artistKey: String, number: Int = -1): Flow<Resource<List<Song>>>
+    suspend fun getArtistSongs(artistKey: String, number: Int = -1): NetworkResponse<List<Song>>
 
-    fun getArtistSinglesEPs(artistKey: String): Flow<Resource<List<Album>>>
+    suspend fun getArtistSinglesEPs(artistKey: String): NetworkResponse<List<Album>>
 
-    fun getArtistAlbums(key: String): Flow<Resource<List<Album>>>
+    suspend fun getArtistAlbums(key: String): NetworkResponse<List<Album>>
 
-    fun getArtist(key: String): Flow<Resource<Artist>>
+    suspend fun getArtist(key: String): NetworkResponse<Artist>
 
-    fun addSongToPlaylist(songId: String, playlistId: String): Flow<Resource<Unit>>
+    suspend fun addSongToPlaylist(songId: String, playlistId: String): Boolean
 
-    fun removeSongFromPlaylist(songId: String, playlistId: String): Flow<Resource<Unit>>
+    suspend fun removeSongFromPlaylist(songId: String, playlistId: String): Boolean
 
     fun getSongLyrics(songId: String): Flow<Resource<Lyric>>
 
-    fun getLibrarySections(): Flow<Resource<List<LibrarySection>>>
+    suspend fun getLibrarySections(): NetworkResponse<List<LibrarySection>>
 
-    fun deletePlaylist(playlistId: String): Flow<Resource<Unit>>
+    suspend fun deletePlaylist(playlistId: String): NetworkResponse<Unit>
 
-    fun createPlaylist(playlistTitle: String): Flow<Resource<Playlist>>
+    suspend fun createPlaylist(playlistTitle: String): NetworkResponse<Unit>
 
     fun searchLibrary(query: String): Flow<Resource<SearchResults>>
 
-    fun rateSong(songId: String, rating: Int): Flow<Resource<Unit>>
+    suspend fun rateSong(songId: String, rating: Int): NetworkResponse<Unit>
 
-    fun markSongAsListened(songId: String): Flow<Resource<Unit>>
+    suspend fun markSongAsListened(songId: String): NetworkResponse<Unit>
 
-    suspend fun editPlaylistMetadata(playlistId: String, title: String?, summary: String?): Resource<Unit>
+    suspend fun editPlaylistMetadata(playlistId: String, title: String?, summary: String?): NetworkResponse<Unit>
 }

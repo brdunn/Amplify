@@ -3,6 +3,7 @@ package com.devdunnapps.amplify.ui.onboarding
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.devdunnapps.amplify.data.networking.NetworkResponse
 import com.devdunnapps.amplify.domain.models.LibrarySection
 import com.devdunnapps.amplify.domain.models.Server
 import com.devdunnapps.amplify.domain.models.User
@@ -72,9 +73,11 @@ class LoginFlowViewModel @Inject constructor(
 
     private fun getLibraries() {
         viewModelScope.launch {
-            getLibrarySectionsUseCase().collect {
-                _libraries.value = it
-            }
+            val librariesResult = getLibrarySectionsUseCase()
+            if (librariesResult is NetworkResponse.Success)
+                _libraries.emit(Resource.Success(librariesResult.data))
+            else
+                _libraries.emit(Resource.Error())
         }
     }
 

@@ -3,6 +3,7 @@ package com.devdunnapps.amplify.ui.playlists
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.devdunnapps.amplify.data.networking.NetworkResponse
 import com.devdunnapps.amplify.domain.models.Playlist
 import com.devdunnapps.amplify.domain.usecases.DeletePlaylistUseCase
 import com.devdunnapps.amplify.domain.usecases.GetPlaylistUseCase
@@ -36,17 +37,18 @@ class PlaylistMenuBottomSheetViewModel @Inject constructor(
 
     private fun getPlaylist() {
         viewModelScope.launch {
-            getPlaylistUseCase(playlistId).collect {
-                _playlist.emit(it)
-            }
+            val playlist = getPlaylistUseCase(playlistId)
+            if (playlist is NetworkResponse.Success)
+                _playlist.emit(Resource.Success(playlist.data))
+            else
+                _playlist.emit(Resource.Error())
         }
     }
 
     fun deletePlaylist() {
         viewModelScope.launch {
-            deletePlaylistUseCase(playlistId).collect {
-                if (it is Resource.Success)
-                    _closeObservable.emit(Unit)
+            if (deletePlaylistUseCase(playlistId) is NetworkResponse.Success) {
+                _closeObservable.emit(Unit)
             }
         }
     }

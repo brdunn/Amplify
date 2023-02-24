@@ -21,6 +21,7 @@ import androidx.paging.compose.items
 import com.devdunnapps.amplify.MobileNavigationDirections
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.domain.models.Song
+import com.devdunnapps.amplify.ui.components.ErrorScreen
 import com.devdunnapps.amplify.ui.components.LoadingPager
 import com.devdunnapps.amplify.ui.components.LoadingScreen
 import com.devdunnapps.amplify.ui.components.SongItem
@@ -71,6 +72,9 @@ private fun SongsScreen(
     onSongMenuClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    if (songs.loadState.refresh is LoadState.Error)
+        ErrorScreen()
+
     if (songs.loadState.refresh is LoadState.Loading)
         LoadingScreen(modifier = modifier)
 

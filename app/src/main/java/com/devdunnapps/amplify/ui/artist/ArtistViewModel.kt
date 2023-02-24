@@ -5,6 +5,7 @@ import android.support.v4.media.session.PlaybackStateCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.devdunnapps.amplify.data.networking.NetworkResponse
 import com.devdunnapps.amplify.domain.models.Album
 import com.devdunnapps.amplify.domain.models.Artist
 import com.devdunnapps.amplify.domain.models.Song
@@ -47,27 +48,37 @@ class ArtistViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            getArtistSongsUseCase(artistId).collect {
-                _artistSongs.emit(it)
-            }
+            val result = getArtistSongsUseCase(artistId)
+            if (result is NetworkResponse.Success)
+                _artistSongs.emit(Resource.Success(result.data))
+            else
+                _artistSongs.emit(Resource.Error())
         }
 
         viewModelScope.launch {
-            getArtistAlbumsUseCase(artistId).collect {
-                _artistAlbums.emit(it)
-            }
+            val result = getArtistAlbumsUseCase(artistId)
+            if (result is NetworkResponse.Success)
+                _artistAlbums.emit(Resource.Success(result.data))
+            else
+                _artistAlbums.emit(Resource.Error())
         }
 
         viewModelScope.launch {
-            getArtistSinglesEPsUseCase(artistId).collect {
-                _artistSinglesEPs.emit(it)
-            }
+            val artistSinglesEPs = getArtistSinglesEPsUseCase(artistId)
+
+            if (artistSinglesEPs is NetworkResponse.Success)
+                _artistSinglesEPs.emit(Resource.Success(artistSinglesEPs.data))
+            else
+                _artistSinglesEPs.emit(Resource.Error())
         }
 
         viewModelScope.launch {
-            getArtistUseCase(artistId).collect {
-                _artist.emit(it)
-            }
+            val artist = getArtistUseCase(artistId)
+
+            if (artist is NetworkResponse.Failure)
+                _artist.emit(Resource.Error())
+            else
+                _artist.emit(Resource.Success(artist.data))
         }
     }
 

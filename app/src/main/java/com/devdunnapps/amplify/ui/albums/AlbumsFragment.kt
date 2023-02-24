@@ -25,6 +25,7 @@ import com.devdunnapps.amplify.MobileNavigationDirections
 import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.domain.models.Album
 import com.devdunnapps.amplify.ui.components.AlbumCard
+import com.devdunnapps.amplify.ui.components.ErrorScreen
 import com.devdunnapps.amplify.ui.components.LoadingScreen
 import com.devdunnapps.amplify.ui.utils.FragmentRootDestinationScaffold
 import dagger.hilt.android.AndroidEntryPoint
@@ -66,6 +67,9 @@ private fun AlbumsScreen(
     onAlbumClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    if (albums.loadState.refresh is LoadState.Error)
+        ErrorScreen()
+
     if (albums.loadState.refresh is LoadState.Loading)
         LoadingScreen(modifier = modifier)
 

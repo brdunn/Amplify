@@ -3,6 +3,7 @@ package com.devdunnapps.amplify.ui.artist.albums
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.devdunnapps.amplify.data.networking.NetworkResponse
 import com.devdunnapps.amplify.domain.models.Album
 import com.devdunnapps.amplify.domain.usecases.GetArtistAlbumsUseCase
 import com.devdunnapps.amplify.domain.usecases.GetArtistSinglesEPsUseCase
@@ -29,13 +30,17 @@ class ArtistAllAlbumsViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             if (navArgs.isSinglesEPs) {
-                getArtistSinglesEPsUseCase(artistId).collect {
-                    _artistAlbums.emit(it)
-                }
+                val result = getArtistSinglesEPsUseCase(artistId)
+                if (result is NetworkResponse.Success)
+                    _artistAlbums.emit(Resource.Success(result.data))
+                else
+                    _artistAlbums.emit(Resource.Error())
             } else {
-                getArtistAlbumsUseCase(artistId).collect {
-                    _artistAlbums.emit(it)
-                }
+                val result = getArtistAlbumsUseCase(artistId)
+                if (result is NetworkResponse.Success)
+                    _artistAlbums.emit(Resource.Success(result.data))
+                else
+                    _artistAlbums.emit(Resource.Error())
             }
         }
     }

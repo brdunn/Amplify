@@ -5,6 +5,7 @@ import android.support.v4.media.session.PlaybackStateCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.devdunnapps.amplify.data.networking.NetworkResponse
 import com.devdunnapps.amplify.domain.models.Playlist
 import com.devdunnapps.amplify.domain.models.Song
 import com.devdunnapps.amplify.domain.repository.PlexRepository
@@ -14,10 +15,9 @@ import com.devdunnapps.amplify.utils.MusicServiceConnection
 import com.devdunnapps.amplify.utils.Resource
 import com.devdunnapps.amplify.utils.WhenToPlay
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import java.io.Serializable
 import javax.inject.Inject
@@ -42,14 +42,19 @@ class PlaylistViewModel @Inject constructor(
 
     private fun gatherPlaylist() {
         viewModelScope.launch {
-            combine(getPlaylistUseCase(playlistId), getPlaylistSongsUseCase(playlistId)) { playlist, songs ->
-                when {
-                    playlist is Resource.Error || songs is Resource.Error -> _uiState.emit(Resource.Error())
-                    playlist is Resource.Loading || songs is Resource.Loading -> _uiState.emit(Resource.Loading)
-                    playlist is Resource.Success && songs is Resource.Success ->
-                        _uiState.emit(Resource.Success(PlaylistUIModel(playlist.data, songs.data)))
-                }
-            }.collect()
+            val playlistDeferred = async { getPlaylistUseCase(playlistId) }
+            val playlistSongsDeferred = async { getPlaylistSongsUseCase(playlistId) }
+
+            val playlistResult = playlistDeferred.await()
+            val playlistSongsResult = playlistSongsDeferred.await()
+
+            when {
+                playlistResult is NetworkResponse.Failure || playlistSongsResult is NetworkResponse.Failure ->
+                    _uiState.emit(Resource.Error())
+
+                playlistResult is NetworkResponse.Success && playlistSongsResult is NetworkResponse.Success ->
+                    _uiState.emit(Resource.Success(PlaylistUIModel(playlistResult.data, playlistSongsResult.data)))
+            }
         }
     }
 
@@ -91,7 +96,7 @@ class PlaylistViewModel @Inject constructor(
             return@launch
 
         val request = plexRepository.editPlaylistMetadata(playlistId = playlistId, title = title, summary = summary)
-        if (request is Resource.Success) {
+        if (request is NetworkResponse.Success) {
             gatherPlaylist()
         } else {
             _uiState.emit(currentScreenState)

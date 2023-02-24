@@ -23,7 +23,6 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -183,7 +182,7 @@ class MusicService : MediaBrowserServiceCompat() {
             val hiltEntryPoint =
                 EntryPointAccessors.fromApplication(applicationContext, MusicServiceEntryPoint::class.java)
             serviceScope.launch {
-                hiltEntryPoint.repository().markSongAsListened(currentSongID!!).collect()
+                hiltEntryPoint.repository().markSongAsListened(currentSongID!!)
             }
 
             mediaSession.setMetadata(convertSongToMetadata(mediaItem.localConfiguration?.tag as Song))

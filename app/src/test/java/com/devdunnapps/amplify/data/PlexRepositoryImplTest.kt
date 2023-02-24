@@ -1,5 +1,7 @@
 package com.devdunnapps.amplify.data
 
+import com.devdunnapps.amplify.data.networking.NetworkResponse
+import com.devdunnapps.amplify.data.networking.NetworkResponseAdapterFactory
 import com.devdunnapps.amplify.domain.repository.PlexRepository
 import com.devdunnapps.amplify.utils.Resource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,6 +22,7 @@ class PlexRepositoryImplTest {
     fun setUp() {
         val api = Retrofit.Builder()
             .client(OkHttpClient.Builder().addInterceptor(FakePlexAPI()).build())
+            .addCallAdapterFactory(NetworkResponseAdapterFactory())
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl("https://www.google.com")  // This value must be a valid URL but it is not used
             .build()
@@ -30,131 +33,71 @@ class PlexRepositoryImplTest {
 
     @Test
     fun `Get Song Successfully`() = runTest {
-        repository.getSong(TEST_SONG_ID).collectIndexed { index, response ->
-            if (index == 0) {
-                assert(response is Resource.Loading)
-            } else if (index == 1 ) {
-                assert(response is Resource.Success)
-                val song = (response as Resource.Success).data
-                assert(song.id == TEST_SONG_ID)
-                assert(song.title == "The Night We Met")
-            }
-        }
+        val response = repository.getSong(TEST_SONG_ID)
+        assert(response is NetworkResponse.Success)
+        val song = response.data
+        assert(song.id == TEST_SONG_ID)
+        assert(song.title == "The Night We Met")
+
     }
 
     @Test
     fun `Get Album Songs Successfully`() = runTest {
-        repository.getAlbumSongs(TEST_ALBUM_ID).collectIndexed { index, response ->
-            if (index == 0) {
-                assert(response is Resource.Loading)
-            } else if (index == 1) {
-                assert(response is Resource.Success)
-                val songs = (response as Resource.Success).data
-                assert(songs.size == 14)
-                assert(songs[0].title == "These Are Days")
-                assert(songs[0].artistName == "10,000 Maniacs")
-            }
-        }
+        val response = repository.getAlbumSongs(TEST_ALBUM_ID)
+        assert(response is NetworkResponse.Success)
+        val songs = response.data
+        assert(songs.size == 14)
+        assert(songs[0].title == "These Are Days")
+        assert(songs[0].artistName == "10,000 Maniacs")
+
     }
 
     @Test
     fun `Get Playlist Successfully`() = runTest {
-        repository.getPlaylist(TEST_PLAYLIST_ID).collectIndexed { index, response ->
-            if (index == 0) {
-                assert(response is Resource.Loading)
-            } else if (index == 1) {
-                assert(response is Resource.Success)
-                val playlist = (response as Resource.Success).data
-                assert(playlist.title == "Bops")
-                assert(playlist.numSongs == 16)
-            }
-        }
+        val response = repository.getPlaylist(TEST_PLAYLIST_ID)
+            assert(response is NetworkResponse.Success)
+            val playlist = response.data
+            assert(playlist.title == "Bops")
+            assert(playlist.numSongs == 16)
     }
 
     @Test
     fun `Get Playlist Songs Successfully`() = runTest {
-        repository.getPlaylistSongs(TEST_PLAYLIST_ID).collectIndexed { index, response ->
-            if (index == 0) {
-                assert(response is Resource.Loading)
-            } else if (index == 1) {
-                assert(response is Resource.Success)
-                val songs = (response as Resource.Success).data
-                assert(songs.size == 16)
-                assert(songs[0].title == "What Life Would Be Like")
-            }
-        }
+        val response = repository.getPlaylistSongs(TEST_PLAYLIST_ID)
+        assert(response is NetworkResponse.Success)
+        val songs = response.data
+        assert(songs.size == 16)
+        assert(songs[0].title == "What Life Would Be Like")
     }
 
     @Test
     fun `Get Artist Songs Successfully`() = runTest {
-        repository.getArtistSongs(TEST_ARTIST_ID).collectIndexed { index, response ->
-            if (index == 0) {
-                assert(response is Resource.Loading)
-            } else if (index == 1) {
-                assert(response is Resource.Success)
-                val songs = (response as Resource.Success).data
-                assert(songs.size == 20)
-                assert(songs[0].title == "Like the Weather")
-            }
-        }
+        val response = repository.getArtistSongs(TEST_ARTIST_ID)
+        assert(response is NetworkResponse.Success)
+        val songs = response.data
+        assert(songs.size == 20)
+        assert(songs[0].title == "Like the Weather")
     }
 
     @Test
     fun `Get Artist Successfully`() = runTest {
-        repository.getArtist(TEST_ARTIST_ID).collectIndexed { index, response ->
-            if (index == 0) {
-                assert(response is Resource.Loading)
-            } else if (index == 1) {
-                assert(response is Resource.Success)
-                val artist = (response as Resource.Success).data
-                assert(artist.id == TEST_ARTIST_ID)
-                assert(artist.name == "10,000 Maniacs")
-            }
-        }
-    }
-
-    @Test
-    fun `Add Song to Playlist Successfully`() = runTest {
-        repository.addSongToPlaylist(TEST_SONG_ID, TEST_PLAYLIST_ID).collectIndexed { index, response ->
-            if (index == 0) {
-                assert(response is Resource.Loading)
-            }
-            // TODO: add more tests
-        }
-    }
-
-    @Test
-    fun `Remove Song From Playlist Successfully`() = runTest {
-        repository.removeSongFromPlaylist("44562", TEST_PLAYLIST_ID).collectIndexed { index, response ->
-            if (index == 0) {
-                assert(response is Resource.Loading)
-            }
-            // TODO: add more tests
-        }
+        val response = repository.getArtist(TEST_ARTIST_ID)
+        assert(response is NetworkResponse.Success)
+        val artist = response.data
+        assert(artist.id == TEST_ARTIST_ID)
+        assert(artist.name == "10,000 Maniacs")
     }
 
     @Test
     fun `Delete Playlist Successfully`() = runTest {
-        repository.deletePlaylist(TEST_PLAYLIST_ID).collectIndexed { index, response ->
-            if (index == 0) {
-                assert(response is Resource.Loading)
-            }
-            // TODO: add more tests
-        }
+        val response = repository.deletePlaylist(TEST_PLAYLIST_ID)
+        assert(response is NetworkResponse.Success)
     }
 
     @Test
     fun `Create Playlist Successfully`() = runTest {
-        repository.createPlaylist(TEST_PLAYLIST_TITLE).collectIndexed { index, response ->
-            if (index == 0) {
-                assert(response is Resource.Loading)
-            } else if (index == 1) {
-                assert(response is Resource.Success)
-                val playlist = (response as Resource.Success).data
-                assert(playlist.title == TEST_PLAYLIST_TITLE)
-                assert(playlist.numSongs == 0)
-            }
-        }
+        val response = repository.createPlaylist(TEST_PLAYLIST_TITLE)
+        assert(response is NetworkResponse.Success)
     }
 
     @Test
@@ -174,23 +117,12 @@ class PlexRepositoryImplTest {
 
     @Test
     fun `Rate Song Successfully`() = runTest {
-        repository.rateSong(TEST_SONG_ID, 10).collectIndexed { index, response ->
-            if (index == 0) {
-                assert(response is Resource.Loading)
-            } else if (index == 1) {
-                assert(response is Resource.Success)
-            }
-        }
+        val response = repository.rateSong(TEST_SONG_ID, 10)
+        assert(response is NetworkResponse.Success)
     }
 
     @Test
     fun `Listen to Song Successfully`() = runTest {
-        repository.markSongAsListened(TEST_SONG_ID).collectIndexed { index, response ->
-            if (index == 0) {
-                assert(response is Resource.Loading)
-            } else if (index == 1) {
-                assert(response is Resource.Success)
-            }
-        }
+        assert(repository.markSongAsListened(TEST_SONG_ID) is NetworkResponse.Success)
     }
 }

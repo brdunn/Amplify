@@ -1,14 +1,13 @@
 package com.devdunnapps.amplify.domain.usecases
 
-import com.devdunnapps.amplify.domain.repository.PlexRepository
+import com.devdunnapps.amplify.data.networking.NetworkResponse
 import com.devdunnapps.amplify.domain.models.Album
-import com.devdunnapps.amplify.utils.Resource
-import kotlinx.coroutines.flow.Flow
+import com.devdunnapps.amplify.domain.repository.PlexRepository
 import javax.inject.Inject
 
 class GetAlbumUseCase @Inject constructor(
     private val repository: PlexRepository
 ){
 
-    operator fun invoke(albumId: String): Flow<Resource<Album>> = repository.getAlbum(albumId)
+    suspend operator fun invoke(albumId: String): NetworkResponse<Album> = repository.getAlbum(albumId)
 }
