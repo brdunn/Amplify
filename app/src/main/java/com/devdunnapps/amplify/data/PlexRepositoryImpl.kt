@@ -365,4 +365,23 @@ class PlexRepositoryImpl @Inject constructor(
             emit(Resource.Error("Couldn't mark as listened, please check your internet connection."))
         }
     }
+
+    override suspend fun editPlaylistMetadata(
+        playlistId: String,
+        title: String?,
+        summary: String?
+    ): Resource<Unit> {
+        return try {
+            val apiResponse = api.editPlaylistMetadata(playlistId = playlistId, title = title, summary = summary)
+            if (apiResponse.code() == HttpURLConnection.HTTP_OK) {
+                Resource.Success(Unit)
+            } else {
+                Resource.Error("Could not edit metadata")
+            }
+        } catch(e: HttpException) {
+            Resource.Error("Oops, something went wrong!")
+        } catch(e: IOException) {
+            Resource.Error("Couldn't mark as listened, please check your internet connection.")
+        }
+    }
 }

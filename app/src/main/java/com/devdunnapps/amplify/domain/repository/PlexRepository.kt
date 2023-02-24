@@ -56,4 +56,6 @@ interface PlexRepository {
     fun rateSong(songId: String, rating: Int): Flow<Resource<Unit>>
 
     fun markSongAsListened(songId: String): Flow<Resource<Unit>>
+
+    suspend fun editPlaylistMetadata(playlistId: String, title: String?, summary: String?): Resource<Unit>
 }

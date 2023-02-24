@@ -100,4 +100,11 @@ interface PlexAPI {
 
     @POST(":/scrobble?identifier=com.plexapp.plugins.library")
     suspend fun markSongAsListened(@Query("key") key: String): Response<Unit>
+
+    @PUT("playlists/{id}")
+    suspend fun editPlaylistMetadata(
+        @Path("id") playlistId: String,
+        @Query("title") title: String? = null,
+        @Query("summary") summary: String? = null
+    ): Response<Unit>
 }

@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devdunnapps.amplify.domain.models.Playlist
 import com.devdunnapps.amplify.domain.models.Song
+import com.devdunnapps.amplify.domain.repository.PlexRepository
 import com.devdunnapps.amplify.domain.usecases.GetPlaylistSongsUseCase
 import com.devdunnapps.amplify.domain.usecases.GetPlaylistUseCase
 import com.devdunnapps.amplify.utils.MusicServiceConnection
@@ -25,6 +26,7 @@ import javax.inject.Inject
 class PlaylistViewModel @Inject constructor(
     private val getPlaylistUseCase: GetPlaylistUseCase,
     private val getPlaylistSongsUseCase: GetPlaylistSongsUseCase,
+    private val plexRepository: PlexRepository,
     savedStateHandle: SavedStateHandle,
     private val musicServiceConnection: MusicServiceConnection
 ) : ViewModel() {
@@ -78,6 +80,21 @@ class PlaylistViewModel @Inject constructor(
         return Bundle().apply {
             val songs = (_uiState.value as? Resource.Success)?.data?.songs ?: return@apply
             putSerializable("songs", songs as Serializable)
+        }
+    }
+
+    fun editPlaylistMetadata(title: String, summary: String) = viewModelScope.launch {
+        val currentScreenState = _uiState.value
+        val currentScreenData = (currentScreenState as? Resource.Success)?.data ?: return@launch
+
+        if (currentScreenData.playlist.title == title && currentScreenData.playlist.summary == summary)
+            return@launch
+
+        val request = plexRepository.editPlaylistMetadata(playlistId = playlistId, title = title, summary = summary)
+        if (request is Resource.Success) {
+            gatherPlaylist()
+        } else {
+            _uiState.emit(currentScreenState)
         }
     }
 }
