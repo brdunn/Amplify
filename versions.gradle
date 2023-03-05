@@ -1,5 +1,5 @@
 ext {
-    agpVersion = '7.4.1'
+    agpVersion = '7.4.2'
     kotlinVersion = "1.8.10"
 
     retrofitVersion = "2.9.0"
