@@ -193,7 +193,7 @@ private fun ArtistHeader(artist: Artist, onShuffleClick: () -> Unit) {
             AsyncImage(
                 model = imageUrl,
                 contentDescription = null,
-                contentScale = ContentScale.FillWidth,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(16 / 9f)
