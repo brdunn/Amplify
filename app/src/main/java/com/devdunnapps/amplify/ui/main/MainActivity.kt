@@ -1,9 +1,8 @@
 package com.devdunnapps.amplify.ui.main
 
 import android.content.Intent
+import android.media.session.PlaybackState
 import android.os.Bundle
-import android.support.v4.media.MediaMetadataCompat
-import android.support.v4.media.session.PlaybackStateCompat
 import android.util.TypedValue
 import android.view.View
 import androidx.activity.viewModels
@@ -87,15 +86,13 @@ class MainActivity : AppCompatActivity() {
 
         binding.nowPlayingBoxCollapsed.setContent {
             Mdc3Theme {
-                val playbackState = viewModel.playbackState.collectAsState().value.state
                 val currentlyPlayingMetadata = viewModel.mediaMetadata.collectAsState().value
-
                 if (currentlyPlayingMetadata != NOTHING_PLAYING) {
                     NowPlayingCollapsed(
-                        albumArtUrl = currentlyPlayingMetadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI),
-                        title = currentlyPlayingMetadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE),
-                        subtitle = currentlyPlayingMetadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST),
-                        isPlaying = playbackState == PlaybackStateCompat.STATE_PLAYING,
+                        albumArtUrl = currentlyPlayingMetadata.artworkUri.toString(),
+                        title = currentlyPlayingMetadata.title.toString(),
+                        subtitle = currentlyPlayingMetadata.artist.toString(),
+                        isPlaying = viewModel.isPlaying.collectAsState().value,
                         onPlayPauseClick = viewModel::togglePlaybackState,
                         onSkipClick = viewModel::skipToNext
                     )
@@ -118,7 +115,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.playbackState.collect {
-                    if (it.state == PlaybackStateCompat.STATE_PLAYING) {
+                    if (it == PlaybackState.STATE_PLAYING) {
                         val marginInDp =
                             TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 64f, resources.displayMetrics).toInt()
                         (binding.navContentFrame.layoutParams as CoordinatorLayout.LayoutParams).setMargins(0, 0, 0, marginInDp)

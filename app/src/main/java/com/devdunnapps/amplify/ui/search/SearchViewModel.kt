@@ -1,6 +1,5 @@
 package com.devdunnapps.amplify.ui.search
 
-import android.os.Bundle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devdunnapps.amplify.domain.models.SearchResults
@@ -54,8 +53,6 @@ class SearchViewModel @Inject constructor(
     }
 
     fun playSong(song: Song) {
-        val bundle = Bundle()
-        bundle.putSerializable("song", song)
-        musicServiceConnection.transportControls.sendCustomAction("play_song", bundle)
+        musicServiceConnection.playSong(song)
     }
 }

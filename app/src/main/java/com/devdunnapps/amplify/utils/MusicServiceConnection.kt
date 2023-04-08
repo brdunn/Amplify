@@ -2,103 +2,190 @@ package com.devdunnapps.amplify.utils
 
 import android.content.ComponentName
 import android.content.Context
-import android.os.Bundle
-import android.support.v4.media.MediaBrowserCompat
-import android.support.v4.media.MediaMetadataCompat
-import android.support.v4.media.session.MediaControllerCompat
-import android.support.v4.media.session.MediaSessionCompat
-import android.support.v4.media.session.PlaybackStateCompat
-import androidx.lifecycle.MutableLiveData
-import androidx.media.MediaBrowserServiceCompat
+import android.media.session.PlaybackState
+import androidx.core.net.toUri
+import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaItem.RequestMetadata
+import androidx.media3.common.MediaMetadata
+import androidx.media3.common.Player
+import androidx.media3.session.MediaController
+import androidx.media3.session.SessionToken
+import com.devdunnapps.amplify.domain.models.Song
+import com.google.common.util.concurrent.ListenableFuture
+import com.google.common.util.concurrent.MoreExecutors
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
-class MusicServiceConnection(context: Context, serviceComponent: ComponentName) {
-    val isConnected = MutableLiveData(false)
+class MusicServiceConnection(private val context: Context, serviceComponent: ComponentName) {
+    private val mediaControllerFuture: ListenableFuture<MediaController>
 
-    val playbackState = MutableStateFlow(EMPTY_PLAYBACK_STATE)
+    private val mediaController: MediaController?
+        get() = if (mediaControllerFuture.isDone) mediaControllerFuture.get() else null
 
-    val nowPlaying = MutableStateFlow(NOTHING_PLAYING)
+    private val _isPlaying = MutableStateFlow(false)
+    val isPlaying = _isPlaying.asStateFlow()
 
-    val transportControls: MediaControllerCompat.TransportControls
-        get() = mediaController.transportControls
+    private val _playbackState = MutableStateFlow(EMPTY_PLAYBACK_STATE.state)
+    val playbackState = _playbackState.asStateFlow()
 
-    val shuffleMode: Int
-        get() = mediaController.shuffleMode
+    private val _nowPlaying = MutableStateFlow(NOTHING_PLAYING)
+    val nowPlaying = _nowPlaying.asStateFlow()
 
-    val repeatMode: Int
-        get() = mediaController.repeatMode
+    val currentPosition: Long
+        get() = mediaController?.currentPosition ?: 0
 
-    private val mediaBrowserConnectionCallback = MediaBrowserConnectionCallback(context)
+    private val _isShuffleEnabled = MutableStateFlow(false)
+    val isShuffleEnabled = _isShuffleEnabled.asStateFlow()
 
-    private val mediaBrowser = MediaBrowserCompat(
-        context,
-        serviceComponent,
-        mediaBrowserConnectionCallback,
-        null
-    ).apply { connect() }
+    private val _repeatMode = MutableStateFlow(Player.REPEAT_MODE_OFF)
+    val repeatMode = _repeatMode.asStateFlow()
 
-    private lateinit var mediaController: MediaControllerCompat
+    private val _duration = MutableStateFlow(0L)
+    val duration = _duration.asStateFlow()
 
-    private inner class MediaBrowserConnectionCallback(
-        private val context: Context
-    ) : MediaBrowserCompat.ConnectionCallback() {
+    fun enableShuffleMode() {
+        mediaController?.shuffleModeEnabled = true
+    }
 
-        override fun onConnected() {
-            mediaController = MediaControllerCompat(context, mediaBrowser.sessionToken).apply {
-                registerCallback(MediaControllerCallback())
-            }
+    fun disableShuffleMode() {
+        mediaController?.shuffleModeEnabled = false
+    }
 
-            isConnected.postValue(true)
-        }
+    fun setRepeatMode(repeatMode: Int) {
+        mediaController?.repeatMode = repeatMode
+    }
 
-        override fun onConnectionSuspended() {
-            isConnected.postValue(false)
-        }
-
-        override fun onConnectionFailed() {
-            isConnected.postValue(false)
+    fun playSong(song: Song) {
+        mediaController?.apply {
+            setMediaItem(convertSongToMediaItem(song))
+            prepare()
+            play()
         }
     }
 
-    private inner class MediaControllerCallback : MediaControllerCompat.Callback() {
-
-        override fun onPlaybackStateChanged(state: PlaybackStateCompat?) {
-            playbackState.value = state ?: EMPTY_PLAYBACK_STATE
+    fun playSongNext(song: Song) {
+        mediaController?.apply {
+            addMediaItem(1, convertSongToMediaItem(song))
+            prepare()
+            play()
         }
+    }
 
-        override fun onMetadataChanged(metadata: MediaMetadataCompat?) {
-            // When ExoPlayer stops we will receive a callback with "empty" metadata. This is a
-            // metadata object which has been instantiated with default values. The default value
-            // for media ID is null so we assume that if this value is null we are not playing
-            // anything.
-            nowPlaying.value =
-                if (metadata?.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID) == null)
-                    NOTHING_PLAYING
-                 else
-                    metadata
+    fun addSongToQueue(song: Song) {
+        mediaController?.apply {
+            addMediaItem(mediaItemCount, convertSongToMediaItem(song))
+            prepare()
+            play()
         }
+    }
 
-        override fun onQueueChanged(queue: MutableList<MediaSessionCompat.QueueItem>?) = Unit
-
-        override fun onSessionEvent(event: String?, extras: Bundle?) = Unit
-
-        /**
-         * Normally if a [MediaBrowserServiceCompat] drops its connection the callback comes via
-         * [MediaControllerCompat.Callback] (here). But since other connection status events
-         * are sent to [MediaBrowserCompat.ConnectionCallback], we catch the disconnect here and
-         * send it on to the other callback.
-         */
-        override fun onSessionDestroyed() {
-            mediaBrowserConnectionCallback.onConnectionSuspended()
+    fun playSongs(songs: List<Song>) {
+        mediaController?.apply {
+            setMediaItems(songs.map { convertSongToMediaItem(it) })
+            prepare()
+            play()
         }
+    }
+
+    fun playSongsNext(songs: List<Song>) {
+        mediaController?.apply {
+            addMediaItems(1, songs.map { convertSongToMediaItem(it) })
+            prepare()
+            play()
+        }
+    }
+
+    fun addSongsToQueue(songs: List<Song>) {
+        mediaController?.apply {
+            addMediaItems(mediaItemCount, songs.map { convertSongToMediaItem(it) })
+            prepare()
+            play()
+        }
+    }
+
+    fun play() {
+        mediaController?.play()
+    }
+
+    fun pause() {
+        mediaController?.pause()
+    }
+
+    fun skipToPrevious() {
+        mediaController?.seekToPrevious()
+    }
+
+    fun skipToNext() {
+        mediaController?.seekToNextMediaItem()
+    }
+
+    fun seekTo(positionMs: Long) {
+        mediaController?.seekTo(positionMs)
+    }
+
+    private fun convertSongToMediaItem(song: Song): MediaItem {
+        val songUrl = PlexUtils.getInstance(context).addKeyAndAddress(song.songUrl)
+        return MediaItem.Builder()
+            .setRequestMetadata(RequestMetadata.Builder().setMediaUri(songUrl.toUri()).build())
+            .setMediaMetadata(convertSongToMetadata(song))
+            .build()
+    }
+
+    private fun convertSongToMetadata(song: Song): MediaMetadata {
+        val artworkUrl = PlexUtils.getInstance(context).addKeyAndAddress(song.thumb)
+        return MediaMetadata.Builder()
+            .setTitle(song.title)
+            .setAlbumTitle(song.albumName)
+            .setArtist(song.artistName)
+            .setArtworkUri(artworkUrl.toUri())
+            .build()
+    }
+
+    init {
+        val sessionToken = SessionToken(context, serviceComponent)
+        mediaControllerFuture = MediaController.Builder(context, sessionToken).buildAsync()
+        mediaControllerFuture.addListener(
+            {
+                mediaController?.addListener(object : Player.Listener {
+                    override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
+                        super.onMediaMetadataChanged(mediaMetadata)
+                        _nowPlaying.value = mediaMetadata
+                    }
+
+                    override fun onPlaybackStateChanged(playbackState: Int) {
+                        super.onPlaybackStateChanged(playbackState)
+                        _playbackState.value = playbackState
+                    }
+
+                    override fun onIsPlayingChanged(isPlaying: Boolean) {
+                        super.onIsPlayingChanged(isPlaying)
+                        _isPlaying.value = isPlaying
+                    }
+
+                    override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+                        super.onShuffleModeEnabledChanged(shuffleModeEnabled)
+                        _isShuffleEnabled.value = shuffleModeEnabled
+                    }
+
+                    override fun onRepeatModeChanged(repeatMode: Int) {
+                        super.onRepeatModeChanged(repeatMode)
+                        _repeatMode.value = repeatMode
+                    }
+
+                    override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+                        // TODO: doesn't work
+                        if (playbackState == Player.STATE_READY)
+                            _duration.value = mediaController?.duration ?: 0
+                    }
+                })
+            },
+            MoreExecutors.directExecutor()
+        )
     }
 }
 
-val EMPTY_PLAYBACK_STATE: PlaybackStateCompat = PlaybackStateCompat.Builder()
-    .setState(PlaybackStateCompat.STATE_NONE, 0, 0f)
+val EMPTY_PLAYBACK_STATE: PlaybackState = PlaybackState.Builder()
+    .setState(PlaybackState.STATE_NONE, 0, 0f)
     .build()
 
-val NOTHING_PLAYING: MediaMetadataCompat = MediaMetadataCompat.Builder()
-    .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, "")
-    .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, 0)
-    .build()
+val NOTHING_PLAYING: MediaMetadata = MediaMetadata.EMPTY

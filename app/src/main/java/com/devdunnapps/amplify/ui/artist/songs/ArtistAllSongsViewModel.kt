@@ -1,6 +1,5 @@
 package com.devdunnapps.amplify.ui.artist.songs
 
-import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -42,8 +41,6 @@ class ArtistAllSongsViewModel @Inject constructor(
     }
 
     fun playSong(song: Song) {
-        val bundle = Bundle()
-        bundle.putSerializable("song", song)
-        musicServiceConnection.transportControls.sendCustomAction("play_song", bundle)
+        musicServiceConnection.playSong(song)
     }
 }

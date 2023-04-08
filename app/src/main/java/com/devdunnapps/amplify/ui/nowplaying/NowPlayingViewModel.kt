@@ -2,12 +2,9 @@ package com.devdunnapps.amplify.ui.nowplaying
 
 import android.os.Handler
 import android.os.Looper
-import android.support.v4.media.session.PlaybackStateCompat
-import androidx.compose.runtime.MutableState
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.media3.common.Player
 import com.devdunnapps.amplify.utils.MusicServiceConnection
-import com.devdunnapps.amplify.utils.currentPlayBackPosition
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
@@ -16,12 +13,11 @@ import javax.inject.Inject
 class NowPlayingViewModel @Inject constructor(
     private val musicServiceConnection: MusicServiceConnection
 ): ViewModel() {
-
-    val playbackState = musicServiceConnection.playbackState
+    val isPlaying = musicServiceConnection.isPlaying
     val metadata = musicServiceConnection.nowPlaying
-
-    val shuffleMode: MutableStateFlow<Int> = MutableStateFlow(PlaybackStateCompat.SHUFFLE_MODE_NONE)
-    val repeatMode: MutableStateFlow<Int> = MutableStateFlow(PlaybackStateCompat.REPEAT_MODE_NONE)
+    val duration = musicServiceConnection.duration
+    val shuffleMode = musicServiceConnection.isShuffleEnabled
+    val repeatMode = musicServiceConnection.repeatMode
 
     val mediaPosition: MutableStateFlow<Long> = MutableStateFlow(0)
     private val handler = Handler(Looper.getMainLooper())
@@ -32,54 +28,42 @@ class NowPlayingViewModel @Inject constructor(
     }
 
     fun togglePlayingState() {
-        if (playbackState.value.state == PlaybackStateCompat.STATE_PLAYING) {
-            musicServiceConnection.transportControls.pause()
+        if (musicServiceConnection.isPlaying.value) {
+            musicServiceConnection.pause()
         } else {
-            musicServiceConnection.transportControls.play()
+            musicServiceConnection.play()
         }
     }
 
     fun toggleShuffleState() {
-        if (musicServiceConnection.shuffleMode == PlaybackStateCompat.SHUFFLE_MODE_NONE) {
-            musicServiceConnection.transportControls.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL)
-            shuffleMode.value = PlaybackStateCompat.SHUFFLE_MODE_ALL
-        } else {
-            musicServiceConnection.transportControls.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE)
-            shuffleMode.value = PlaybackStateCompat.SHUFFLE_MODE_NONE
-        }
+        if (musicServiceConnection.isShuffleEnabled.value)
+            musicServiceConnection.enableShuffleMode()
+        else
+            musicServiceConnection.disableShuffleMode()
     }
 
     fun toggleRepeatState() {
-        when (musicServiceConnection.repeatMode) {
-            PlaybackStateCompat.REPEAT_MODE_NONE -> {
-                musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE)
-                repeatMode.value = PlaybackStateCompat.REPEAT_MODE_ONE
-            }
-            PlaybackStateCompat.REPEAT_MODE_ONE -> {
-                musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL)
-                repeatMode.value = PlaybackStateCompat.REPEAT_MODE_ALL
-            }
-            PlaybackStateCompat.REPEAT_MODE_ALL -> {
-                musicServiceConnection.transportControls.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_NONE)
-                repeatMode.value = PlaybackStateCompat.REPEAT_MODE_NONE
-            }
+        when (musicServiceConnection.repeatMode.value) {
+            Player.REPEAT_MODE_OFF -> musicServiceConnection.setRepeatMode(Player.REPEAT_MODE_ONE)
+            Player.REPEAT_MODE_ONE -> musicServiceConnection.setRepeatMode(Player.REPEAT_MODE_ALL)
+            Player.REPEAT_MODE_ALL -> musicServiceConnection.setRepeatMode(Player.REPEAT_MODE_OFF)
         }
     }
 
     fun skipToPrevious() {
-        musicServiceConnection.transportControls.skipToPrevious()
+        musicServiceConnection.skipToPrevious()
     }
 
     fun skipToNext() {
-        musicServiceConnection.transportControls.skipToNext()
+        musicServiceConnection.skipToNext()
     }
 
     fun seekTo(position: Long) {
-        musicServiceConnection.transportControls.seekTo(position)
+        musicServiceConnection.seekTo(position)
     }
 
     private fun checkPlaybackPosition(): Boolean = handler.postDelayed({
-        val currPosition = playbackState.value.currentPlayBackPosition
+        val currPosition = musicServiceConnection.currentPosition
         if (mediaPosition.value != currPosition)
             mediaPosition.value = currPosition
         if (updatePosition)

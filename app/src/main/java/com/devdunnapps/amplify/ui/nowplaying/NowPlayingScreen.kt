@@ -1,7 +1,5 @@
 package com.devdunnapps.amplify.ui.nowplaying
 
-import android.support.v4.media.MediaMetadataCompat
-import android.support.v4.media.session.PlaybackStateCompat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -52,6 +50,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.media3.common.Player
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.devdunnapps.amplify.ui.utils.DynamicThemePrimaryColorsFromImage
@@ -73,20 +72,20 @@ fun NowPlayingScreen(
     if (metadata == NOTHING_PLAYING)
         return
 
-    val songDurationMillis = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
+    val songDurationMillis = viewModel.duration.collectAsState().value
     val mediaPosition = viewModel.mediaPosition.collectAsState().value
-    val playMode = viewModel.playbackState.collectAsState().value
+    val isPlaying = viewModel.isPlaying.collectAsState().value
     val shuffleModel = viewModel.shuffleMode.collectAsState().value
     val repeatMode = viewModel.repeatMode.collectAsState().value
 
     NowPlayingHeader(
-        artworkUrl = metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI),
-        title = metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE),
-        subtitle = metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST),
+        artworkUrl = metadata.artworkUri.toString(),
+        title = metadata.title.toString(),
+        subtitle = metadata.artist.toString(),
         onSeekToPosition = { viewModel.seekTo((it * 1000).toLong()) },
         mediaPosition = mediaPosition,
         songDurationMillis = songDurationMillis,
-        playMode = playMode,
+        isPlaying = isPlaying,
         shuffleMode = shuffleModel,
         repeatMode = repeatMode,
         onToggleShuffleClick = viewModel::toggleShuffleState,
@@ -96,7 +95,7 @@ fun NowPlayingScreen(
         onSkipNext = viewModel::skipToNext,
         onCollapseNowPlaying = onCollapseNowPlaying,
         onMenuClick = {
-            onNowPlayingMenuClick(viewModel.metadata.value.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))
+//            onNowPlayingMenuClick(viewModel.metadata.value.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID))
         }
     )
 }
@@ -109,8 +108,8 @@ private fun NowPlayingHeader(
     onSeekToPosition: (Float) -> Unit,
     mediaPosition: Long,
     songDurationMillis: Long,
-    playMode: PlaybackStateCompat,
-    shuffleMode: Int,
+    isPlaying: Boolean,
+    shuffleMode: Boolean,
     repeatMode: Int,
     onToggleShuffleClick: () -> Unit,
     onToggleRepeatClick: () -> Unit,
@@ -188,7 +187,7 @@ private fun NowPlayingHeader(
                 )
 
                 MediaButtonsRow(
-                    playMode = playMode,
+                    isPlaying = isPlaying,
                     shuffleMode = shuffleMode,
                     repeatMode = repeatMode,
                     onToggleShuffleClick = onToggleShuffleClick,
@@ -235,7 +234,6 @@ private fun NowPlayingProgressBar(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-
         var sliderPosition by remember(mediaPosition) { mutableStateOf((mediaPosition / 1000).toFloat()) }
         Slider(
             value = sliderPosition,
@@ -278,8 +276,8 @@ private fun NowPlayingProgressBar(
 
 @Composable
 private fun MediaButtonsRow(
-    playMode: PlaybackStateCompat,
-    shuffleMode: Int,
+    isPlaying: Boolean,
+    shuffleMode: Boolean,
     repeatMode: Int,
     onToggleShuffleClick: () -> Unit,
     onToggleRepeatClick: () -> Unit,
@@ -294,13 +292,9 @@ private fun MediaButtonsRow(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
     ) {
-        val shuffleModeIcon = when (shuffleMode) {
-            PlaybackStateCompat.SHUFFLE_MODE_ALL -> Icons.Filled.ShuffleOn
-            else -> Icons.Filled.Shuffle
-        }
         IconButton(onClick = onToggleShuffleClick) {
             Icon(
-                imageVector = shuffleModeIcon,
+                imageVector = if (shuffleMode) Icons.Filled.ShuffleOn else Icons.Filled.Shuffle,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onBackground
             )
@@ -315,15 +309,13 @@ private fun MediaButtonsRow(
             )
         }
 
-        val playPauseIcon =
-            if (playMode.state == PlaybackStateCompat.STATE_PAUSED) Icons.Filled.PlayArrow else Icons.Filled.Pause
         FloatingActionButton(
             shape = CircleShape,
             onClick = onTogglePlayPause,
             modifier = Modifier.size(64.dp)
         ) {
             Icon(
-                imageVector = playPauseIcon,
+                imageVector = if (isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
                 contentDescription = null
             )
         }
@@ -338,8 +330,8 @@ private fun MediaButtonsRow(
         }
 
         val repeatModeIcon = when (repeatMode) {
-            PlaybackStateCompat.REPEAT_MODE_ONE -> Icons.Filled.RepeatOne
-            PlaybackStateCompat.REPEAT_MODE_ALL -> Icons.Filled.RepeatOn
+            Player.REPEAT_MODE_ONE -> Icons.Filled.RepeatOne
+            Player.REPEAT_MODE_ALL -> Icons.Filled.RepeatOn
             else -> Icons.Filled.Repeat
         }
         IconButton(onClick = onToggleRepeatClick) {

@@ -1,7 +1,5 @@
 package com.devdunnapps.amplify.ui.songbottomsheet
 
-import android.os.Bundle
-import android.support.v4.media.session.PlaybackStateCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,7 +16,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.io.Serializable
 import javax.inject.Inject
 
 @HiltViewModel
@@ -68,19 +65,12 @@ class SongMenuBottomSheetViewModel @Inject constructor(
     }
 
     fun playSong(whenToPlay: WhenToPlay = WhenToPlay.NOW) {
-        val action = when (whenToPlay) {
-            WhenToPlay.NOW -> "play_songs_now"
-            WhenToPlay.NEXT -> "add_songs_to_queue"
-            WhenToPlay.QUEUE -> "play_songs_next"
+        val song = (screenState.value as? Resource.Success)?.data?.song ?: return
+        when (whenToPlay) {
+            WhenToPlay.NOW -> mediaServiceConnection.playSong(song)
+            WhenToPlay.NEXT -> mediaServiceConnection.playSongNext(song)
+            WhenToPlay.QUEUE -> mediaServiceConnection.addSongToQueue(song)
         }
-
-        val curState = screenState.value as? Resource.Success ?: return
-        val songs = ArrayList<Serializable>()
-        songs.add(curState.data.song)
-        val bundle = Bundle()
-        bundle.putSerializable("songs", songs)
-        mediaServiceConnection.transportControls.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_NONE)
-        mediaServiceConnection.transportControls.sendCustomAction(action, bundle)
     }
 
     fun removeSongFromPlaylist() {

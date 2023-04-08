@@ -66,7 +66,9 @@ dependencies {
     implementation(libs.androidx.dataStore)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.preference.ktx)
-    implementation(libs.androidx.media)
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.mediaSession)
+    implementation(libs.androidx.media3.ui)
 
     implementation(libs.androidx.navigation.fragment)
     implementation(libs.androidx.navigation.compose)
@@ -78,10 +80,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewModelCompose)
 
     implementation(libs.material)
-
-    implementation(libs.exoplayer.core)
-    implementation(libs.exoplayer.ui)
-    implementation(libs.exoplayer.mediaSession)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

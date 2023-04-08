@@ -1,7 +1,6 @@
 package com.devdunnapps.amplify.ui.artist
 
 import android.os.Bundle
-import android.support.v4.media.session.PlaybackStateCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,7 +18,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.io.Serializable
 import javax.inject.Inject
 
 @HiltViewModel
@@ -85,18 +83,12 @@ class ArtistViewModel @Inject constructor(
     fun playSong(song: Song) {
         val bundle = Bundle()
         bundle.putSerializable("song", song)
-        musicServiceConnection.transportControls.sendCustomAction("play_song", bundle)
+        musicServiceConnection.playSong(song)
     }
 
     fun shuffleArtist() {
-        musicServiceConnection.transportControls.setShuffleMode(PlaybackStateCompat.SHUFFLE_MODE_ALL)
-        musicServiceConnection.transportControls.sendCustomAction("play_songs_now", collectAlbumBundle())
-    }
-
-    private fun collectAlbumBundle(): Bundle? {
-        val currentValue = _artistSongs.value as? Resource.Success ?: return null
-        return Bundle().apply {
-            putSerializable("songs", currentValue.data as Serializable)
-        }
+        val songs = (_artistSongs.value as? Resource.Success)?.data ?: return
+        musicServiceConnection.enableShuffleMode()
+        musicServiceConnection.playSongs(songs)
     }
 }

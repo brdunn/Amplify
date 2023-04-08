@@ -28,8 +28,6 @@ class SongsViewModel @Inject constructor(
     ).flow.cachedIn(viewModelScope)
 
     fun playSong(song: Song) {
-        val bundle = Bundle()
-        bundle.putSerializable("song", song)
-        musicServiceConnection.transportControls.sendCustomAction("play_song", bundle)
+        musicServiceConnection.playSong(song)
     }
 }

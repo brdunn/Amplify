@@ -105,7 +105,7 @@ private fun SearchScreen(
             )
         }
     ) {
-        Box(modifier = Modifier.padding(it)) {
+        Box(modifier = Modifier.padding(top = it.calculateTopPadding())) {
             when (searchResults) {
                 is Resource.Loading -> LoadingScreen()
                 is Resource.Error -> ErrorScreen()

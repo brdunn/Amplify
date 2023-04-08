@@ -1,7 +1,5 @@
 package com.devdunnapps.amplify.ui.album
 
-import android.os.Bundle
-import android.support.v4.media.session.PlaybackStateCompat
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,7 +16,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.io.Serializable
 import javax.inject.Inject
 
 @HiltViewModel
@@ -64,28 +61,21 @@ class AlbumViewModel @Inject constructor(
     }
 
     fun playSong(song: Song) {
-        val bundle = Bundle()
-        bundle.putSerializable("song", song)
-        musicServiceConnection.transportControls.sendCustomAction("play_song", bundle)
+        musicServiceConnection.playSong(song)
     }
 
     fun playAlbum(whenToPlay: WhenToPlay = WhenToPlay.NOW, shuffle: Boolean = false) {
-        val action = when (whenToPlay) {
-            WhenToPlay.NOW -> "play_songs_now"
-            WhenToPlay.NEXT -> "play_songs_next"
-            WhenToPlay.QUEUE -> "add_songs_to_queue"
-        }
+        val songs = (_album.value as? Resource.Success)?.data?.songs ?: return
 
-        val shuffleMode = if (shuffle) PlaybackStateCompat.SHUFFLE_MODE_ALL else PlaybackStateCompat.SHUFFLE_MODE_NONE
-        musicServiceConnection.transportControls.setShuffleMode(shuffleMode)
+        if (shuffle)
+            musicServiceConnection.enableShuffleMode()
+        else
+            musicServiceConnection.disableShuffleMode()
 
-        musicServiceConnection.transportControls.sendCustomAction(action, collectAlbumBundle())
-    }
-
-    private fun collectAlbumBundle(): Bundle {
-        return Bundle().apply {
-            val albumContent = _album.value as? Resource.Success<AlbumScreenUIModel> ?: return@apply
-            putSerializable("songs", albumContent.data.songs as Serializable)
+        when (whenToPlay) {
+            WhenToPlay.NOW -> musicServiceConnection.playSongs(songs)
+            WhenToPlay.NEXT -> musicServiceConnection.playSongsNext(songs)
+            WhenToPlay.QUEUE -> musicServiceConnection.addSongsToQueue(songs)
         }
     }
 }
