@@ -13,7 +13,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.PlexPlayer">
+        android:theme="@style/Theme.PlexPlayer"
+        android:enableOnBackInvokedCallback="true">
 
         <activity
             android:name=".ui.main.MainActivity"
@@ -29,19 +30,16 @@
 
         <activity
             android:name=".ui.settings.SettingsActivity"
-            android:exported="true"
             android:parentActivityName="com.devdunnapps.amplify.ui.main.MainActivity"
             android:screenOrientation="portrait" />
 
         <activity
             android:name=".ui.about.AboutActivity"
-            android:exported="true"
             android:parentActivityName="com.devdunnapps.amplify.ui.main.MainActivity"
             android:screenOrientation="portrait" />
 
         <activity
             android:name=".ui.onboarding.OnBoardingActivity"
-            android:exported="true"
             android:screenOrientation="portrait" />
 
         <service
