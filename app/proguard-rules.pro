@@ -22,3 +22,7 @@
 -keepnames class com.devdunnapps.amplify.domain.models.*
 -keepnames class androidx.navigation.fragment.NavHostFragment
 -keep class * extends androidx.fragment.app.Fragment{}
+
+-dontwarn org.conscrypt.**
+-dontwarn org.bouncycastle.**
+-dontwarn org.openjsse.**
