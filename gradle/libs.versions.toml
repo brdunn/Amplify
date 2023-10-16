@@ -1,43 +1,42 @@
 [versions]
-accompanist = "0.30.1"
+accompanist = "0.32.0"
 androidGradlePlugin = "8.1.2"
 androidxAppCompat = "1.6.1"
 androidxConstraintLayout = "2.1.4"
 androidxPalette = "1.0.0"
 androidxDataStore = "1.0.0"
-androidxCore = "1.9.0"
+androidxCore = "1.12.0"
 androidxNavigation = "2.5.3"
-androidxLifecycle = "2.5.1"
-androidxPreference = "1.2.0"
+androidxLifecycle = "2.6.2"
+androidxPreference = "1.2.1"
 androidxMedia = "1.6.0"
 androidxTestExt = "1.1.5"
 androidxEspresso = "3.5.1"
-androidxCompose = "1.4.1"
-androidxComposeMaterial = "1.4.1"
-androidxComposeCompiler = "1.4.5"
-androidxComposePaging = "1.0.0-alpha18"
-androidxActivity = "1.7.0"
-androidxComposeMaterial3 = "1.0.1"
+androidxCompose = "1.5.3"
+androidxComposeMaterial = "1.5.3"
+androidxComposeCompiler = "1.5.3"
+androidxComposePaging = "1.0.0-alpha20"
+androidxActivity = "1.8.0"
+androidxComposeMaterial3 = "1.1.2"
 androidxHiltNavigationCompose = "1.0.0"
-coil = "2.2.2"
-coroutines = "1.6.3"
-exoPlayer = "2.18.3"
-hilt = "2.44.2"
+coil = "2.4.0"
+exoPlayer = "2.19.1"
+hilt = "2.48.1"
 junit4 = "4.13.2"
-kotlin = "1.8.20"
-kotlinxCoroutines = "1.6.4"
-material = "1.8.0"
-mockWebserver = "4.9.2"
-protobuf = "3.22.3"
-protobufPlugin = "0.9.0"
+kotlin = "1.9.10"
+kotlinxCoroutines = "1.7.1"
+material = "1.10.0"
+mockWebserver = "4.11.0"
+protobuf = "3.24.1"
+protobufPlugin = "0.9.4"
 retrofit = "2.9.0"
 
 [libraries]
 accompanist-themeAdapter-material3 = { group = "com.google.accompanist", name = "accompanist-themeadapter-material3", version.ref = "accompanist" }
+android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidxActivity" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidxAppCompat" }
 androidx-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "androidxCompose" }
-androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "androidxCompose" }
 androidx-compose-compiler = { group = "androidx.compose.compiler", name = "compiler", version.ref = "androidxComposeCompiler" }
 androidx-compose-material-iconsExtended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "androidxComposeMaterial" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "androidxComposeMaterial3" }
@@ -56,6 +55,7 @@ androidx-lifecycle-viewModelCompose = { group = "androidx.lifecycle", name = "li
 androidx-media = { group = "androidx.media", name = "media", version.ref = "androidxMedia" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxNavigation" }
 androidx-navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "androidxNavigation" }
+androidx-navigation-safeArgs = { group = "androidx.navigation", name = "navigation-safe-args-gradle-plugin", version.ref = "androidxNavigation" }
 androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "androidxNavigation" }
 androidx-palette-ktx = { group = "androidx.palette", name = "palette-ktx", version.ref = "androidxPalette" }
 androidx-preference-ktx = { group = "androidx.preference", name = "preference-ktx", version.ref = "androidxPreference" }
@@ -69,7 +69,7 @@ exoplayer-mediaSession = { group = "com.google.android.exoplayer", name = "exten
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 junit4 = { group = "junit", name = "junit", version.ref = "junit4" }
-kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version.ref = "kotlin" }
+kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 okhttp-mockWebServer = { group = "com.squareup.okhttp3", name = "mockwebserver", version.ref = "mockWebserver" }
@@ -77,11 +77,6 @@ protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-
 protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
 retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
-
-# Dependencies of the included build-logic
-android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
-androidx-navigation-safeArgs = { group = "androidx.navigation", name = "navigation-safe-args-gradle-plugin", version.ref = "androidxNavigation" }
-kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
