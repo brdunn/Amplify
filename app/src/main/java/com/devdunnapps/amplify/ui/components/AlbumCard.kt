@@ -42,12 +42,21 @@ fun AlbumCard(onClick: () -> Unit, album: Album, modifier: Modifier = Modifier) 
             contentScale = ContentScale.Crop
         )
 
-        Text(
-            text = album.title,
-            style = MaterialTheme.typography.bodySmall,
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 1
-        )
+        Column {
+            Text(
+                text = album.title,
+                style = MaterialTheme.typography.bodyMedium,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1
+            )
+
+            Text(
+                text = album.artistName,
+                style = MaterialTheme.typography.bodySmall,
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1
+            )
+        }
     }
 }
 
@@ -62,7 +71,7 @@ fun AlbumCardPreview() {
                 title = "52nd Street",
                 thumb = "/library/metadata/45209/thumb/1641184622",
                 artistId = "",
-                artistThumb = "",
+                artistThumb = "Billy Joel",
                 review = "",
                 numSongs = 0,
                 year = "",
