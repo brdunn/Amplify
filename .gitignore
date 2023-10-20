@@ -1,11 +1,27 @@
-*.iml
-.gradle
-/local.properties
-/.idea
-.DS_Store
-/build
-/app/release
-/captures
-.externalNativeBuild
-.cxx
+# built applications
+*.apk
+
+# Java class files
+*.class
+
+# generated files
+bin/
+gen/
+out/
+build/
+
+# Local configuration files
 local.properties
+
+# Windows thumbnail db
+.DS_Store
+
+# IDEA/Android Studio project files
+*.iml
+.idea/*
+
+# Gradle cache
+.gradle
+
+# Android Studio captures
+captures/

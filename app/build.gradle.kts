@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.safeargs)
     alias(libs.plugins.hilt)
     alias(libs.plugins.protobuf)
@@ -59,10 +59,6 @@ android {
     }
 }
 
-kapt {
-    correctErrorTypes = true
-}
-
 dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintLayout)
@@ -88,7 +84,7 @@ dependencies {
     implementation(libs.exoplayer.mediaSession)
 
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
 
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.converter.gson)
