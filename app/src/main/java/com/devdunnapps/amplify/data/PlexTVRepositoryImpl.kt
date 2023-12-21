@@ -27,7 +27,7 @@ class PlexTVRepositoryImpl @Inject constructor(
             val userCredentials = SignInDTO(username, password, authToken)
             val response = plexTVClient.signInUser(userCredentials)
             if (response.code() == HttpURLConnection.HTTP_CREATED) {
-                val user = response.body()?.toUser() ?: run {
+                val user = response.body()?.toSignInModel() ?: run {
                     emit(Resource.Error())
                     return@flow
                 }

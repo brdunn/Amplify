@@ -7,7 +7,11 @@ import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
 class NetworkResponseAdapterFactory : CallAdapter.Factory() {
-    override fun get(returnType: Type, annotations: Array<out Annotation>, retrofit: Retrofit): CallAdapter<*, *>? {
+    override fun get(
+        returnType: Type,
+        annotations: Array<out Annotation>,
+        retrofit: Retrofit
+    ): CallAdapter<*, *>? {
         if (returnType !is ParameterizedType) return null
 
         val containerType = getParameterUpperBound(0, returnType)
@@ -33,13 +37,16 @@ class NetworkResponseAdapterFactory : CallAdapter.Factory() {
 
 }
 
-private class NetworkResultCallAdapter<T>(private val successType: Type) : CallAdapter<T, Call<NetworkResponse<T>>> {
+private class NetworkResultCallAdapter<T>(
+    private val successType: Type
+) : CallAdapter<T, Call<NetworkResponse<T>>> {
     override fun responseType(): Type = successType
 
     override fun adapt(call: Call<T>): Call<NetworkResponse<T>> = NetworkResponseCall(call)
 }
 
-private class EmptyResponseBodyNetworkResponseCallAdapter : CallAdapter<Unit, Call<NetworkResponse<Unit>>> {
+private class EmptyResponseBodyNetworkResponseCallAdapter :
+    CallAdapter<Unit, Call<NetworkResponse<Unit>>> {
     override fun responseType(): Type = Unit.javaClass
 
     override fun adapt(call: Call<Unit>): Call<NetworkResponse<Unit>> =
