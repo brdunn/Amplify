@@ -1,6 +1,6 @@
 package com.devdunnapps.amplify.data.models
 
-data class SigninDTO(
+data class SignInDTO(
     val login: String,
     val password: String,
     val verificationCode: String?

@@ -199,4 +199,19 @@ class PlexRepositoryImpl @Inject constructor(
         summary: String?
     ): NetworkResponse<Unit> =
         api.editPlaylistMetadata(playlistId = playlistId, title = title, summary = summary)
+
+    override suspend fun getRecentlyPlayedArtists(): NetworkResponse<List<Artist>> =
+        api.getRecentlyPlayedArtists(section).map {
+            it.mediaContainer.metadata?.map { artist -> artist.toArtist() }.orEmpty()
+        }
+
+    override suspend fun getRecentlyAddedAlbums(): NetworkResponse<List<Album>> =
+        api.getRecentlyAddedAlbums(section).map {
+            it.mediaContainer.metadata?.map { album -> album.toAlbum() }.orEmpty()
+        }
+
+    override suspend fun getRecentlyPlayedSongs(): NetworkResponse<List<Song>> =
+        api.getRecentlyPlayedSongs(section).map {
+            it.mediaContainer.metadata?.map { song -> song.toSong() }.orEmpty()
+        }
 }

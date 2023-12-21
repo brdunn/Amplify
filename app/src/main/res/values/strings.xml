@@ -21,6 +21,15 @@
     <string name="sample_summary">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras quis elit egestas, vulputate tellus vitae, ultricies nisi. Suspendisse quis sollicitudin erat. Vivamus eu maximus purus. Vivamus quis lacus sem. Praesent rhoncus porttitor lacus nec fringilla. Proin euismod semper odio, et lobortis purus volutpat maximus. Nulla a feugiat massa. Suspendisse vel felis egestas, consectetur mauris sit amet, semper lacus. Aliquam ut metus mi. Morbi a rutrum tellus. Donec vitae luctus nisi. Etiam aliquam elementum felis ut venenatis. Fusce tempor porta purus ut commodo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.</string>
     <string name="section_format">Page %1$d</string>
 
+    <string name="home_tab_title">Home</string>
+    <string name="home_recently_played_carousel_header_title">Recently Played Artists</string>
+    <string name="home_recently_added_carousel_header_title">Recently Added Music</string>
+    <string name="home_recent_songs_header_title">Recently Played Songs</string>
+    <string name="greeting_morning">Good morning,\n%s</string>
+    <string name="greeting_afternoon">Good afternoon,\n%s</string>
+    <string name="greeting_evening">Good evening,\n%s</string>
+    <string name="greeting_night">Good night,\n%s</string>
+
     <!-- Artist Fragment -->
     <string name="artist_artists_title">Artists</string>
     <string name="artist_shuffle_btn">Shuffle</string>

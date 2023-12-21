@@ -59,4 +59,10 @@ interface PlexRepository {
     suspend fun markSongAsListened(songId: String): NetworkResponse<Unit>
 
     suspend fun editPlaylistMetadata(playlistId: String, title: String?, summary: String?): NetworkResponse<Unit>
+
+    suspend fun getRecentlyPlayedArtists(): NetworkResponse<List<Artist>>
+
+    suspend fun getRecentlyAddedAlbums(): NetworkResponse<List<Album>>
+
+    suspend fun getRecentlyPlayedSongs() : NetworkResponse<List<Song>>
 }

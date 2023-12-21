@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.devdunnapps.amplify.data.networking.NetworkResponse
 import com.devdunnapps.amplify.domain.models.LibrarySection
 import com.devdunnapps.amplify.domain.models.Server
-import com.devdunnapps.amplify.domain.models.User
+import com.devdunnapps.amplify.domain.models.SignInModel
 import com.devdunnapps.amplify.domain.usecases.GetLibrarySectionsUseCase
 import com.devdunnapps.amplify.domain.usecases.GetUsersServersUseCase
 import com.devdunnapps.amplify.domain.usecases.SignInUserUseCase
@@ -26,7 +26,7 @@ class LoginFlowViewModel @Inject constructor(
     private val app: Application
 ): AndroidViewModel(app) {
 
-    private val _user = MutableStateFlow<Resource<User>>(Resource.Loading)
+    private val _user = MutableStateFlow<Resource<SignInModel>>(Resource.Loading)
     val user = _user.asStateFlow()
 
     private val _twoFactorAuthRequired = MutableStateFlow(false)

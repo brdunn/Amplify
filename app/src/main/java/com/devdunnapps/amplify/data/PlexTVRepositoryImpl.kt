@@ -1,8 +1,11 @@
 package com.devdunnapps.amplify.data
 
 import com.devdunnapps.amplify.data.models.ErrorsDTO
-import com.devdunnapps.amplify.data.models.SigninDTO
+import com.devdunnapps.amplify.data.models.SignInDTO
+import com.devdunnapps.amplify.data.networking.NetworkResponse
+import com.devdunnapps.amplify.data.networking.map
 import com.devdunnapps.amplify.domain.models.Server
+import com.devdunnapps.amplify.domain.models.SignInModel
 import com.devdunnapps.amplify.domain.models.User
 import com.devdunnapps.amplify.domain.repository.PlexTVRepository
 import com.devdunnapps.amplify.utils.Resource
@@ -17,11 +20,11 @@ class PlexTVRepositoryImpl @Inject constructor(
     private val plexTVClient: PlexTVAPI
 ): PlexTVRepository  {
 
-    override fun signInUser(username: String, password: String, authToken: String?): Flow<Resource<User>> = flow {
+    override fun signInUser(username: String, password: String, authToken: String?): Flow<Resource<SignInModel>> = flow {
         emit(Resource.Loading)
 
         try {
-            val userCredentials = SigninDTO(username, password, authToken)
+            val userCredentials = SignInDTO(username, password, authToken)
             val response = plexTVClient.signInUser(userCredentials)
             if (response.code() == HttpURLConnection.HTTP_CREATED) {
                 val user = response.body()?.toUser() ?: run {
@@ -58,4 +61,7 @@ class PlexTVRepositoryImpl @Inject constructor(
         }
         emit(Resource.Success(servers.toList()))
     }
+
+    override suspend fun getUser(): NetworkResponse<User> =
+        plexTVClient.getUser().map { it.toUser() }
 }
