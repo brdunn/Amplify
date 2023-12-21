@@ -110,4 +110,19 @@ interface PlexAPI {
         @Query("title") title: String? = null,
         @Query("summary") summary: String? = null
     ): NetworkResponse<Unit>
+
+    @GET("library/sections/{section}/all?viewCount>=1&type=8&sort=lastViewedAt:desc&limit=10")
+    suspend fun getRecentlyPlayedArtists(
+        @Path("section") section: String
+    ): NetworkResponse<PlexModelDTO>
+
+    @GET("library/sections/{section}/all?type=9&sort=addedAt:desc&limit=10")
+    suspend fun getRecentlyAddedAlbums(
+        @Path("section") section: String
+    ): NetworkResponse<PlexModelDTO>
+
+    @GET("library/sections/{section}/all?viewCount>=1&type=10&sort=lastViewedAt:desc&limit=3")
+    suspend fun getRecentlyPlayedSongs(
+        @Path("section") section: String
+    ): NetworkResponse<PlexModelDTO>
 }

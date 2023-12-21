@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -238,11 +237,11 @@ private fun AlbumsSearchResults(albums: List<Album>) {
             items(albums) { album ->
                 AlbumCard(
                     album = album,
+                    artworkSize = 100.dp,
                     onClick = {
                         val action = MobileNavigationDirections.actionGlobalNavigationAlbum(album.id)
                         localView.findNavController().navigate(action)
-                    },
-                    modifier = Modifier.width(100.dp)
+                    }
                 )
             }
         }
@@ -261,11 +260,11 @@ private fun ArtistsSearchResults(artists: List<Artist>) {
             items(artists) { artist ->
                 ArtistCard(
                     artist = artist,
+                    artworkSize = 100.dp,
                     onClick = {
                         val action = MobileNavigationDirections.actionGlobalNavigationArtist(artist.id)
                         localView.findNavController().navigate(action)
-                    },
-                    modifier = Modifier.width(100.dp)
+                    }
                 )
             }
         }

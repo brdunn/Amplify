@@ -3,7 +3,11 @@ package com.devdunnapps.amplify.ui.components
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -17,21 +21,27 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.devdunnapps.amplify.R
 import com.devdunnapps.amplify.domain.models.Artist
 import com.devdunnapps.amplify.utils.PlexUtils
 import com.google.accompanist.themeadapter.material3.Mdc3Theme
 
 @Composable
-fun ArtistCard(onClick: () -> Unit, artist: Artist, modifier: Modifier = Modifier) {
+fun ArtistCard(
+    artist: Artist,
+    artworkSize: Dp,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Column(
-        modifier = modifier.clickable { onClick() },
+        modifier = modifier
+            .width(IntrinsicSize.Min)
+            .clickable { onClick() },
         verticalArrangement = Arrangement.spacedBy(4.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -39,6 +49,7 @@ fun ArtistCard(onClick: () -> Unit, artist: Artist, modifier: Modifier = Modifie
         val imageUrl = remember { PlexUtils.getInstance(context).getSizedImage(artist.thumb, 500, 500) }
         AsyncImage(
             modifier = Modifier
+                .size(artworkSize)
                 .aspectRatio(1f)
                 .clip(CircleShape),
             model = imageUrl,
@@ -53,7 +64,8 @@ fun ArtistCard(onClick: () -> Unit, artist: Artist, modifier: Modifier = Modifie
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodySmall,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
@@ -70,7 +82,8 @@ fun ArtistCardPreview() {
                 thumb = "/library/metadata/45209/thumb/1641184622",
                 art = null,
                 bio = ""
-            )
+            ),
+            artworkSize = 100.dp
         )
     }
 }

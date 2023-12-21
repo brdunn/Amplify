@@ -30,6 +30,8 @@ import com.devdunnapps.amplify.ui.components.LoadingScreen
 import com.devdunnapps.amplify.ui.utils.FragmentRootDestinationScaffold
 import dagger.hilt.android.AndroidEntryPoint
 
+private const val ARTWORK_SIZE = 100
+
 @AndroidEntryPoint
 class AlbumsFragment : Fragment() {
 
@@ -74,7 +76,7 @@ private fun AlbumsScreen(
         LoadingScreen(modifier = modifier)
 
     LazyVerticalGrid(
-        columns = GridCells.Adaptive(100.dp),
+        columns = GridCells.Adaptive(ARTWORK_SIZE.dp),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -84,7 +86,8 @@ private fun AlbumsScreen(
             albums[index]?.let {
                 AlbumCard(
                     onClick = { onAlbumClick(it.id) },
-                    album = it
+                    album = it,
+                    artworkSize = ARTWORK_SIZE.dp
                 )
             }
         }

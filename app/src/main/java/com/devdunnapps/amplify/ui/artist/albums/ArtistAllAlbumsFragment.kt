@@ -31,6 +31,8 @@ import com.devdunnapps.amplify.ui.utils.FragmentSubDestinationScaffold
 import com.devdunnapps.amplify.utils.Resource
 import dagger.hilt.android.AndroidEntryPoint
 
+private const val ARTWORK_SIZE = 150
+
 @AndroidEntryPoint
 class ArtistAllAlbumsFragment : Fragment() {
 
@@ -85,7 +87,7 @@ private fun ArtistAllAlbumsScreen(
 @Composable
 private fun ArtistAllAlbumsList(albums: List<Album>, onAlbumClick: (String) -> Unit, modifier: Modifier = Modifier) {
     LazyVerticalGrid(
-        columns = GridCells.Adaptive(150.dp),
+        columns = GridCells.Adaptive(ARTWORK_SIZE.dp),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -94,6 +96,7 @@ private fun ArtistAllAlbumsList(albums: List<Album>, onAlbumClick: (String) -> U
         items(albums) {
             AlbumCard(
                 onClick = { onAlbumClick(it.id) },
+                artworkSize = ARTWORK_SIZE.dp,
                 album = it
             )
         }
