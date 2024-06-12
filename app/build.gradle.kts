@@ -86,7 +86,7 @@ dependencies {
     implementation(libs.exoplayer.mediaSession)
 
     implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
+    ksp(libs.hilt.android.compiler)
 
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.converter.gson)

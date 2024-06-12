@@ -18,10 +18,10 @@ androidxComposeCompiler = "1.5.14"
 androidxComposePaging = "1.0.0-alpha20"
 androidxActivity = "1.9.0"
 androidxComposeMaterial3 = "1.1.2"
-androidxHiltNavigationCompose = "1.0.0"
+androidxHiltNavigationCompose = "1.2.0"
 coil = "2.6.0"
 exoPlayer = "2.19.1"
-hilt = "2.48.1"
+hilt = "2.51.1"
 junit4 = "4.13.2"
 kotlin = "1.9.24"
 kotlinxCoroutines = "1.7.1"
@@ -66,7 +66,7 @@ exoplayer-core = { group = "com.google.android.exoplayer", name = "exoplayer-cor
 exoplayer-ui = { group = "com.google.android.exoplayer", name = "exoplayer-ui", version.ref = "exoPlayer" }
 exoplayer-mediaSession = { group = "com.google.android.exoplayer", name = "extension-mediasession", version.ref = "exoPlayer" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
-hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
+hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 junit4 = { group = "junit", name = "junit", version.ref = "junit4" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
