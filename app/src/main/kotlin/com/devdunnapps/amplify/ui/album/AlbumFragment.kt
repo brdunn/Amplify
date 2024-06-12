@@ -6,33 +6,47 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.PlaylistPlay
 import androidx.compose.material.icons.outlined.QueueMusic
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -155,6 +169,10 @@ private fun AlbumScreenContent(
             }
 
             item {
+                AlbumDurationMetadata(model = model)
+            }
+
+            item {
                 AlbumFooter(album = model.album)
             }
         }
@@ -184,6 +202,10 @@ private fun AlbumScreenContent(
                 }
 
                 item {
+                    AlbumDurationMetadata(model = model)
+                }
+
+                item {
                     AlbumFooter(album = model.album)
                 }
             }
@@ -199,8 +221,10 @@ private fun AlbumHeaderTablet(
     onPlayNextClick: () -> Unit,
     onAddToQueueClick: () -> Unit
 ) {
-    Column {
-        ArtworkTitleTablet(
+    Column(
+        modifier = Modifier.verticalScroll(rememberScrollState())
+    ) {
+        ArtworkTitle(
             album = model.album,
             onPlayNextClick = onPlayNextClick,
             onAddToQueueClick = onAddToQueueClick
@@ -209,10 +233,6 @@ private fun AlbumHeaderTablet(
         PlayControls(
             onPlayClicked = onPlayClicked,
             onShuffleClicked = onShuffleClicked
-        )
-
-        AlbumDurationMetadata(
-            model = model
         )
     }
 }
@@ -236,22 +256,28 @@ private fun AlbumHeader(
             onPlayClicked = onPlayClicked,
             onShuffleClicked = onShuffleClicked
         )
-
-        AlbumDurationMetadata(
-            model = model
-        )
     }
 }
 
 @Composable
-private fun ArtworkTitleTablet(album: Album, onPlayNextClick: () -> Unit, onAddToQueueClick: () -> Unit) {
-    Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+private fun ArtworkTitle(
+    album: Album,
+    modifier: Modifier = Modifier,
+    onPlayNextClick: () -> Unit,
+    onAddToQueueClick: () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+    ) {
         val context = LocalContext.current
         val imageUrl = remember { PlexUtils.getInstance(context).addKeyAndAddress(album.thumb) }
+
         AsyncImage(
             modifier = Modifier
-                .padding(horizontal = 16.dp)
+                .width(250.dp)
                 .aspectRatio(1F)
+                .padding(16.dp)
                 .clip(shape = RoundedCornerShape(4.dp)),
             model = imageUrl,
             placeholder = painterResource(R.drawable.ic_album),
@@ -263,27 +289,27 @@ private fun ArtworkTitleTablet(album: Album, onPlayNextClick: () -> Unit, onAddT
         Text(
             text = album.title,
             style = MaterialTheme.typography.titleLarge,
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 2
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
         )
 
         Text(
-            text = buildAnnotatedString {
-                append("by ")
-                withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                    append(album.artistName)
-                }
-            },
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            text = album.artistName,
+            fontWeight = FontWeight.SemiBold,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(start = 16.dp)
         )
 
         Text(
-            maxLines = 1,
-            text =  "Album • ${album.year}"
+            text =  "Album • ${album.year}",
+            modifier = Modifier.padding(start = 16.dp),
         )
 
-        Row {
+        Row(
+            modifier = Modifier.padding(start = 4.dp)
+        ) {
             IconButton(
                 onClick = {
                     onPlayNextClick()
@@ -308,123 +334,6 @@ private fun ArtworkTitleTablet(album: Album, onPlayNextClick: () -> Unit, onAddT
                     contentDescription = stringResource(R.string.add_to_queue),
                     tint = MaterialTheme.colorScheme.onSurface
                 )
-            }
-        }
-    }
-}
-
-@Composable
-private fun ArtworkTitle(album: Album, onPlayNextClick: () -> Unit, onAddToQueueClick: () -> Unit) {
-    Row {
-        val context = LocalContext.current
-        val imageUrl = remember { PlexUtils.getInstance(context).addKeyAndAddress(album.thumb) }
-
-        AsyncImage(
-            modifier = Modifier
-                .padding(16.dp)
-                .weight(1F)
-                .aspectRatio(1F)
-                .clip(shape = RoundedCornerShape(4.dp)),
-            model = imageUrl,
-            placeholder = painterResource(R.drawable.ic_album),
-            error = painterResource(R.drawable.ic_album),
-            contentDescription = null,
-            contentScale = ContentScale.FillWidth
-        )
-
-        Column(
-            modifier = Modifier
-                .weight(1F)
-                .aspectRatio(1F, false)
-                .padding(top = 16.dp, end = 16.dp, bottom = 16.dp),
-        ) {
-            Box(
-                modifier = Modifier
-                    .weight(1F)
-                    .fillMaxSize(),
-                contentAlignment = Alignment.BottomStart
-            ) {
-                val maxTextStyle = TextStyle (
-                    fontSize = 50.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                var textStyle by remember { mutableStateOf(maxTextStyle) }
-                var readyToDraw by remember { mutableStateOf(false) }
-
-                Text(
-                    text = album.title,
-                    style = textStyle,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 3,
-                    modifier = Modifier
-                        .drawWithContent {
-                            if (readyToDraw) drawContent()
-                        }
-                        .padding(start = 16.dp),
-                    onTextLayout = { result ->
-                        if (result.didOverflowHeight || result.isLineEllipsized(0)) {
-                            textStyle = textStyle.copy(fontSize = textStyle.fontSize * 0.9)
-                        } else {
-                            readyToDraw = true
-                        }
-                    }
-                )
-            }
-
-            Text(
-                modifier = Modifier
-                    .weight(0.3f)
-                    .fillMaxWidth()
-                    .padding(start = 16.dp),
-                text = buildAnnotatedString {
-                    append("by ")
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                        append(album.artistName)
-                    }
-                },
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Text(
-                modifier = Modifier
-                    .weight(0.3f)
-                    .fillMaxWidth()
-                    .padding(start = 16.dp),
-                maxLines = 1,
-                text =  "Album • ${album.year}"
-            )
-
-            Row(
-                modifier = Modifier
-                    .weight(0.3f)
-                    .padding(start = 4.dp)
-            ) {
-                IconButton(
-                    onClick = {
-                        onPlayNextClick()
-                        Toast.makeText(context, "Playing album next", Toast.LENGTH_SHORT).show()
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.PlaylistPlay,
-                        contentDescription = stringResource(R.string.play_next),
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-
-                IconButton(
-                    onClick = {
-                        onAddToQueueClick()
-                        Toast.makeText(context, "Added to queue", Toast.LENGTH_SHORT).show()
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.QueueMusic,
-                        contentDescription = stringResource(R.string.add_to_queue),
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
-                }
             }
         }
     }
@@ -457,20 +366,23 @@ private fun PlayControls(onPlayClicked: () -> Unit, onShuffleClicked: () -> Unit
 }
 
 @Composable
-private fun AlbumDurationMetadata(model: AlbumScreenUIModel) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
+private fun AlbumDurationMetadata(model: AlbumScreenUIModel, modifier: Modifier = Modifier) {
+    val resources = LocalContext.current.resources
+    Text(
+        text = resources.getQuantityString(
+            R.plurals.album_track_count,
+            model.album.numSongs,
+            model.album.numSongs
+        ) + " • " + resources.getQuantityString(
+            R.plurals.album_duration,
+            model.duration,
+            model.duration
+        ),
+        textAlign = TextAlign.Center,
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-    ) {
-        val resources = LocalContext.current.resources
-        Text(
-            text = resources.getQuantityString(R.plurals.album_track_count, model.album.numSongs, model.album.numSongs)
-        )
-
-        Text(text = resources.getQuantityString(R.plurals.album_duration, model.duration, model.duration))
-    }
+    )
 }
 
 @Composable
