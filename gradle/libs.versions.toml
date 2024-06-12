@@ -1,6 +1,6 @@
 [versions]
 accompanist = "0.32.0"
-androidGradlePlugin = "8.1.2"
+androidGradlePlugin = "8.4.2"
 androidxAppCompat = "1.7.0"
 androidxConstraintLayout = "2.1.4"
 androidxPalette = "1.0.0"
