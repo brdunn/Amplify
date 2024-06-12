@@ -19,7 +19,6 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Shuffle
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -248,7 +247,6 @@ private fun PlaylistHeader(
 private fun PlaylistZeroState(modifier: Modifier = Modifier) =
     ZeroStateScreen(title = R.string.playlist_zero_state_title, modifier = modifier)
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EditPlaylistDialog(
     playlist: Playlist,

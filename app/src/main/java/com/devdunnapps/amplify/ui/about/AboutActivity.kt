@@ -30,7 +30,6 @@ class AboutActivity : AppCompatActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AboutScreen(onNavigateUp: () -> Unit) {
     Scaffold(

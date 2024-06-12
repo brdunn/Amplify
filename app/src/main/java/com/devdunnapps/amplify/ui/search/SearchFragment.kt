@@ -33,7 +33,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -114,7 +113,7 @@ private fun SearchScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchAppBar(onUpClicked: () -> Unit, onTextChanged: (String) -> Unit) {
     TopAppBar(
@@ -169,7 +168,6 @@ private fun SearchAppBar(onUpClicked: () -> Unit, onTextChanged: (String) -> Uni
     )
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun SearchResultsContent(results: SearchResults, onPlaySong: (Song) -> Unit) {
     val songs = results.songs

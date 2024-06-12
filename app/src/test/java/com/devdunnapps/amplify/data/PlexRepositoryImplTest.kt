@@ -13,7 +13,6 @@ import org.junit.Test
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class PlexRepositoryImplTest {
 
     private lateinit var repository: PlexRepository
