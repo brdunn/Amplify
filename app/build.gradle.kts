@@ -1,3 +1,5 @@
+import com.google.protobuf.gradle.GenerateProtoTask
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -129,6 +131,22 @@ protobuf {
                 val kotlin by registering {
                     option("lite")
                 }
+            }
+        }
+    }
+}
+
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        afterEvaluate {
+            val protoTask =
+                project.tasks.getByName("generate" + variant.name.replaceFirstChar { it.uppercaseChar() } + "Proto") as GenerateProtoTask
+
+            project.tasks.getByName("ksp" + variant.name.replaceFirstChar { it.uppercaseChar() } + "Kotlin") {
+                dependsOn(protoTask)
+                (this as org.jetbrains.kotlin.gradle.tasks.AbstractKotlinCompileTool<*>).setSource(
+                    protoTask.outputBaseDir
+                )
             }
         }
     }
