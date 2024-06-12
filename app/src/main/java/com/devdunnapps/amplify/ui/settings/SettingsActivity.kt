@@ -46,7 +46,7 @@ class SettingsActivity : AppCompatActivity() {
                     uiState = viewModel.uiState.collectAsState().value,
                     onNavigateUpClick = { onBackPressed() },
                     onChooseThemeClick = viewModel::changeTheme,
-                    onSignOutClick = {  handleSignOut() }
+                    onSignOutClick = { handleSignOut() }
                 )
             }
         }

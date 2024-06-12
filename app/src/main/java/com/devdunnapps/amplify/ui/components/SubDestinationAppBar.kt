@@ -57,14 +57,20 @@ fun SubDestinationAppBar(
                     text = {
                         Text(text = stringResource(R.string.settings))
                     },
-                    onClick = onNavigateToSettings
+                    onClick = {
+                        onNavigateToSettings()
+                        isMenuExpanded = false
+                    }
                 )
 
                 DropdownMenuItem(
                     text = {
                         Text(text = stringResource(R.string.about))
                     },
-                    onClick = onNavigateToAbout
+                    onClick = {
+                        onNavigateToAbout()
+                        isMenuExpanded = false
+                    }
                 )
             }
         }

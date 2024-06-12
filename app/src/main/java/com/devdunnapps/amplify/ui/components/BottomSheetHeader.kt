@@ -38,10 +38,10 @@ fun BottomSheetHeader(
         }
 
         Column(modifier = Modifier.weight(1f)) {
-            Text(text = title, style = MaterialTheme.typography.headlineSmall, maxLines = 1)
+            Text(text = title, style = MaterialTheme.typography.bodyLarge, maxLines = 1)
 
             subtitle?.let {
-                Text(text = it, style = MaterialTheme.typography.bodyLarge, maxLines = 1)
+                Text(text = it, style = MaterialTheme.typography.bodyMedium, maxLines = 1)
             }
         }
 

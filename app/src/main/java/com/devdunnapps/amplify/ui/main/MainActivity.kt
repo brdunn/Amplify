@@ -1,11 +1,15 @@
 package com.devdunnapps.amplify.ui.main
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
 import android.util.TypedValue
 import android.view.View
+import android.view.ViewGroup
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
@@ -32,7 +36,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -66,11 +73,11 @@ class MainActivity : AppCompatActivity() {
         startOnBoardingIfFirstTime()
 
         binding = ActivityMainBinding.inflate(layoutInflater)
+        drawUnderSystemBars()
         setContentView(binding.root)
 
-        drawUnderSystemBars()
-
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_content_frame) as NavHostFragment
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_content_frame) as NavHostFragment
         binding.navView.apply {
             val navController = navHostFragment.navController
             setupWithNavController(navController)
@@ -109,7 +116,8 @@ class MainActivity : AppCompatActivity() {
                     bottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
                 },
                 onNowPlayingMenuClick = { songId ->
-                    val action = MobileNavigationDirections.actionGlobalNavigationSongBottomSheet(songId)
+                    val action =
+                        MobileNavigationDirections.actionGlobalNavigationSongBottomSheet(songId)
                     findNavController(binding.navContentFrame).navigate(action)
                 }
             )
@@ -119,9 +127,13 @@ class MainActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.playbackState.collect {
                     if (it.state == PlaybackStateCompat.STATE_PLAYING) {
-                        val marginInDp =
-                            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 64f, resources.displayMetrics).toInt()
-                        (binding.navContentFrame.layoutParams as CoordinatorLayout.LayoutParams).setMargins(0, 0, 0, marginInDp)
+                        val marginInDp = TypedValue.applyDimension(
+                            TypedValue.COMPLEX_UNIT_DIP,
+                            64f,
+                            resources.displayMetrics
+                        ).toInt()
+                        (binding.navContentFrame.layoutParams as CoordinatorLayout.LayoutParams)
+                            .setMargins(0, 0, 0, marginInDp)
 
                         binding.bottomSheet.visibility = View.VISIBLE
                     }
@@ -138,9 +150,8 @@ class MainActivity : AppCompatActivity() {
                         binding.nowPlayingBoxCollapsed.visibility = View.INVISIBLE
                     }
 
-                    BottomSheetBehavior.STATE_COLLAPSED -> {
+                    BottomSheetBehavior.STATE_COLLAPSED ->
                         binding.nowPlayingExpanded.visibility = View.INVISIBLE
-                    }
 
                     else -> Unit
                 }
@@ -162,11 +173,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Draws the main content under the system bars for Android versions 11+
-     */
     private fun drawUnderSystemBars() {
-        WindowCompat.setDecorFitsSystemWindows(window, false)
+        enableEdgeToEdge()
+
+        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, windowInsets ->
+                val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+                view.setPadding(insets.left, 0, insets.right,0)
+
+                windowInsets
+            }
+        }
     }
 
     private fun startOnBoardingIfFirstTime() {

@@ -19,7 +19,6 @@
 
         <activity
             android:name=".ui.main.MainActivity"
-            android:screenOrientation="portrait"
             android:exported="true"
             android:launchMode="singleTop"
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan">
@@ -31,17 +30,14 @@
 
         <activity
             android:name=".ui.settings.SettingsActivity"
-            android:parentActivityName="com.devdunnapps.amplify.ui.main.MainActivity"
-            android:screenOrientation="portrait" />
+            android:parentActivityName="com.devdunnapps.amplify.ui.main.MainActivity" />
 
         <activity
             android:name=".ui.about.AboutActivity"
-            android:parentActivityName="com.devdunnapps.amplify.ui.main.MainActivity"
-            android:screenOrientation="portrait" />
+            android:parentActivityName="com.devdunnapps.amplify.ui.main.MainActivity" />
 
         <activity
-            android:name=".ui.onboarding.OnBoardingActivity"
-            android:screenOrientation="portrait" />
+            android:name=".ui.onboarding.OnBoardingActivity" />
 
         <service
             android:name=".utils.MusicService"

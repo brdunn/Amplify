@@ -19,6 +19,7 @@ local.properties
 # IDEA/Android Studio project files
 *.iml
 .idea/*
+!.idea/icon.png
 
 # Gradle cache
 .gradle
