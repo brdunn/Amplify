@@ -1,8 +1,10 @@
 import com.google.protobuf.gradle.GenerateProtoTask
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose.compiler)
     alias(libs.plugins.ksp)
     alias(libs.plugins.safeargs)
     alias(libs.plugins.hilt)
@@ -42,22 +44,20 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
-        freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
-    }
-
     buildFeatures {
         viewBinding = true
         compose = true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.androidx.compose.compiler.get().versionConstraint.toString()
-    }
-
     lint {
         abortOnError = false
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+        freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
     }
 }
 

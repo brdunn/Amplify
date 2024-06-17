@@ -23,9 +23,9 @@ coil = "2.6.0"
 exoPlayer = "2.19.1"
 hilt = "2.51.1"
 junit4 = "4.13.2"
-kotlin = "1.9.24"
+kotlin = "2.0.0"
 kotlinxCoroutines = "1.7.1"
-ksp = "1.9.24-1.0.20"
+ksp = "2.0.0-1.0.22"
 material = "1.12.0"
 mockWebserver = "4.11.0"
 protobuf = "4.27.1"
@@ -80,6 +80,7 @@ retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
 safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "androidxNavigation" }
