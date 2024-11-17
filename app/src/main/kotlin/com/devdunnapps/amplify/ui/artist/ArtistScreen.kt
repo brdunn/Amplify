@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,6 +24,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -282,9 +284,11 @@ private fun ArtistSongsCarousel(
 
 @Composable
 private fun ArtistAlbumCard(onClick: () -> Unit, album: Album) {
-    Column(modifier = Modifier
-        .requiredWidth(200.dp)
-        .clickable { onClick() }) {
+    Column(
+        modifier = Modifier
+            .requiredWidth(175.dp)
+            .clickable { onClick() }
+    ) {
         val context = LocalContext.current
         val imageUrl = remember {
             PlexUtils.getInstance(context).getSizedImage(album.thumb, 300, 300)
@@ -295,7 +299,9 @@ private fun ArtistAlbumCard(onClick: () -> Unit, album: Album) {
             error = painterResource(R.drawable.ic_album),
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            modifier = Modifier.aspectRatio(1f),
+            modifier = Modifier
+                .aspectRatio(1f)
+                .clip(RoundedCornerShape(4.dp)),
         )
 
         Text(
