@@ -72,6 +72,7 @@ fun NowPlayingScreen(
     onNowPlayingMenuClick: (String) -> Unit
 ) {
     val metadata = viewModel.metadata.collectAsState().value
+    val hasLyrics = viewModel.hasLyrics.collectAsState().value
 
     // Only display content if something is playing
     if (metadata == NOTHING_PLAYING)
@@ -84,6 +85,7 @@ fun NowPlayingScreen(
     val repeatMode = viewModel.repeatMode.collectAsState().value
 
     NowPlaying(
+        hasLyrics = hasLyrics,
         artworkUrl = metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI),
         songId = metadata.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID),
         title = metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE),
@@ -108,6 +110,7 @@ fun NowPlayingScreen(
 
 @Composable
 private fun NowPlaying(
+    hasLyrics: Boolean,
     artworkUrl: String,
     songId: String,
     title: String,
@@ -140,6 +143,7 @@ private fun NowPlaying(
                 .systemBarsPadding()
         ) {
             NowPlayingTopBar(
+                hasLyrics = hasLyrics,
                 songId = songId,
                 title = title,
                 subtitle = subtitle,
@@ -220,6 +224,7 @@ private fun NowPlaying(
 
 @Composable
 private fun NowPlayingTopBar(
+    hasLyrics: Boolean,
     songId: String,
     title: String,
     subtitle: String,
@@ -254,12 +259,14 @@ private fun NowPlayingTopBar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            IconButton(onClick = { isLyricsBottomSheetVisible = true }) {
-                Icon(
-                    imageVector = Icons.Filled.Lyrics,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
+            if (hasLyrics) {
+                IconButton(onClick = { isLyricsBottomSheetVisible = true }) {
+                    Icon(
+                        imageVector = Icons.Filled.Lyrics,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
+                }
             }
 
             IconButton(onClick = onMenuClick) {

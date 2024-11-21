@@ -2,19 +2,24 @@ package com.devdunnapps.amplify.ui.nowplaying
 
 import android.os.Handler
 import android.os.Looper
+import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import androidx.compose.runtime.MutableState
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.devdunnapps.amplify.domain.usecases.GetSongLyricsUseCase
 import com.devdunnapps.amplify.utils.MusicServiceConnection
+import com.devdunnapps.amplify.utils.Resource
 import com.devdunnapps.amplify.utils.currentPlayBackPosition
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class NowPlayingViewModel @Inject constructor(
-    private val musicServiceConnection: MusicServiceConnection
+    private val musicServiceConnection: MusicServiceConnection,
+    private val getSongLyricsUseCase: GetSongLyricsUseCase
 ): ViewModel() {
 
     val playbackState = musicServiceConnection.playbackState
@@ -23,12 +28,21 @@ class NowPlayingViewModel @Inject constructor(
     val shuffleMode: MutableStateFlow<Int> = MutableStateFlow(PlaybackStateCompat.SHUFFLE_MODE_NONE)
     val repeatMode: MutableStateFlow<Int> = MutableStateFlow(PlaybackStateCompat.REPEAT_MODE_NONE)
 
+    private val _hasLyrics = MutableStateFlow(false)
+    val hasLyrics = _hasLyrics.asStateFlow()
+
     val mediaPosition: MutableStateFlow<Long> = MutableStateFlow(0)
     private val handler = Handler(Looper.getMainLooper())
     private var updatePosition = true
 
     init {
         checkPlaybackPosition()
+
+        viewModelScope.launch {
+            metadata.collect {
+                checkForSongLyrics()
+            }
+        }
     }
 
     fun togglePlayingState() {
@@ -90,5 +104,16 @@ class NowPlayingViewModel @Inject constructor(
         super.onCleared()
 
         updatePosition = false
+    }
+
+    private fun checkForSongLyrics() {
+        viewModelScope.launch {
+            val songId = metadata.value.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID)
+            getSongLyricsUseCase(songId).collect {
+                if (it is Resource.Success) {
+                    _hasLyrics.emit(true)
+                }
+            }
+        }
     }
 }
