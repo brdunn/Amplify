@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.PlexPlayer.Base" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.PlexPlayer.Base" parent="Theme.AppCompat.DayNight.NoActionBar">
     </style>
 
     <style name="Theme.PlexPlayer" parent="Theme.PlexPlayer.Base">
-    </style>
-
-    <style name="Theme.PlexPlayer.Translucent" parent="Theme.PlexPlayer.Base">
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 </resources>

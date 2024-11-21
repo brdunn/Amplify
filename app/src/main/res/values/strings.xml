@@ -90,10 +90,12 @@
     <string name="settings">Settings</string>
     <string-array name="theme_titles">
         <item>@string/theme_system_default</item>
+        <item>@string/theme_dynamic</item>
         <item>@string/theme_light</item>
         <item>@string/theme_dark</item>
     </string-array>
     <string name="theme_system_default">System default</string>
+    <string name="theme_dynamic">Dynamic</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
     <string name="choose_theme_preference_title">Choose theme</string>

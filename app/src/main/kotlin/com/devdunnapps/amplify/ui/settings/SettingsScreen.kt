@@ -1,6 +1,7 @@
 package com.devdunnapps.amplify.ui.settings
 
 import android.content.Intent
+import android.os.Build
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -105,23 +106,38 @@ private fun SettingsScreenContent(
             ListPreferenceCell(
                 title = R.string.choose_theme_preference_title,
                 description = themeDescription,
-                items = listOf(
-                    ListPreferenceItem(
-                        title = stringResource(id = R.string.theme_system_default),
-                        isSelected = theme == ThemeConfig.FOLLOW_SYSTEM,
-                        value = ThemeConfig.FOLLOW_SYSTEM
-                    ),
-                    ListPreferenceItem(
-                        title = stringResource(id = R.string.theme_light),
-                        isSelected = theme == ThemeConfig.LIGHT,
-                        value = ThemeConfig.LIGHT
-                    ),
-                    ListPreferenceItem(
-                        title = stringResource(id = R.string.theme_dark),
-                        isSelected = theme == ThemeConfig.DARK,
-                        value = ThemeConfig.DARK
+                items = buildList {
+                    add(
+                        ListPreferenceItem(
+                            title = stringResource(id = R.string.theme_system_default),
+                            isSelected = theme == ThemeConfig.FOLLOW_SYSTEM,
+                            value = ThemeConfig.FOLLOW_SYSTEM
+                        )
                     )
-                ),
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        add(
+                            ListPreferenceItem(
+                                title = stringResource(id = R.string.theme_dynamic),
+                                isSelected = theme == ThemeConfig.DYNAMIC,
+                                value = ThemeConfig.DYNAMIC
+                            )
+                        )
+                    }
+                    add(
+                        ListPreferenceItem(
+                            title = stringResource(id = R.string.theme_light),
+                            isSelected = theme == ThemeConfig.LIGHT,
+                            value = ThemeConfig.LIGHT
+                        )
+                    )
+                    add(
+                        ListPreferenceItem(
+                            title = stringResource(id = R.string.theme_dark),
+                            isSelected = theme == ThemeConfig.DARK,
+                            value = ThemeConfig.DARK
+                        )
+                    )
+                },
                 onClick = { listPreferenceItem -> listPreferenceItem?.let { onChooseThemeClick(it.value as ThemeConfig) } }
             )
         }

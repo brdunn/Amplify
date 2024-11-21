@@ -20,6 +20,7 @@ class PreferencesRepositoryImpl @Inject constructor (
                 themeConfig = when (it.themeConfig) {
                     ThemeConfigProto.DARK_THEME_CONFIG_DARK -> ThemeConfig.DARK
                     ThemeConfigProto.DARK_THEME_CONFIG_LIGHT -> ThemeConfig.LIGHT
+                    ThemeConfigProto.DARK_THEME_CONFIG_DYNAMIC -> ThemeConfig.DYNAMIC
                     else -> ThemeConfig.FOLLOW_SYSTEM
                 }
             )
@@ -30,6 +31,7 @@ class PreferencesRepositoryImpl @Inject constructor (
             it.copy {
                 this.themeConfig = when (themeConfig) {
                     ThemeConfig.FOLLOW_SYSTEM -> ThemeConfigProto.DARK_THEME_CONFIG_FOLLOW_SYSTEM
+                    ThemeConfig.DYNAMIC -> ThemeConfigProto.DARK_THEME_CONFIG_DYNAMIC
                     ThemeConfig.LIGHT -> ThemeConfigProto.DARK_THEME_CONFIG_LIGHT
                     ThemeConfig.DARK -> ThemeConfigProto.DARK_THEME_CONFIG_DARK
                 }

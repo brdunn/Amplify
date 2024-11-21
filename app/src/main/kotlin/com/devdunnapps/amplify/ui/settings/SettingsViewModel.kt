@@ -1,7 +1,6 @@
 package com.devdunnapps.amplify.ui.settings
 
 import android.app.Application
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.devdunnapps.amplify.domain.models.Preferences
@@ -29,14 +28,6 @@ class SettingsActivityViewModel @Inject constructor(
         viewModelScope.launch {
             preferencesRepository.setTheme(newValue)
         }
-
-        val mode = when (newValue) {
-            ThemeConfig.DARK -> AppCompatDelegate.MODE_NIGHT_YES
-            ThemeConfig.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
-            ThemeConfig.FOLLOW_SYSTEM -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-        }
-
-        AppCompatDelegate.setDefaultNightMode(mode)
     }
 
     fun signOut() {

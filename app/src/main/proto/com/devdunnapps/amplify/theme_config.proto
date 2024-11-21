@@ -5,6 +5,7 @@ option java_multiple_files = true;
 
 enum ThemeConfigProto {
   DARK_THEME_CONFIG_FOLLOW_SYSTEM = 0;
-  DARK_THEME_CONFIG_LIGHT = 1;
-  DARK_THEME_CONFIG_DARK = 2;
+  DARK_THEME_CONFIG_DYNAMIC = 1;
+  DARK_THEME_CONFIG_LIGHT = 2;
+  DARK_THEME_CONFIG_DARK = 3;
 }

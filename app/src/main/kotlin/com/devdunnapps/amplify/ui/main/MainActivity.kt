@@ -28,7 +28,9 @@ class MainActivity : ComponentActivity() {
         val isUserFirstTime = sharedPref.getBoolean(PreferencesUtils.PREF_USER_FIRST_TIME, true)
 
         setContent {
-            Theme {
+            val theme = viewModel.theme.collectAsState().value
+
+            Theme(userSelectedTheme = theme) {
                 val playbackState = viewModel.playbackState.collectAsState().value.state
                 val currentlyPlayingMetadata = viewModel.mediaMetadata.collectAsState().value
 

@@ -1,10 +1,15 @@
 package com.devdunnapps.amplify.ui.theme
 
+import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
+import com.devdunnapps.amplify.domain.models.ThemeConfig
 
 private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
@@ -72,17 +77,22 @@ private val DarkColors = darkColorScheme(
 
 @Composable
 fun Theme(
-    useDarkTheme: Boolean = isSystemInDarkTheme(),
+    userSelectedTheme: ThemeConfig = ThemeConfig.LIGHT,
     content: @Composable () -> Unit
 ) {
-    val colors = if (!useDarkTheme) {
-        LightColors
-    } else {
-        DarkColors
+    val isSystemInDarkTheme = isSystemInDarkTheme()
+    val supportsDynamicColors = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    val colors = when {
+        supportsDynamicColors && userSelectedTheme == ThemeConfig.DYNAMIC && isSystemInDarkTheme ->
+            dynamicDarkColorScheme(LocalContext.current)
+
+        supportsDynamicColors && userSelectedTheme == ThemeConfig.DYNAMIC && !isSystemInDarkTheme ->
+            dynamicLightColorScheme(LocalContext.current)
+
+        userSelectedTheme == ThemeConfig.DARK -> DarkColors
+        userSelectedTheme == ThemeConfig.LIGHT -> LightColors
+        else -> if (isSystemInDarkTheme) DarkColors else LightColors
     }
 
-    MaterialTheme(
-        colorScheme = colors,
-        content = content
-    )
+    MaterialTheme(colorScheme = colors, content = content)
 }
