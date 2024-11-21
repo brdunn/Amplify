@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -91,6 +90,7 @@ fun NowPlayingScreen(
         title = metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE),
         subtitle = metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST),
         onSeekToPosition = { viewModel.seekTo((it * 1000).toLong()) },
+        onFinishSeekToPosition = viewModel::finishSeek,
         mediaPosition = mediaPosition,
         songDurationMillis = songDurationMillis,
         playMode = playMode,
@@ -116,6 +116,7 @@ private fun NowPlaying(
     title: String,
     subtitle: String,
     onSeekToPosition: (Float) -> Unit,
+    onFinishSeekToPosition: () -> Unit,
     mediaPosition: Long,
     songDurationMillis: Long,
     playMode: PlaybackStateCompat,
@@ -203,6 +204,7 @@ private fun NowPlaying(
 
                 NowPlayingProgressBar(
                     onSeekToPosition = onSeekToPosition,
+                    onFinishSeekToPosition = onFinishSeekToPosition,
                     mediaPosition = mediaPosition,
                     songDurationMillis = songDurationMillis
                 )
@@ -283,13 +285,14 @@ private fun NowPlayingTopBar(
 @Composable
 private fun NowPlayingProgressBar(
     onSeekToPosition: (Float) -> Unit,
+    onFinishSeekToPosition: () -> Unit,
     mediaPosition: Long,
     songDurationMillis: Long,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-
         var sliderPosition by remember(mediaPosition) { mutableFloatStateOf((mediaPosition / 1000).toFloat()) }
+
         Slider(
             value = sliderPosition,
             valueRange = 0f..(songDurationMillis / 1000).toFloat(),
@@ -297,9 +300,10 @@ private fun NowPlayingProgressBar(
                 sliderPosition = it
                 onSeekToPosition(it)
             },
+            onValueChangeFinished = onFinishSeekToPosition,
             colors = SliderDefaults.colors(
-                thumbColor = Color.White,
-                activeTrackColor = Color.White,
+                thumbColor = MaterialTheme.colorScheme.primaryContainer,
+                activeTrackColor = MaterialTheme.colorScheme.primaryContainer,
                 inactiveTrackColor = Color.Gray
             ),
             modifier = Modifier.fillMaxWidth()
@@ -315,15 +319,13 @@ private fun NowPlayingProgressBar(
             Text(
                 text = TimeUtils.millisecondsToTime(mediaPosition),
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.offset(y = (-6).dp)
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             Text(
                 text = TimeUtils.millisecondsToTime(songDurationMillis),
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.offset(y = (-6).dp)
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
     }

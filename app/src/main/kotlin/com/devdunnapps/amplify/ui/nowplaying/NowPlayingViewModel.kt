@@ -31,7 +31,9 @@ class NowPlayingViewModel @Inject constructor(
     private val _hasLyrics = MutableStateFlow(false)
     val hasLyrics = _hasLyrics.asStateFlow()
 
-    val mediaPosition: MutableStateFlow<Long> = MutableStateFlow(0)
+    private val _mediaPosition: MutableStateFlow<Long> = MutableStateFlow(0L)
+    val mediaPosition = _mediaPosition.asStateFlow()
+
     private val handler = Handler(Looper.getMainLooper())
     private var updatePosition = true
 
@@ -89,13 +91,19 @@ class NowPlayingViewModel @Inject constructor(
     }
 
     fun seekTo(position: Long) {
-        musicServiceConnection.transportControls.seekTo(position)
+        updatePosition = false
+        _mediaPosition.value = position
+    }
+
+    fun finishSeek() {
+        musicServiceConnection.transportControls.seekTo(mediaPosition.value)
+        updatePosition = true
     }
 
     private fun checkPlaybackPosition(): Boolean = handler.postDelayed({
         val currPosition = playbackState.value.currentPlayBackPosition
         if (mediaPosition.value != currPosition)
-            mediaPosition.value = currPosition
+            _mediaPosition.value = currPosition
         if (updatePosition)
             checkPlaybackPosition()
     }, 500)
