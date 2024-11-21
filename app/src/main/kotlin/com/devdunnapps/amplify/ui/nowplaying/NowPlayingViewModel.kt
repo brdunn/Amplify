@@ -36,6 +36,7 @@ class NowPlayingViewModel @Inject constructor(
 
     private val handler = Handler(Looper.getMainLooper())
     private var updatePosition = true
+    private var isSeeking = false
 
     init {
         checkPlaybackPosition()
@@ -91,18 +92,18 @@ class NowPlayingViewModel @Inject constructor(
     }
 
     fun seekTo(position: Long) {
-        updatePosition = false
+        isSeeking = true
         _mediaPosition.value = position
     }
 
     fun finishSeek() {
         musicServiceConnection.transportControls.seekTo(mediaPosition.value)
-        updatePosition = true
+        isSeeking = false
     }
 
     private fun checkPlaybackPosition(): Boolean = handler.postDelayed({
         val currPosition = playbackState.value.currentPlayBackPosition
-        if (mediaPosition.value != currPosition)
+        if (mediaPosition.value != currPosition && !isSeeking)
             _mediaPosition.value = currPosition
         if (updatePosition)
             checkPlaybackPosition()
